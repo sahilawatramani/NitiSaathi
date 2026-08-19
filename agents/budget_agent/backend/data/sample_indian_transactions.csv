@@ -1,0 +1,501 @@
+transaction_id,date,time,amount,merchant,description,category,payment_method,bank,status
+TXN202401010043,2024-01-01,15:18:13,6465.43,RedBus,Bus ticket booking,Transport,Net Banking,Yes Bank,Success
+TXN202401030367,2024-01-03,07:34:12,26919.77,PG Accommodation,PG monthly payment,Rent,Net Banking,IndusInd Bank,Success
+TXN202401040130,2024-01-04,12:19:13,35228.68,HDFC Bank EMI,Home loan EMI,EMI,Debit Card,PNB,Success
+TXN202401050100,2024-01-05,07:58:38,3776.83,Vi (Vodafone Idea),Postpaid bill,Utilities,Debit Card,Axis Bank,Success
+TXN202401050304,2024-01-05,16:00:48,5326.97,Grofers,Grocery delivery order,Grocery,Debit Card,HDFC Bank,Success
+TXN202401050485,2024-01-05,13:05:09,90,Faasos,Wraps and rolls delivery,Food,Cash,Kotak Bank,Success
+TXN202401050491,2024-01-05,07:37:50,10370.55,Delhi Metro,Metro recharge,Transport,UPI,PNB,Success
+TXN202401060418,2024-01-06,23:55:35,7500,ICICI Prudential,Mutual fund investment,Investment,Cash,IndusInd Bank,Success
+TXN202401070234,2024-01-07,06:33:46,4142.87,IndiGo Airlines,Domestic flight ticket,Transport,UPI,IndusInd Bank,Success
+TXN202401080022,2024-01-08,08:59:48,4270,Indane Gas,LPG cylinder booking,Utilities,Wallet,Yes Bank,Success
+TXN202401080114,2024-01-08,17:50:50,7518.98,Coursera,Online certification course,Education,UPI,Kotak Bank,Success
+TXN202401080226,2024-01-08,12:59:12,48120,SBI Mutual Fund,SIP installment,Investment,Wallet,Axis Bank,Success
+TXN202401090218,2024-01-09,13:13:04,1540,MakeMyTrip,Travel booking,Transport,UPI,Axis Bank,Success
+TXN202401100132,2024-01-10,20:58:04,12945.44,Max Healthcare,Medical check-up,Healthcare,Cash,Bank of Baroda,Success
+TXN202401100154,2024-01-10,14:13:53,416.32,Zomato,Online food delivery,Food,Cash,HDFC Bank,Success
+TXN202401120313,2024-01-12,08:12:57,32476.35,Groww,Mutual fund SIP,Investment,UPI,PNB,Success
+TXN202401150125,2024-01-15,11:17:44,1167.14,BookMyShow,Movie tickets,Entertainment,Net Banking,SBI,Success
+TXN202401170499,2024-01-17,12:06:31,520,Biryani Blues,Biryani delivery order,Food,Cash,Yes Bank,Success
+TXN202401190202,2024-01-19,18:50:31,506.46,FreshMenu,Healthy meal delivery,Food,Debit Card,SBI,Success
+TXN202401190299,2024-01-19,23:51:58,18136.5,ICICI Lombard,Health insurance renewal,Insurance,Credit Card,PNB,Success
+TXN202401200039,2024-01-20,09:38:27,15370.61,MagicBricks Rent,Rental apartment payment,Rent,Cash,IDFC First,Failed
+TXN202401200346,2024-01-20,18:56:56,1790,BSNL,Landline + broadband bill,Utilities,Wallet,Kotak Bank,Success
+TXN202401210291,2024-01-21,07:50:25,1291.2,McDonald's India,Fast food restaurant,Food,Cash,Bank of Baroda,Success
+TXN202401220197,2024-01-22,15:45:05,584.26,BookMyShow,Movie tickets,Entertainment,Debit Card,Yes Bank,Success
+TXN202401220430,2024-01-22,12:33:58,6373.39,BigBasket,Online grocery order,Grocery,Wallet,SBI,Success
+TXN202401230090,2024-01-23,16:47:30,21304.22,Chegg India,Study resources subscription,Education,Cash,ICICI Bank,Success
+TXN202401240095,2024-01-24,16:50:03,2488.27,Big Bazaar,Monthly grocery shopping,Grocery,UPI,Axis Bank,Success
+TXN202401240178,2024-01-24,14:41:13,23125.29,BYJU'S,Learning app subscription,Education,UPI,Yes Bank,Success
+TXN202401240369,2024-01-24,15:18:29,1833.19,Biryani Blues,Biryani delivery order,Food,Net Banking,Bank of Baroda,Success
+TXN202401240379,2024-01-24,06:54:08,1680,Biryani Blues,Biryani delivery order,Food,Net Banking,Yes Bank,Failed
+TXN202401250155,2024-01-25,13:26:40,1995.05,Zomato,Online food delivery,Food,UPI,Yes Bank,Success
+TXN202401250468,2024-01-25,18:06:44,4330,Westside,Casual wear shopping,Shopping,Debit Card,Yes Bank,Success
+TXN202401260378,2024-01-26,09:52:11,7018.3,JioMart,Online grocery purchase,Grocery,Net Banking,PNB,Success
+TXN202401270142,2024-01-27,16:04:21,937.15,Nature's Basket,Organic grocery shopping,Grocery,Debit Card,Kotak Bank,Success
+TXN202401270150,2024-01-27,21:55:23,1410,Haldiram's,Sweets and snacks purchase,Food,UPI,Kotak Bank,Success
+TXN202401270490,2024-01-27,12:07:15,5136.69,Reliance Fresh,Fresh vegetables and fruits,Grocery,UPI,Kotak Bank,Success
+TXN202401280385,2024-01-28,06:41:59,4176.11,Westside,Casual wear shopping,Shopping,Wallet,ICICI Bank,Success
+TXN202401280400,2024-01-28,07:12:17,1890,Dominos Pizza,Pizza delivery order,Food,Debit Card,Kotak Bank,Success
+TXN202401290322,2024-01-29,13:38:14,328.32,Ola Cabs,Auto ride,Transport,Net Banking,IDFC First,Success
+TXN202401300223,2024-01-30,23:26:26,1420,Faasos,Wraps and rolls delivery,Food,Credit Card,Kotak Bank,Success
+TXN202401310214,2024-01-31,08:59:30,352.33,Indane Gas,LPG cylinder booking,Utilities,UPI,Bank of Baroda,Success
+TXN202401310232,2024-01-31,22:02:53,12705.06,Indian Oil,Diesel refueling,Transport,UPI,SBI,Success
+TXN202402010193,2024-02-01,10:33:13,8457.21,Fortis Hospital,Health screening,Healthcare,Wallet,IndusInd Bank,Success
+TXN202402010316,2024-02-01,08:17:24,7290,Axis Mutual Fund,Monthly SIP,Investment,Credit Card,IndusInd Bank,Success
+TXN202402020449,2024-02-02,14:14:23,2280,Flipkart,Online shopping - clothing,Shopping,Cash,Bank of Baroda,Success
+TXN202402030072,2024-02-03,18:31:04,17522.12,BYJU'S,Learning app subscription,Education,UPI,ICICI Bank,Success
+TXN202402040233,2024-02-04,10:00:13,807.53,Spotify India,Music subscription,Entertainment,Wallet,Yes Bank,Success
+TXN202402040329,2024-02-04,17:16:50,310,Café Coffee Day,Coffee shop visit,Food,Cash,Yes Bank,Success
+TXN202402050253,2024-02-05,19:43:31,1285.6,Grofers,Grocery delivery order,Grocery,Debit Card,ICICI Bank,Success
+TXN202402060018,2024-02-06,22:15:17,1690,Barbeque Nation,Dining out - dinner,Food,UPI,IDFC First,Success
+TXN202402070028,2024-02-07,23:13:32,14138.42,HDFC Bank EMI,Home loan EMI,EMI,UPI,Axis Bank,Success
+TXN202402070225,2024-02-07,12:51:48,14813.32,IKEA India,Home furnishing,Shopping,Credit Card,Yes Bank,Success
+TXN202402070414,2024-02-07,07:11:50,2160,D-Mart,Grocery and household items,Grocery,Credit Card,Kotak Bank,Success
+TXN202402090432,2024-02-09,22:16:24,7790,More Supermarket,Household essentials,Grocery,Cash,PNB,Success
+TXN202402100176,2024-02-10,14:12:40,14350,Mumbai Local,Train pass renewal,Transport,Debit Card,IDFC First,Success
+TXN202402120443,2024-02-12,15:38:56,8170,Delhi Metro,Metro recharge,Transport,UPI,SBI,Success
+TXN202402130157,2024-02-13,22:23:04,2385.84,Starbucks India,Coffee and beverages,Food,UPI,Bank of Baroda,Success
+TXN202402130306,2024-02-13,09:32:08,32042.18,Axis Mutual Fund,Monthly SIP,Investment,UPI,Bank of Baroda,Success
+TXN202402140286,2024-02-14,09:08:48,1873.66,Delhi Metro,Metro recharge,Transport,Net Banking,Bank of Baroda,Success
+TXN202402160492,2024-02-16,16:59:48,1580,Faasos,Wraps and rolls delivery,Food,UPI,IndusInd Bank,Success
+TXN202402170332,2024-02-17,16:38:39,2238.4,FreshMenu,Healthy meal delivery,Food,Cash,ICICI Bank,Success
+TXN202402170380,2024-02-17,17:52:21,1626.38,Grofers,Grocery delivery order,Grocery,Wallet,Kotak Bank,Success
+TXN202402180120,2024-02-18,16:27:20,9986.66,IndiGo Airlines,Domestic flight ticket,Transport,UPI,Yes Bank,Success
+TXN202402180384,2024-02-18,19:42:46,1393.17,Delhi Jal Board,Water bill payment,Utilities,Cash,ICICI Bank,Success
+TXN202402190338,2024-02-19,08:42:22,12141.88,Apollo 24/7,Teleconsultation,Healthcare,Credit Card,IndusInd Bank,Success
+TXN202402200421,2024-02-20,12:46:37,2538.51,Vi (Vodafone Idea),Postpaid bill,Utilities,UPI,Axis Bank,Success
+TXN202402210333,2024-02-21,16:13:12,6156.92,Uber India,Cab ride to office,Transport,Debit Card,Kotak Bank,Success
+TXN202402220071,2024-02-22,06:36:18,19081.91,PG Accommodation,PG monthly payment,Rent,UPI,SBI,Success
+TXN202402220284,2024-02-22,09:20:23,2210,Zomato,Online food delivery,Food,UPI,ICICI Bank,Success
+TXN202402240030,2024-02-24,23:09:17,740,Zomato,Online food delivery,Food,Net Banking,Axis Bank,Success
+TXN202402240235,2024-02-24,09:33:09,1356.65,Jio Recharge,Mobile recharge,Utilities,Debit Card,PNB,Success
+TXN202402240392,2024-02-24,14:39:12,2894.4,Max Healthcare,Medical check-up,Healthcare,Cash,Axis Bank,Success
+TXN202402250106,2024-02-25,13:30:01,15602.81,Croma,Electronics purchase,Shopping,Net Banking,IDFC First,Success
+TXN202402260129,2024-02-26,15:43:43,1503.18,Chai Point,Tea and snacks,Food,Debit Card,SBI,Success
+TXN202402280011,2024-02-28,23:48:17,1933.07,Café Coffee Day,Coffee shop visit,Food,Debit Card,Bank of Baroda,Success
+TXN202402280077,2024-02-28,23:14:41,4580,SBI Life,Endowment plan premium,Insurance,UPI,HDFC Bank,Success
+TXN202402280104,2024-02-28,20:04:09,6080,Reliance Fresh,Fresh vegetables and fruits,Grocery,Cash,IndusInd Bank,Success
+TXN202402280115,2024-02-28,08:30:28,11692.45,Lenskart,Eyeglasses purchase,Healthcare,UPI,Yes Bank,Success
+TXN202402280420,2024-02-28,11:42:51,890,Spotify India,Music subscription,Entertainment,Wallet,IndusInd Bank,Success
+TXN202403010296,2024-03-01,06:21:51,700.48,BookMyShow,Movie tickets,Entertainment,Debit Card,IDFC First,Success
+TXN202403030122,2024-03-03,19:22:55,16733.91,Meesho,Budget fashion shopping,Shopping,UPI,Kotak Bank,Success
+TXN202403040175,2024-03-04,22:09:19,8650.53,Zerodha,Brokerage charges,Investment,Credit Card,PNB,Success
+TXN202403040373,2024-03-04,23:16:30,10540,IndiGo Airlines,Domestic flight ticket,Transport,UPI,Kotak Bank,Success
+TXN202403060015,2024-03-06,21:35:10,3997.9,Rapido,Bike taxi ride,Transport,Cash,Axis Bank,Success
+TXN202403060042,2024-03-06,12:26:42,4713.75,Indane Gas,LPG cylinder booking,Utilities,UPI,IDFC First,Success
+TXN202403080245,2024-03-08,08:11:27,6787.77,Practo,Doctor consultation online,Healthcare,Cash,HDFC Bank,Success
+TXN202403090048,2024-03-09,20:42:33,1483.04,Sony LIV,Sports streaming,Entertainment,Wallet,IDFC First,Success
+TXN202403090159,2024-03-09,07:22:34,5144.35,Narayana Health,Hospital consultation,Healthcare,Wallet,Yes Bank,Success
+TXN202403090185,2024-03-09,14:46:23,1169.16,INOX,Movie + popcorn,Entertainment,Cash,SBI,Success
+TXN202403090265,2024-03-09,16:07:15,7840,Meesho,Budget fashion shopping,Shopping,UPI,IndusInd Bank,Success
+TXN202403090394,2024-03-09,21:00:33,18484.48,Shoppers Stop,Branded clothing,Shopping,Cash,IDFC First,Success
+TXN202403090494,2024-03-09,14:57:02,7294.97,Bharat Petroleum,CNG refueling,Transport,Debit Card,IndusInd Bank,Success
+TXN202403100249,2024-03-10,15:00:25,863.93,Zomato,Online food delivery,Food,Net Banking,Yes Bank,Success
+TXN202403100308,2024-03-10,09:09:06,452.72,McDonald's India,Fast food restaurant,Food,Cash,HDFC Bank,Success
+TXN202403120425,2024-03-12,23:12:16,1847.18,Haldiram's,Sweets and snacks purchase,Food,UPI,SBI,Success
+TXN202403130276,2024-03-13,14:40:26,2000,Mahanagar Gas,Piped gas bill,Utilities,UPI,Bank of Baroda,Success
+TXN202403160310,2024-03-16,08:45:15,1455.73,PVR Cinemas,Movie screening,Entertainment,UPI,Kotak Bank,Success
+TXN202403170143,2024-03-17,16:05:37,3385.34,Delhi Jal Board,Water bill payment,Utilities,Debit Card,Bank of Baroda,Success
+TXN202403170427,2024-03-17,17:25:14,13374.82,Indian Oil,Diesel refueling,Transport,Debit Card,ICICI Bank,Success
+TXN202403170467,2024-03-17,21:51:00,346.43,PlayStation Store,Gaming purchase,Entertainment,Net Banking,Yes Bank,Success
+TXN202403180051,2024-03-18,13:24:44,2320,Rapido,Bike taxi ride,Transport,Cash,Bank of Baroda,Success
+TXN202403180364,2024-03-18,10:12:21,1052.52,Biryani Blues,Biryani delivery order,Food,Wallet,ICICI Bank,Success
+TXN202403190209,2024-03-19,20:47:38,16208.75,PG Accommodation,PG monthly payment,Rent,Wallet,IndusInd Bank,Success
+TXN202403190498,2024-03-19,15:20:26,9620,Vistara Airlines,Air India flight,Transport,UPI,SBI,Success
+TXN202403200092,2024-03-20,08:30:50,14538.98,Indian Oil,Diesel refueling,Transport,Cash,HDFC Bank,Success
+TXN202403200460,2024-03-20,09:07:58,208.96,PVR Cinemas,Movie screening,Entertainment,Wallet,IDFC First,Success
+TXN202403210075,2024-03-21,13:11:35,790,D-Mart,Grocery and household items,Grocery,Wallet,IDFC First,Success
+TXN202403210434,2024-03-21,17:38:45,2051.54,Dominos Pizza,Pizza delivery order,Food,Cash,PNB,Success
+TXN202403220002,2024-03-22,19:21:17,1412.74,Big Bazaar,Monthly grocery shopping,Grocery,Net Banking,HDFC Bank,Success
+TXN202403220166,2024-03-22,06:09:54,950.21,Audible India,Audiobook subscription,Entertainment,UPI,ICICI Bank,Success
+TXN202403220319,2024-03-22,09:15:42,6256.47,Ajio,Apparel shopping,Shopping,UPI,Axis Bank,Success
+TXN202403220366,2024-03-22,21:50:48,11720,Dr. Lal PathLabs,Blood test,Healthcare,Cash,Bank of Baroda,Success
+TXN202403230013,2024-03-23,23:49:59,1350,Baskin Robbins,Ice cream purchase,Food,Net Banking,Yes Bank,Success
+TXN202403240035,2024-03-24,11:56:26,1594.87,Star Health Insurance,Family floater premium,Insurance,Net Banking,Bank of Baroda,Success
+TXN202403250023,2024-03-25,18:00:24,4000.09,Uber India,Cab ride to office,Transport,Wallet,Kotak Bank,Success
+TXN202403260412,2024-03-26,23:34:00,1590,Zomato,Online food delivery,Food,Credit Card,Bank of Baroda,Success
+TXN202403270314,2024-03-27,19:52:46,16850,House Rent - Landlord,Monthly house rent,Rent,Cash,ICICI Bank,Success
+TXN202403270423,2024-03-27,06:20:15,1199.71,INOX,Movie + popcorn,Entertainment,Cash,Kotak Bank,Success
+TXN202403280133,2024-03-28,20:53:44,13800,Indian Railways (IRCTC),Train ticket booking,Transport,UPI,Axis Bank,Success
+TXN202403280438,2024-03-28,13:53:26,28235.23,Bajaj Finserv EMI,Consumer durable EMI,EMI,UPI,IDFC First,Success
+TXN202403300131,2024-03-30,10:24:34,10563.96,IndiGo Airlines,Domestic flight ticket,Transport,Net Banking,HDFC Bank,Success
+TXN202403300221,2024-03-30,19:35:31,164.87,KFC India,Fried chicken restaurant,Food,Cash,IndusInd Bank,Success
+TXN202403300325,2024-03-30,23:44:56,32865.36,MagicBricks Rent,Rental apartment payment,Rent,Credit Card,IDFC First,Success
+TXN202403310323,2024-03-31,16:03:01,411.89,Café Coffee Day,Coffee shop visit,Food,UPI,HDFC Bank,Success
+TXN202403310352,2024-03-31,21:37:35,5270,SpiceJet,Flight booking,Transport,Debit Card,HDFC Bank,Success
+TXN202403310395,2024-03-31,11:46:52,1951.88,BluSmart,Electric cab ride,Transport,Net Banking,IndusInd Bank,Success
+TXN202403310478,2024-03-31,20:40:47,24075.53,Co-living Space,Shared living rent,Rent,Debit Card,PNB,Success
+TXN202404010070,2024-04-01,15:00:45,4370,Reliance Fresh,Fresh vegetables and fruits,Grocery,UPI,IndusInd Bank,Success
+TXN202404020081,2024-04-02,19:40:52,7390,Mumbai Local,Train pass renewal,Transport,Net Banking,Bank of Baroda,Success
+TXN202404020096,2024-04-02,11:11:05,15354.45,Decathlon India,Sports equipment,Shopping,Credit Card,Yes Bank,Success
+TXN202404020145,2024-04-02,12:21:49,1240,Haldiram's,Sweets and snacks purchase,Food,UPI,ICICI Bank,Success
+TXN202404020147,2024-04-02,11:46:28,684.08,Rapido,Bike taxi ride,Transport,Credit Card,Yes Bank,Success
+TXN202404020487,2024-04-02,12:57:53,662.69,Faasos,Wraps and rolls delivery,Food,UPI,HDFC Bank,Failed
+TXN202404040206,2024-04-04,10:30:20,14040,Ola Cabs,Auto ride,Transport,Cash,Axis Bank,Success
+TXN202404040465,2024-04-04,21:27:13,10651.6,Croma,Electronics purchase,Shopping,Net Banking,Bank of Baroda,Success
+TXN202404040474,2024-04-04,06:08:46,3540,Rapido,Bike taxi ride,Transport,UPI,Axis Bank,Success
+TXN202404050405,2024-04-05,11:47:32,8010,HDFC Bank EMI,Home loan EMI,EMI,Debit Card,IndusInd Bank,Success
+TXN202404060484,2024-04-06,16:01:09,438.23,Mahanagar Gas,Piped gas bill,Utilities,UPI,HDFC Bank,Success
+TXN202404070101,2024-04-07,14:43:48,5823.24,More Supermarket,Household essentials,Grocery,UPI,HDFC Bank,Success
+TXN202404080205,2024-04-08,11:39:54,16076.53,Decathlon India,Sports equipment,Shopping,Cash,IndusInd Bank,Success
+TXN202404090422,2024-04-09,16:31:28,8410.15,Pepperfry,Furniture purchase,Shopping,UPI,IDFC First,Success
+TXN202404090454,2024-04-09,20:59:25,4680,Nature's Basket,Organic grocery shopping,Grocery,Cash,IndusInd Bank,Success
+TXN202404100303,2024-04-10,23:48:50,3700,MakeMyTrip,Travel booking,Transport,Cash,SBI,Success
+TXN202404120016,2024-04-12,15:25:42,9783.18,Netmeds,Online medicine delivery,Healthcare,Wallet,HDFC Bank,Success
+TXN202404120302,2024-04-12,15:36:50,4579.52,Indian Railways (IRCTC),Train ticket booking,Transport,Wallet,PNB,Success
+TXN202404150052,2024-04-15,19:24:57,11553.84,Uber India,Cab ride to office,Transport,UPI,IDFC First,Success
+TXN202404150288,2024-04-15,22:38:32,1105.5,Vi (Vodafone Idea),Postpaid bill,Utilities,UPI,Axis Bank,Success
+TXN202404160376,2024-04-16,21:21:15,56.71,Faasos,Wraps and rolls delivery,Food,UPI,IDFC First,Success
+TXN202404180341,2024-04-18,12:08:02,6367.92,Rapido,Bike taxi ride,Transport,Cash,Axis Bank,Failed
+TXN202404180371,2024-04-18,06:37:32,1011.13,Jio Recharge,Mobile recharge,Utilities,UPI,Bank of Baroda,Success
+TXN202404210409,2024-04-21,22:30:35,6624.77,Zepto,Quick grocery delivery,Grocery,UPI,HDFC Bank,Success
+TXN202404220009,2024-04-22,10:32:31,2550,Croma,Electronics purchase,Shopping,UPI,ICICI Bank,Success
+TXN202404220269,2024-04-22,15:02:17,5850,Decathlon India,Sports equipment,Shopping,Wallet,IDFC First,Success
+TXN202404220318,2024-04-22,06:57:51,1960,KFC India,Fried chicken restaurant,Food,Wallet,IndusInd Bank,Success
+TXN202404220457,2024-04-22,13:51:20,1060.44,Starbucks India,Coffee and beverages,Food,UPI,Kotak Bank,Success
+TXN202404230229,2024-04-23,10:01:16,1405.61,Biryani Blues,Biryani delivery order,Food,Cash,Kotak Bank,Success
+TXN202404230312,2024-04-23,10:12:52,1031.43,Baskin Robbins,Ice cream purchase,Food,UPI,IDFC First,Success
+TXN202404250124,2024-04-25,19:54:35,14620.74,Dr. Lal PathLabs,Blood test,Healthcare,UPI,IDFC First,Success
+TXN202404260298,2024-04-26,22:00:02,4320,BSES Rajdhani,Electricity bill,Utilities,UPI,Yes Bank,Success
+TXN202404270007,2024-04-27,07:51:20,3330,Big Bazaar,Monthly grocery shopping,Grocery,Net Banking,Axis Bank,Success
+TXN202404270447,2024-04-27,20:50:44,28500,BYJU'S,Learning app subscription,Education,Cash,PNB,Success
+TXN202404290001,2024-04-29,22:38:01,1425.05,McDonald's India,Fast food restaurant,Food,Cash,Axis Bank,Success
+TXN202404290148,2024-04-29,23:15:19,14487.39,Fortis Hospital,Health screening,Healthcare,Credit Card,PNB,Success
+TXN202404290199,2024-04-29,07:06:26,4974.5,Indian Oil,Diesel refueling,Transport,UPI,SBI,Failed
+TXN202404290282,2024-04-29,19:41:05,5690,Grofers,Grocery delivery order,Grocery,Wallet,HDFC Bank,Success
+TXN202404300110,2024-04-30,17:06:43,949.97,Faasos,Wraps and rolls delivery,Food,Net Banking,SBI,Success
+TXN202405010099,2024-05-01,18:36:22,17456.95,BYJU'S,Learning app subscription,Education,Debit Card,SBI,Failed
+TXN202405010172,2024-05-01,21:01:23,26268.9,SBI Home Loan,Housing loan installment,EMI,UPI,IDFC First,Success
+TXN202405020014,2024-05-02,07:15:56,14620,Bajaj Allianz,Motor insurance renewal,Insurance,Wallet,HDFC Bank,Failed
+TXN202405020227,2024-05-02,23:20:49,1558.68,BSNL,Landline + broadband bill,Utilities,Net Banking,Kotak Bank,Success
+TXN202405030066,2024-05-03,19:31:35,27744.94,House Rent - Landlord,Monthly house rent,Rent,Wallet,Yes Bank,Success
+TXN202405040456,2024-05-04,16:49:29,17135.39,Decathlon India,Sports equipment,Shopping,UPI,Yes Bank,Success
+TXN202405060026,2024-05-06,07:39:05,17576.75,Co-living Space,Shared living rent,Rent,Net Banking,Kotak Bank,Success
+TXN202405070073,2024-05-07,09:35:48,17485.22,House Rent - Landlord,Monthly house rent,Rent,Credit Card,IndusInd Bank,Success
+TXN202405070368,2024-05-07,13:44:56,1850,Hathway,Cable TV bill,Utilities,Cash,IndusInd Bank,Success
+TXN202405100406,2024-05-10,06:21:29,1790,Biryani Blues,Biryani delivery order,Food,UPI,PNB,Success
+TXN202405130307,2024-05-13,16:59:51,1012.73,Haldiram's,Sweets and snacks purchase,Food,Net Banking,PNB,Success
+TXN202405140012,2024-05-14,22:48:11,1290,Café Coffee Day,Coffee shop visit,Food,Debit Card,IndusInd Bank,Success
+TXN202405140496,2024-05-14,23:23:29,40.78,RedBus,Bus ticket booking,Transport,Cash,ICICI Bank,Success
+TXN202405150027,2024-05-15,18:08:42,3298.4,Airtel,Prepaid recharge,Utilities,UPI,SBI,Success
+TXN202405150105,2024-05-15,23:07:29,615.39,Netflix India,Monthly subscription,Entertainment,Debit Card,IDFC First,Success
+TXN202405160036,2024-05-16,11:50:44,3688.82,Udemy,Course purchase,Education,Wallet,Axis Bank,Success
+TXN202405180300,2024-05-18,08:36:23,6410.35,ICICI Prudential,Mutual fund investment,Investment,UPI,ICICI Bank,Success
+TXN202405180374,2024-05-18,10:26:53,2251.62,Pizza Hut,Pizza delivery,Food,UPI,Kotak Bank,Success
+TXN202405190128,2024-05-19,20:42:27,1239.87,Zomato,Online food delivery,Food,Debit Card,Axis Bank,Success
+TXN202405200000,2024-05-20,13:14:08,18490.84,Amazon India,Online shopping - electronics,Shopping,UPI,IDFC First,Success
+TXN202405200196,2024-05-20,15:07:36,17012.57,Pepperfry,Furniture purchase,Shopping,Cash,PNB,Failed
+TXN202405210275,2024-05-21,10:44:55,280,Netflix India,Monthly subscription,Entertainment,Net Banking,Axis Bank,Success
+TXN202405210343,2024-05-21,22:29:58,21874.62,IKEA India,Home furnishing,Shopping,Cash,HDFC Bank,Success
+TXN202405220005,2024-05-22,20:40:53,11262.55,Chegg India,Study resources subscription,Education,Credit Card,Kotak Bank,Success
+TXN202405220064,2024-05-22,20:15:48,750.06,Amazon Prime,Annual subscription,Entertainment,Cash,PNB,Success
+TXN202405230239,2024-05-23,23:36:42,130.61,FreshMenu,Healthy meal delivery,Food,Net Banking,SBI,Failed
+TXN202405230315,2024-05-23,20:56:09,2215.15,SBI Mutual Fund,SIP installment,Investment,Credit Card,Kotak Bank,Success
+TXN202405230462,2024-05-23,18:14:48,8690,Lenskart,Eyeglasses purchase,Healthcare,Cash,Yes Bank,Success
+TXN202405260451,2024-05-26,12:02:50,15388.36,Care Health,Health insurance premium,Insurance,Credit Card,IDFC First,Success
+TXN202405260480,2024-05-26,21:34:00,1062.57,PVR Cinemas,Movie screening,Entertainment,Wallet,Kotak Bank,Success
+TXN202405270094,2024-05-27,13:47:05,11020,Pepperfry,Furniture purchase,Shopping,UPI,Yes Bank,Success
+TXN202405270186,2024-05-27,08:24:32,1153.37,Pizza Hut,Pizza delivery,Food,UPI,ICICI Bank,Failed
+TXN202405290251,2024-05-29,21:36:50,3659.09,Indian Railways (IRCTC),Train ticket booking,Transport,Cash,PNB,Success
+TXN202405300331,2024-05-30,06:20:16,1430,Netflix India,Monthly subscription,Entertainment,UPI,Bank of Baroda,Success
+TXN202405310401,2024-05-31,12:48:34,129.15,Baskin Robbins,Ice cream purchase,Food,UPI,IDFC First,Success
+TXN202406010053,2024-06-01,18:54:57,2385.9,Barbeque Nation,Dining out - dinner,Food,Credit Card,Yes Bank,Success
+TXN202406010358,2024-06-01,12:09:33,3874.28,Hathway,Cable TV bill,Utilities,Cash,PNB,Success
+TXN202406020171,2024-06-02,11:45:45,13912.05,Mumbai Local,Train pass renewal,Transport,Net Banking,IndusInd Bank,Success
+TXN202406020222,2024-06-02,18:11:48,8080,Rapido,Bike taxi ride,Transport,Credit Card,Kotak Bank,Success
+TXN202406030179,2024-06-03,21:15:51,12116.02,Indian Oil,Diesel refueling,Transport,Wallet,HDFC Bank,Success
+TXN202406030207,2024-06-03,06:16:41,3000,Reliance Fresh,Fresh vegetables and fruits,Grocery,UPI,Yes Bank,Success
+TXN202406040347,2024-06-04,15:17:53,1254.47,Biryani Blues,Biryani delivery order,Food,UPI,Axis Bank,Success
+TXN202406050037,2024-06-05,13:14:01,33171.64,ICICI Prudential,Mutual fund investment,Investment,Debit Card,HDFC Bank,Failed
+TXN202406060213,2024-06-06,06:25:16,12252.3,MakeMyTrip,Travel booking,Transport,UPI,SBI,Success
+TXN202406060362,2024-06-06,19:50:56,860,McDonald's India,Fast food restaurant,Food,Debit Card,Yes Bank,Success
+TXN202406070045,2024-06-07,13:51:12,2300,Apollo 24/7,Teleconsultation,Healthcare,Wallet,IDFC First,Success
+TXN202406070138,2024-06-07,20:28:02,643.74,D-Mart,Grocery and household items,Grocery,UPI,HDFC Bank,Success
+TXN202406070144,2024-06-07,23:24:41,3999.98,BSES Rajdhani,Electricity bill,Utilities,UPI,Bank of Baroda,Success
+TXN202406080127,2024-06-08,16:49:36,4850.55,Reliance Fresh,Fresh vegetables and fruits,Grocery,UPI,ICICI Bank,Success
+TXN202406100267,2024-06-10,20:39:03,6951.07,Blinkit,Instant grocery delivery,Grocery,Wallet,ICICI Bank,Success
+TXN202406110493,2024-06-11,23:50:41,1903.91,McDonald's India,Fast food restaurant,Food,Wallet,Axis Bank,Success
+TXN202406130164,2024-06-13,09:05:20,1669.25,Haldiram's,Sweets and snacks purchase,Food,Cash,ICICI Bank,Success
+TXN202406130348,2024-06-13,14:46:26,28410,Bajaj Finserv EMI,Consumer durable EMI,EMI,Wallet,Axis Bank,Success
+TXN202406150118,2024-06-15,18:38:33,7583.97,Tata CLiQ,Premium shopping,Shopping,Cash,HDFC Bank,Success
+TXN202406150464,2024-06-15,17:39:55,3917.72,Ola Cabs,Auto ride,Transport,Credit Card,Kotak Bank,Success
+TXN202406160056,2024-06-16,16:48:56,3157.18,JioMart,Online grocery purchase,Grocery,Cash,Kotak Bank,Success
+TXN202406170082,2024-06-17,19:44:31,1583.45,Jio Recharge,Mobile recharge,Utilities,UPI,Yes Bank,Success
+TXN202406180190,2024-06-18,09:26:37,530.06,PVR Cinemas,Movie screening,Entertainment,UPI,IDFC First,Success
+TXN202406180204,2024-06-18,11:46:29,1638.3,Zomato,Online food delivery,Food,UPI,PNB,Success
+TXN202406180386,2024-06-18,14:03:32,3363.92,Delhi Metro,Metro recharge,Transport,Cash,Axis Bank,Success
+TXN202406180424,2024-06-18,21:29:28,928.92,Café Coffee Day,Coffee shop visit,Food,UPI,ICICI Bank,Success
+TXN202406190188,2024-06-19,21:33:29,414.9,Café Coffee Day,Coffee shop visit,Food,UPI,PNB,Success
+TXN202406200153,2024-06-20,10:08:02,500.92,Audible India,Audiobook subscription,Entertainment,UPI,Yes Bank,Success
+TXN202406200203,2024-06-20,15:29:41,13719.52,Flipkart,Online shopping - clothing,Shopping,UPI,IndusInd Bank,Success
+TXN202406200469,2024-06-20,14:23:23,1422.86,Café Coffee Day,Coffee shop visit,Food,Debit Card,PNB,Success
+TXN202406220187,2024-06-22,23:23:48,2189.68,MakeMyTrip,Travel booking,Transport,Cash,IndusInd Bank,Success
+TXN202406220393,2024-06-22,09:48:26,164.15,PlayStation Store,Gaming purchase,Entertainment,UPI,Yes Bank,Success
+TXN202406230088,2024-06-23,22:17:52,102.59,INOX,Movie + popcorn,Entertainment,Wallet,ICICI Bank,Success
+TXN202406230389,2024-06-23,17:52:03,4119.63,Mahanagar Gas,Piped gas bill,Utilities,Net Banking,IndusInd Bank,Success
+TXN202406230455,2024-06-23,09:51:32,2393.94,Haldiram's,Sweets and snacks purchase,Food,Debit Card,Yes Bank,Failed
+TXN202406240260,2024-06-24,09:43:51,988.9,Tata Power,Electricity bill payment,Utilities,Credit Card,IndusInd Bank,Success
+TXN202406240360,2024-06-24,13:43:34,16066.35,Ajio,Apparel shopping,Shopping,Net Banking,IndusInd Bank,Success
+TXN202406240458,2024-06-24,08:35:59,487.29,Starbucks India,Coffee and beverages,Food,Credit Card,IDFC First,Success
+TXN202406250003,2024-06-25,14:51:02,1837.84,Biryani Blues,Biryani delivery order,Food,Cash,HDFC Bank,Success
+TXN202406250098,2024-06-25,15:40:27,1741.27,Faasos,Wraps and rolls delivery,Food,Debit Card,Axis Bank,Failed
+TXN202406250398,2024-06-25,10:45:41,4880,Hathway,Cable TV bill,Utilities,Net Banking,HDFC Bank,Success
+TXN202406250419,2024-06-25,12:26:57,1632.53,McDonald's India,Fast food restaurant,Food,UPI,ICICI Bank,Success
+TXN202406270135,2024-06-27,17:46:52,9690,Delhi Metro,Metro recharge,Transport,UPI,ICICI Bank,Success
+TXN202406270259,2024-06-27,21:06:28,1818.89,Faasos,Wraps and rolls delivery,Food,UPI,Kotak Bank,Success
+TXN202406270272,2024-06-27,08:28:55,2485.2,Haldiram's,Sweets and snacks purchase,Food,Credit Card,Axis Bank,Success
+TXN202406290165,2024-06-29,19:17:40,7844.21,Big Bazaar,Monthly grocery shopping,Grocery,UPI,Bank of Baroda,Success
+TXN202406290184,2024-06-29,07:03:18,1262.49,KFC India,Fried chicken restaurant,Food,Wallet,Kotak Bank,Success
+TXN202406300320,2024-06-30,11:11:15,27885.82,Bajaj Finserv EMI,Consumer durable EMI,EMI,Net Banking,IDFC First,Success
+TXN202407020034,2024-07-02,12:43:15,33513.2,Zerodha,Brokerage charges,Investment,Cash,IDFC First,Success
+TXN202407020317,2024-07-02,21:34:50,23356.54,Personal Loan EMI,Personal loan repayment,EMI,Net Banking,Bank of Baroda,Success
+TXN202407030297,2024-07-03,07:31:54,8516.29,Vistara Airlines,Air India flight,Transport,Debit Card,HDFC Bank,Success
+TXN202407040004,2024-07-04,12:45:04,160,JioCinema,IPL streaming subscription,Entertainment,Debit Card,HDFC Bank,Success
+TXN202407040167,2024-07-04,18:36:02,9115.91,Narayana Health,Hospital consultation,Healthcare,Net Banking,PNB,Success
+TXN202407050428,2024-07-05,22:00:42,3606.05,IndiGo Airlines,Domestic flight ticket,Transport,UPI,IndusInd Bank,Success
+TXN202407060263,2024-07-06,16:12:29,3861.67,Coursera,Online certification course,Education,Wallet,IndusInd Bank,Failed
+TXN202407060290,2024-07-06,23:43:11,1167.58,INOX,Movie + popcorn,Entertainment,UPI,SBI,Success
+TXN202407070162,2024-07-07,19:56:25,5997.8,D-Mart,Grocery and household items,Grocery,Cash,PNB,Failed
+TXN202407070163,2024-07-07,22:17:51,1266.69,SpiceJet,Flight booking,Transport,Cash,IDFC First,Failed
+TXN202407070404,2024-07-07,23:47:38,1143.05,Hathway,Cable TV bill,Utilities,Credit Card,Kotak Bank,Success
+TXN202407080446,2024-07-08,23:35:30,6568.31,Myntra,Fashion purchase,Shopping,Net Banking,Bank of Baroda,Success
+TXN202407100158,2024-07-10,14:47:01,920,Chai Point,Tea and snacks,Food,Credit Card,HDFC Bank,Success
+TXN202407100324,2024-07-10,18:37:06,10428.55,BYJU'S,Learning app subscription,Education,UPI,Bank of Baroda,Success
+TXN202407110444,2024-07-11,12:44:51,823.96,Swiggy,Food delivery order,Food,UPI,Bank of Baroda,Success
+TXN202407120215,2024-07-12,18:05:43,48225.15,Axis Mutual Fund,Monthly SIP,Investment,UPI,PNB,Success
+TXN202407130093,2024-07-13,16:40:45,26679.44,Great Learning,Data science course,Education,UPI,IDFC First,Success
+TXN202407130217,2024-07-13,13:15:29,5210,Vistara Airlines,Air India flight,Transport,UPI,SBI,Success
+TXN202407130244,2024-07-13,10:47:24,830,Dominos Pizza,Pizza delivery order,Food,UPI,Kotak Bank,Success
+TXN202407150266,2024-07-15,19:11:31,15996.89,Westside,Casual wear shopping,Shopping,UPI,IndusInd Bank,Success
+TXN202407150345,2024-07-15,21:36:38,14450,Vedantu,Online tutoring session,Education,Cash,ICICI Bank,Success
+TXN202407180054,2024-07-18,16:42:43,11978.19,Uber India,Cab ride to office,Transport,Wallet,ICICI Bank,Failed
+TXN202407180476,2024-07-18,15:14:15,1857.1,Starbucks India,Coffee and beverages,Food,UPI,ICICI Bank,Success
+TXN202407180482,2024-07-18,18:14:16,580.21,Hathway,Cable TV bill,Utilities,Debit Card,Kotak Bank,Success
+TXN202407200055,2024-07-20,06:05:41,6446.33,BluSmart,Electric cab ride,Transport,UPI,SBI,Success
+TXN202407200463,2024-07-20,11:29:07,1760.7,Barbeque Nation,Dining out - dinner,Food,UPI,SBI,Success
+TXN202407210134,2024-07-21,15:47:21,3346.93,Ola Cabs,Auto ride,Transport,UPI,IndusInd Bank,Success
+TXN202407220060,2024-07-22,12:04:37,34685.41,Kotak AMC,NPS contribution,Investment,UPI,Kotak Bank,Success
+TXN202407220356,2024-07-22,09:00:32,4997.26,Delhi Jal Board,Water bill payment,Utilities,Net Banking,IndusInd Bank,Success
+TXN202407240126,2024-07-24,08:09:47,1600,Starbucks India,Coffee and beverages,Food,Credit Card,Bank of Baroda,Success
+TXN202407240301,2024-07-24,08:56:29,12994.5,Uber India,Cab ride to office,Transport,Debit Card,PNB,Success
+TXN202407250083,2024-07-25,22:52:00,5329.75,D-Mart,Grocery and household items,Grocery,Cash,SBI,Success
+TXN202407260067,2024-07-26,13:19:42,1474.81,McDonald's India,Fast food restaurant,Food,Net Banking,Bank of Baroda,Failed
+TXN202407260236,2024-07-26,20:36:15,14850,Indian Railways (IRCTC),Train ticket booking,Transport,UPI,SBI,Success
+TXN202407260311,2024-07-26,20:35:47,26110,HDFC Bank EMI,Home loan EMI,EMI,UPI,ICICI Bank,Success
+TXN202407270019,2024-07-27,12:06:06,1664.51,Faasos,Wraps and rolls delivery,Food,Cash,Yes Bank,Success
+TXN202407270200,2024-07-27,21:30:41,11377.15,SBI Home Loan,Housing loan installment,EMI,Net Banking,Kotak Bank,Success
+TXN202407290383,2024-07-29,20:02:04,3946.34,BluSmart,Electric cab ride,Transport,Credit Card,PNB,Success
+TXN202407300483,2024-07-30,12:54:04,2760,Mumbai Local,Train pass renewal,Transport,Wallet,IDFC First,Success
+TXN202407310258,2024-07-31,08:07:53,14110,Mumbai Local,Train pass renewal,Transport,Debit Card,PNB,Success
+TXN202408020339,2024-08-02,23:43:55,14047.33,Vistara Airlines,Air India flight,Transport,Credit Card,Yes Bank,Success
+TXN202408030248,2024-08-03,15:30:50,240,Haldiram's,Sweets and snacks purchase,Food,Credit Card,Yes Bank,Success
+TXN202408030381,2024-08-03,11:07:08,3540,Mahanagar Gas,Piped gas bill,Utilities,UPI,HDFC Bank,Success
+TXN202408040021,2024-08-04,11:17:29,3769.6,Rapido,Bike taxi ride,Transport,Wallet,IndusInd Bank,Success
+TXN202408040445,2024-08-04,17:39:17,7936.03,Star Bazaar,Weekly grocery run,Grocery,Credit Card,Bank of Baroda,Success
+TXN202408050047,2024-08-05,13:11:51,28760.0,BYJU'S,Learning app subscription,Education,UPI,IndusInd Bank,Success
+TXN202408060261,2024-08-06,20:14:51,1040,Pizza Hut,Pizza delivery,Food,Cash,Bank of Baroda,Success
+TXN202408070442,2024-08-07,13:51:30,23791.89,Great Learning,Data science course,Education,UPI,Bank of Baroda,Success
+TXN202408090062,2024-08-09,17:40:57,1260.02,Amazon Prime,Annual subscription,Entertainment,Cash,ICICI Bank,Success
+TXN202408090121,2024-08-09,09:47:47,620,Amazon Prime,Annual subscription,Entertainment,UPI,IDFC First,Failed
+TXN202408090243,2024-08-09,11:43:37,16620,Reliance Digital,Gadget purchase,Shopping,Debit Card,Axis Bank,Success
+TXN202408090415,2024-08-09,16:01:24,10109.28,IndiGo Airlines,Domestic flight ticket,Transport,UPI,IDFC First,Success
+TXN202408120141,2024-08-12,20:33:33,1544.02,Café Coffee Day,Coffee shop visit,Food,Debit Card,Bank of Baroda,Success
+TXN202408130102,2024-08-13,07:37:23,18390,Nykaa,Beauty and skincare products,Shopping,Debit Card,PNB,Success
+TXN202408130271,2024-08-13,23:13:27,300.92,Café Coffee Day,Coffee shop visit,Food,Credit Card,Kotak Bank,Success
+TXN202408140479,2024-08-14,15:23:26,686.53,Zomato,Online food delivery,Food,UPI,IndusInd Bank,Success
+TXN202408140488,2024-08-14,13:47:02,1156.06,BSNL,Landline + broadband bill,Utilities,UPI,IndusInd Bank,Success
+TXN202408150117,2024-08-15,08:57:05,840,Café Coffee Day,Coffee shop visit,Food,UPI,Kotak Bank,Success
+TXN202408150283,2024-08-15,06:00:44,890,Starbucks India,Coffee and beverages,Food,Cash,ICICI Bank,Success
+TXN202408160337,2024-08-16,07:16:28,6990,Rapido,Bike taxi ride,Transport,Debit Card,IDFC First,Success
+TXN202408160471,2024-08-16,08:24:39,4319.26,MakeMyTrip,Travel booking,Transport,UPI,ICICI Bank,Success
+TXN202408170254,2024-08-17,21:37:25,847.65,Amazon Prime,Annual subscription,Entertainment,Cash,IndusInd Bank,Success
+TXN202408170387,2024-08-17,08:54:31,6720,HP Petrol Pump,Petrol refueling,Transport,Wallet,SBI,Success
+TXN202408180140,2024-08-18,09:51:57,12565.54,Uber India,Cab ride to office,Transport,UPI,IndusInd Bank,Success
+TXN202408180224,2024-08-18,17:05:34,18200,Pepperfry,Furniture purchase,Shopping,Debit Card,Bank of Baroda,Success
+TXN202408180262,2024-08-18,19:24:00,17710,Ajio,Apparel shopping,Shopping,UPI,IDFC First,Success
+TXN202408190170,2024-08-19,11:57:45,1140,Zomato,Online food delivery,Food,Net Banking,PNB,Success
+TXN202408190309,2024-08-19,15:29:16,30570,NoBroker Rent Pay,Rent payment via card,Rent,Debit Card,IDFC First,Success
+TXN202408200111,2024-08-20,08:42:13,1622.18,Zomato,Online food delivery,Food,UPI,SBI,Success
+TXN202408200277,2024-08-20,21:20:37,219.29,Reliance Fresh,Fresh vegetables and fruits,Grocery,UPI,Yes Bank,Success
+TXN202408200294,2024-08-20,07:19:42,18800.64,HDFC Life,Term insurance premium,Insurance,UPI,SBI,Success
+TXN202408210280,2024-08-21,06:27:12,29872.98,Amazon Kindle,E-book purchase,Education,Debit Card,ICICI Bank,Success
+TXN202408220160,2024-08-22,07:18:12,160,Amazon Prime,Annual subscription,Entertainment,UPI,PNB,Success
+TXN202408230231,2024-08-23,11:46:50,9000,Lifestyle,Department store shopping,Shopping,Wallet,ICICI Bank,Success
+TXN202408240086,2024-08-24,09:41:53,314.71,Amazon Prime,Annual subscription,Entertainment,Debit Card,IndusInd Bank,Success
+TXN202408240149,2024-08-24,15:49:24,12721.8,Lifestyle,Department store shopping,Shopping,UPI,Axis Bank,Success
+TXN202408250107,2024-08-25,15:41:26,340,Biryani Blues,Biryani delivery order,Food,UPI,Kotak Bank,Failed
+TXN202408250486,2024-08-25,07:21:05,12657.89,Indian Railways (IRCTC),Train ticket booking,Transport,UPI,Kotak Bank,Success
+TXN202408260228,2024-08-26,09:51:46,7058.27,SpiceJet,Flight booking,Transport,Credit Card,PNB,Success
+TXN202408270183,2024-08-27,21:56:19,7480,Vistara Airlines,Air India flight,Transport,Cash,IndusInd Bank,Success
+TXN202408290087,2024-08-29,13:29:35,2200,SpiceJet,Flight booking,Transport,UPI,HDFC Bank,Success
+TXN202408290336,2024-08-29,21:57:42,2267.03,Spencer's,Supermarket grocery shopping,Grocery,Cash,ICICI Bank,Success
+TXN202408300044,2024-08-30,11:42:05,1562.17,Indane Gas,LPG cylinder booking,Utilities,Net Banking,HDFC Bank,Success
+TXN202408300354,2024-08-30,10:41:11,18230,Unacademy,Online course subscription,Education,Debit Card,IDFC First,Success
+TXN202408300417,2024-08-30,11:34:14,290.07,Netflix India,Monthly subscription,Entertainment,Debit Card,ICICI Bank,Success
+TXN202408300475,2024-08-30,23:03:01,1938.79,Zomato,Online food delivery,Food,UPI,HDFC Bank,Success
+TXN202408310237,2024-08-31,07:40:00,10550,Vistara Airlines,Air India flight,Transport,Cash,PNB,Success
+TXN202409020173,2024-09-02,22:26:49,1053.11,Chai Point,Tea and snacks,Food,UPI,PNB,Success
+TXN202409020335,2024-09-02,12:06:01,1193.37,Delhi Jal Board,Water bill payment,Utilities,UPI,Yes Bank,Success
+TXN202409020435,2024-09-02,12:37:10,9719.47,SpiceJet,Flight booking,Transport,Credit Card,SBI,Success
+TXN202409030461,2024-09-03,17:39:20,15024.04,Unacademy,Online course subscription,Education,Debit Card,Yes Bank,Success
+TXN202409040180,2024-09-04,20:13:21,1536.32,Chai Point,Tea and snacks,Food,Net Banking,PNB,Failed
+TXN202409050050,2024-09-05,13:17:28,800,Star Bazaar,Weekly grocery run,Grocery,Debit Card,PNB,Success
+TXN202409050279,2024-09-05,16:57:43,19130,Westside,Casual wear shopping,Shopping,Wallet,SBI,Success
+TXN202409060065,2024-09-06,12:22:51,8120,Coursera,Online certification course,Education,Debit Card,IndusInd Bank,Success
+TXN202409060365,2024-09-06,16:40:11,1700,BSES Rajdhani,Electricity bill,Utilities,Wallet,Kotak Bank,Success
+TXN202409070031,2024-09-07,14:57:58,25460,Great Learning,Data science course,Education,Cash,Kotak Bank,Success
+TXN202409070370,2024-09-07,17:48:12,9925.11,ICICI Car Loan,Car loan EMI,EMI,Cash,SBI,Success
+TXN202409080305,2024-09-08,07:09:45,14750,Bajaj Finserv EMI,Consumer durable EMI,EMI,Credit Card,IndusInd Bank,Success
+TXN202409090330,2024-09-09,18:22:34,16260.43,PG Accommodation,PG monthly payment,Rent,Credit Card,ICICI Bank,Success
+TXN202409110295,2024-09-11,17:33:33,3958.34,Jio Recharge,Mobile recharge,Utilities,UPI,PNB,Success
+TXN202409110359,2024-09-11,15:16:58,2209.12,Hathway,Cable TV bill,Utilities,UPI,IDFC First,Success
+TXN202409120459,2024-09-12,12:15:47,12260,NoBroker Rent Pay,Rent payment via card,Rent,Credit Card,Axis Bank,Success
+TXN202409140152,2024-09-14,17:15:24,14918.04,IndiGo Airlines,Domestic flight ticket,Transport,UPI,PNB,Success
+TXN202409140416,2024-09-14,09:18:50,1059.92,PVR Cinemas,Movie screening,Entertainment,Debit Card,Yes Bank,Success
+TXN202409150268,2024-09-15,21:26:43,7391.14,Vistara Airlines,Air India flight,Transport,Wallet,Yes Bank,Success
+TXN202409150408,2024-09-15,11:26:34,1370,Zomato,Online food delivery,Food,Credit Card,Axis Bank,Success
+TXN202409150440,2024-09-15,19:52:09,1530,Pizza Hut,Pizza delivery,Food,UPI,IndusInd Bank,Success
+TXN202409160123,2024-09-16,12:09:42,3961.08,Nature's Basket,Organic grocery shopping,Grocery,Net Banking,IndusInd Bank,Success
+TXN202409160146,2024-09-16,23:53:47,1340,Amazon Prime,Annual subscription,Entertainment,Net Banking,IDFC First,Success
+TXN202409170038,2024-09-17,18:43:53,4382.48,More Supermarket,Household essentials,Grocery,UPI,Kotak Bank,Success
+TXN202409180212,2024-09-18,20:51:03,6817.88,BluSmart,Electric cab ride,Transport,Wallet,IDFC First,Success
+TXN202409180270,2024-09-18,09:36:07,4091.54,Lenskart,Eyeglasses purchase,Healthcare,Net Banking,IndusInd Bank,Success
+TXN202409180377,2024-09-18,08:46:46,300,Zomato,Online food delivery,Food,Credit Card,Yes Bank,Failed
+TXN202409190151,2024-09-19,10:53:27,274.7,Faasos,Wraps and rolls delivery,Food,Wallet,PNB,Success
+TXN202409190397,2024-09-19,15:53:44,13830.81,Pepperfry,Furniture purchase,Shopping,Credit Card,Axis Bank,Success
+TXN202409200181,2024-09-20,23:06:20,640,Barbeque Nation,Dining out - dinner,Food,Wallet,Axis Bank,Success
+TXN202409210174,2024-09-21,17:08:56,12440.93,Indian Oil,Diesel refueling,Transport,UPI,ICICI Bank,Success
+TXN202409210349,2024-09-21,17:52:03,7740,SpiceJet,Flight booking,Transport,Debit Card,IndusInd Bank,Success
+TXN202409210411,2024-09-21,17:32:51,2641.93,Tata Power,Electricity bill payment,Utilities,Debit Card,Axis Bank,Success
+TXN202409230247,2024-09-23,11:43:24,10120,Education Loan EMI,Student loan installment,EMI,Debit Card,Yes Bank,Success
+TXN202409270216,2024-09-27,10:46:14,38062.51,Bajaj Finserv EMI,Consumer durable EMI,EMI,Debit Card,Yes Bank,Success
+TXN202409270238,2024-09-27,07:14:13,27087.55,BYJU'S,Learning app subscription,Education,Wallet,Kotak Bank,Success
+TXN202409280025,2024-09-28,11:03:32,2280,Shoppers Stop,Branded clothing,Shopping,UPI,Axis Bank,Success
+TXN202409280168,2024-09-28,17:25:20,1640,Dominos Pizza,Pizza delivery order,Food,UPI,SBI,Success
+TXN202409290194,2024-09-29,16:34:22,25276.06,PG Accommodation,PG monthly payment,Rent,Debit Card,IDFC First,Success
+TXN202409300278,2024-09-30,18:13:27,4159.27,BSES Rajdhani,Electricity bill,Utilities,Net Banking,Kotak Bank,Success
+TXN202410020108,2024-10-02,10:24:29,958.98,McDonald's India,Fast food restaurant,Food,Cash,IDFC First,Success
+TXN202410020274,2024-10-02,11:20:45,4410.74,HP Petrol Pump,Petrol refueling,Transport,UPI,ICICI Bank,Failed
+TXN202410020292,2024-10-02,10:17:05,809.27,Pizza Hut,Pizza delivery,Food,Credit Card,ICICI Bank,Success
+TXN202410030057,2024-10-03,07:22:14,9762.66,Bharat Petroleum,CNG refueling,Transport,UPI,SBI,Success
+TXN202410030103,2024-10-03,17:33:32,2288.04,Dominos Pizza,Pizza delivery order,Food,Debit Card,Yes Bank,Failed
+TXN202410030219,2024-10-03,12:48:55,11650,Delhi Metro,Metro recharge,Transport,Debit Card,Axis Bank,Success
+TXN202410050029,2024-10-05,15:39:51,1650,Biryani Blues,Biryani delivery order,Food,Debit Card,HDFC Bank,Success
+TXN202410050161,2024-10-05,21:16:02,11310,RedBus,Bus ticket booking,Transport,Net Banking,SBI,Success
+TXN202410050495,2024-10-05,17:20:46,1197.57,Dominos Pizza,Pizza delivery order,Food,UPI,HDFC Bank,Success
+TXN202410060033,2024-10-06,07:53:23,29330,Paytm Money,SIP investment,Investment,UPI,SBI,Success
+TXN202410060252,2024-10-06,11:43:49,13887.45,Westside,Casual wear shopping,Shopping,Wallet,Axis Bank,Success
+TXN202410070049,2024-10-07,20:57:10,37310.94,Kotak AMC,NPS contribution,Investment,Debit Card,Axis Bank,Success
+TXN202410070391,2024-10-07,22:23:44,247.96,BookMyShow,Movie tickets,Entertainment,Wallet,ICICI Bank,Success
+TXN202410080388,2024-10-08,06:52:05,11883.0,Vistara Airlines,Air India flight,Transport,Debit Card,IndusInd Bank,Success
+TXN202410090089,2024-10-09,23:24:29,13994.8,Indian Railways (IRCTC),Train ticket booking,Transport,Credit Card,IDFC First,Success
+TXN202410120195,2024-10-12,15:14:19,28135.23,MagicBricks Rent,Rental apartment payment,Rent,Wallet,PNB,Success
+TXN202410120257,2024-10-12,13:28:23,5885.28,Vistara Airlines,Air India flight,Transport,UPI,PNB,Failed
+TXN202410120361,2024-10-12,11:18:06,1203.41,Starbucks India,Coffee and beverages,Food,UPI,PNB,Success
+TXN202410140169,2024-10-14,09:16:49,3926.54,IndiGo Airlines,Domestic flight ticket,Transport,Debit Card,Yes Bank,Success
+TXN202410140198,2024-10-14,14:08:06,961.56,BookMyShow,Movie tickets,Entertainment,Credit Card,SBI,Success
+TXN202410150321,2024-10-15,10:36:12,4216.14,Delhi Jal Board,Water bill payment,Utilities,Wallet,IndusInd Bank,Success
+TXN202410160061,2024-10-16,07:22:34,10880.94,Flipkart,Online shopping - clothing,Shopping,Net Banking,SBI,Success
+TXN202410160112,2024-10-16,12:04:53,1920,Dominos Pizza,Pizza delivery order,Food,Credit Card,Axis Bank,Success
+TXN202410160429,2024-10-16,10:47:46,1234.58,KFC India,Fried chicken restaurant,Food,Credit Card,Yes Bank,Success
+TXN202410180078,2024-10-18,15:28:07,755.65,JioCinema,IPL streaming subscription,Entertainment,Cash,Kotak Bank,Success
+TXN202410180230,2024-10-18,13:31:35,5305.94,Spencer's,Supermarket grocery shopping,Grocery,Debit Card,Yes Bank,Failed
+TXN202410180350,2024-10-18,06:11:12,1330,YouTube Premium,Ad-free streaming,Entertainment,UPI,Axis Bank,Success
+TXN202410180382,2024-10-18,20:11:39,9679.84,Decathlon India,Sports equipment,Shopping,UPI,ICICI Bank,Success
+TXN202410190334,2024-10-19,23:53:31,426.3,Chai Point,Tea and snacks,Food,Cash,HDFC Bank,Success
+TXN202410190353,2024-10-19,12:54:14,9721.28,Rapido,Bike taxi ride,Transport,Debit Card,Bank of Baroda,Success
+TXN202410190399,2024-10-19,19:43:47,22378.49,Westside,Casual wear shopping,Shopping,Cash,SBI,Success
+TXN202410200211,2024-10-20,23:09:10,16741.82,HDFC Mutual Fund,ELSS investment,Investment,UPI,Axis Bank,Success
+TXN202410210156,2024-10-21,13:45:09,760,Pizza Hut,Pizza delivery,Food,Net Banking,Axis Bank,Success
+TXN202410210466,2024-10-21,13:52:06,1816.0,Dominos Pizza,Pizza delivery order,Food,Cash,Bank of Baroda,Success
+TXN202410220040,2024-10-22,12:16:02,1790,FreshMenu,Healthy meal delivery,Food,Credit Card,PNB,Success
+TXN202410220191,2024-10-22,13:46:03,22510,Co-living Space,Shared living rent,Rent,Cash,ICICI Bank,Success
+TXN202410220220,2024-10-22,16:15:19,13156.25,Narayana Health,Hospital consultation,Healthcare,Credit Card,Bank of Baroda,Success
+TXN202410240139,2024-10-24,23:50:47,13441.28,SpiceJet,Flight booking,Transport,Credit Card,PNB,Success
+TXN202410240426,2024-10-24,18:49:37,5560,IKEA India,Home furnishing,Shopping,Debit Card,IndusInd Bank,Success
+TXN202410250344,2024-10-25,09:59:06,1430,KFC India,Fried chicken restaurant,Food,Debit Card,IndusInd Bank,Success
+TXN202410270080,2024-10-27,06:48:43,4142.82,Delhi Jal Board,Water bill payment,Utilities,UPI,Yes Bank,Success
+TXN202410280017,2024-10-28,23:14:37,590,Swiggy,Food delivery order,Food,UPI,Axis Bank,Success
+TXN202410280074,2024-10-28,19:19:36,31240.85,SBI Mutual Fund,SIP installment,Investment,UPI,Axis Bank,Success
+TXN202410290091,2024-10-29,16:55:06,2191.77,Pizza Hut,Pizza delivery,Food,Wallet,SBI,Success
+TXN202410300177,2024-10-30,10:10:42,9378.45,Rapido,Bike taxi ride,Transport,Net Banking,IDFC First,Success
+TXN202410310242,2024-10-31,18:49:20,430,Nature's Basket,Organic grocery shopping,Grocery,Wallet,Yes Bank,Success
+TXN202410310250,2024-10-31,10:19:20,944.1,Audible India,Audiobook subscription,Entertainment,Wallet,PNB,Success
+TXN202410310255,2024-10-31,08:06:49,12446.93,Co-living Space,Shared living rent,Rent,UPI,IDFC First,Success
+TXN202410310342,2024-10-31,14:20:58,18259.44,IKEA India,Home furnishing,Shopping,UPI,Bank of Baroda,Success
+TXN202411010010,2024-11-01,08:24:24,933.84,INOX,Movie + popcorn,Entertainment,Debit Card,IndusInd Bank,Success
+TXN202411010113,2024-11-01,06:17:54,2460.87,FreshMenu,Healthy meal delivery,Food,Debit Card,ICICI Bank,Success
+TXN202411010246,2024-11-01,16:55:24,296.26,D-Mart,Grocery and household items,Grocery,UPI,IndusInd Bank,Success
+TXN202411010450,2024-11-01,07:49:52,2653.81,Bharat Petroleum,CNG refueling,Transport,UPI,Axis Bank,Success
+TXN202411010481,2024-11-01,13:50:00,8240,Mumbai Local,Train pass renewal,Transport,Cash,Bank of Baroda,Success
+TXN202411020079,2024-11-02,07:56:27,11025.97,Ola Cabs,Auto ride,Transport,UPI,HDFC Bank,Success
+TXN202411050433,2024-11-05,06:32:56,1280,JioMart,Online grocery purchase,Grocery,UPI,IndusInd Bank,Success
+TXN202411050473,2024-11-05,18:17:56,3670.21,Zepto,Quick grocery delivery,Grocery,Net Banking,IDFC First,Success
+TXN202411060059,2024-11-06,09:49:52,2540.11,PharmEasy,Online medicine order,Healthcare,UPI,Kotak Bank,Success
+TXN202411070006,2024-11-07,11:34:46,1375.09,BSES Rajdhani,Electricity bill,Utilities,Debit Card,IndusInd Bank,Success
+TXN202411070375,2024-11-07,12:49:16,2087.17,McDonald's India,Fast food restaurant,Food,Net Banking,Bank of Baroda,Success
+TXN202411080264,2024-11-08,18:37:07,2913.81,Spencer's,Supermarket grocery shopping,Grocery,UPI,Kotak Bank,Success
+TXN202411090327,2024-11-09,13:40:36,2871.52,Pepperfry,Furniture purchase,Shopping,Net Banking,HDFC Bank,Success
+TXN202411110063,2024-11-11,23:49:30,18946.21,MagicBricks Rent,Rental apartment payment,Rent,Debit Card,PNB,Success
+TXN202411110182,2024-11-11,19:15:55,2260.66,Chai Point,Tea and snacks,Food,Net Banking,Axis Bank,Success
+TXN202411110189,2024-11-11,15:37:21,4157.06,Spencer's,Supermarket grocery shopping,Grocery,Wallet,IDFC First,Success
+TXN202411110407,2024-11-11,15:31:50,8632.89,Apollo 24/7,Teleconsultation,Healthcare,Net Banking,IndusInd Bank,Success
+TXN202411130497,2024-11-13,13:20:46,1864.54,Croma,Electronics purchase,Shopping,Cash,Axis Bank,Success
+TXN202411140058,2024-11-14,10:15:08,1210,Swiggy,Food delivery order,Food,Credit Card,Yes Bank,Success
+TXN202411150041,2024-11-15,16:42:54,8738.76,MagicBricks Rent,Rental apartment payment,Rent,Debit Card,Bank of Baroda,Success
+TXN202411150372,2024-11-15,07:38:03,5363.37,Star Bazaar,Weekly grocery run,Grocery,UPI,SBI,Success
+TXN202411160084,2024-11-16,20:48:03,1787.75,JioMart,Online grocery purchase,Grocery,Debit Card,Yes Bank,Success
+TXN202411170137,2024-11-17,16:09:28,5868.02,ICICI Car Loan,Car loan EMI,EMI,Debit Card,Kotak Bank,Success
+TXN202411180046,2024-11-18,12:45:44,990.75,Chai Point,Tea and snacks,Food,UPI,SBI,Success
+TXN202411180085,2024-11-18,13:45:10,4680,Uber India,Cab ride to office,Transport,Cash,HDFC Bank,Success
+TXN202411180436,2024-11-18,22:02:57,14440,Myntra,Fashion purchase,Shopping,Debit Card,ICICI Bank,Success
+TXN202411190472,2024-11-19,18:54:58,2710,SBI Life,Endowment plan premium,Insurance,Credit Card,PNB,Success
+TXN202411200363,2024-11-20,08:30:56,2940,RedBus,Bus ticket booking,Transport,Cash,IndusInd Bank,Success
+TXN202411210328,2024-11-21,08:52:45,31141.03,SBI Home Loan,Housing loan installment,EMI,Net Banking,Yes Bank,Success
+TXN202411220032,2024-11-22,14:10:47,3646.32,Blinkit,Instant grocery delivery,Grocery,UPI,HDFC Bank,Success
+TXN202411220097,2024-11-22,14:29:16,1683.76,Faasos,Wraps and rolls delivery,Food,Wallet,Kotak Bank,Success
+TXN202411220289,2024-11-22,08:33:56,2445.36,Faasos,Wraps and rolls delivery,Food,Net Banking,ICICI Bank,Success
+TXN202411220437,2024-11-22,06:56:46,10927.78,HP Petrol Pump,Petrol refueling,Transport,UPI,Axis Bank,Success
+TXN202411240410,2024-11-24,13:02:43,13288.33,BluSmart,Electric cab ride,Transport,UPI,Bank of Baroda,Success
+TXN202411250008,2024-11-25,20:09:16,2120.27,BluSmart,Electric cab ride,Transport,Debit Card,IDFC First,Success
+TXN202411250355,2024-11-25,14:27:57,3136.51,Grofers,Grocery delivery order,Grocery,Debit Card,Axis Bank,Success
+TXN202411260020,2024-11-26,09:03:25,1834.12,Starbucks India,Coffee and beverages,Food,UPI,Axis Bank,Success
+TXN202411260287,2024-11-26,08:15:35,1522.45,Haldiram's,Sweets and snacks purchase,Food,Debit Card,SBI,Success
+TXN202411270256,2024-11-27,18:48:21,43560.1,Personal Loan EMI,Personal loan repayment,EMI,UPI,HDFC Bank,Success
+TXN202411270402,2024-11-27,23:24:15,7712.74,1mg,Health products and medicines,Healthcare,Debit Card,SBI,Success
+TXN202411280285,2024-11-28,11:28:22,18144.07,Westside,Casual wear shopping,Shopping,UPI,Bank of Baroda,Success
+TXN202411280293,2024-11-28,08:19:44,6579.17,Indian Oil,Diesel refueling,Transport,Credit Card,SBI,Success
+TXN202411290119,2024-11-29,23:46:55,576.81,Starbucks India,Coffee and beverages,Food,Credit Card,Bank of Baroda,Success
+TXN202411290201,2024-11-29,13:34:47,36294.33,Groww,Mutual fund SIP,Investment,UPI,Bank of Baroda,Success
+TXN202412010109,2024-12-01,09:53:31,1558.35,Chai Point,Tea and snacks,Food,Debit Card,SBI,Success
+TXN202412010136,2024-12-01,08:11:49,1588.47,Dominos Pizza,Pizza delivery order,Food,Wallet,IDFC First,Success
+TXN202412010281,2024-12-01,17:16:05,11469.39,BYJU'S,Learning app subscription,Education,UPI,SBI,Success
+TXN202412010452,2024-12-01,06:10:05,2492.2,McDonald's India,Fast food restaurant,Food,Net Banking,Bank of Baroda,Success
+TXN202412020390,2024-12-02,17:45:28,3116.38,Tata CLiQ,Premium shopping,Shopping,Credit Card,SBI,Success
+TXN202412030116,2024-12-03,22:19:29,24300,House Rent - Landlord,Monthly house rent,Rent,Wallet,Bank of Baroda,Success
+TXN202412030441,2024-12-03,10:57:38,1370,Faasos,Wraps and rolls delivery,Food,Cash,IndusInd Bank,Success
+TXN202412040024,2024-12-04,21:09:12,13901.23,Co-living Space,Shared living rent,Rent,UPI,PNB,Success
+TXN202412050477,2024-12-05,17:55:58,846.74,Swiggy,Food delivery order,Food,Debit Card,IndusInd Bank,Success
+TXN202412130470,2024-12-13,12:36:36,1642.17,Biryani Blues,Biryani delivery order,Food,Debit Card,PNB,Success
+TXN202412140210,2024-12-14,08:33:28,838.97,Spotify India,Music subscription,Entertainment,UPI,SBI,Success
+TXN202412140489,2024-12-14,15:59:20,438.6,Chai Point,Tea and snacks,Food,UPI,Kotak Bank,Success
+TXN202412160357,2024-12-16,09:30:04,8610,Nykaa,Beauty and skincare products,Shopping,Net Banking,Kotak Bank,Success
+TXN202412160403,2024-12-16,16:35:03,220,MakeMyTrip,Travel booking,Transport,Wallet,Axis Bank,Success
+TXN202412170439,2024-12-17,16:59:29,4850,Grofers,Grocery delivery order,Grocery,Cash,Bank of Baroda,Success
+TXN202412180241,2024-12-18,08:32:47,14620,PharmEasy,Online medicine order,Healthcare,Cash,Axis Bank,Success
+TXN202412180326,2024-12-18,15:08:11,10940.6,Bharat Petroleum,CNG refueling,Transport,Cash,IDFC First,Success
+TXN202412190069,2024-12-19,11:12:13,11090,MakeMyTrip,Travel booking,Transport,Debit Card,HDFC Bank,Success
+TXN202412200396,2024-12-20,13:17:25,14455.0,HP Petrol Pump,Petrol refueling,Transport,Wallet,ICICI Bank,Success
+TXN202412240192,2024-12-24,09:12:01,1130.54,KFC India,Fried chicken restaurant,Food,Cash,Axis Bank,Success
+TXN202412250068,2024-12-25,20:17:19,6510,Croma,Electronics purchase,Shopping,Credit Card,PNB,Success
+TXN202412250413,2024-12-25,19:41:52,2352.39,Biryani Blues,Biryani delivery order,Food,UPI,SBI,Success
+TXN202412260208,2024-12-26,15:44:07,9591.51,Vistara Airlines,Air India flight,Transport,Net Banking,IDFC First,Success
+TXN202412260351,2024-12-26,12:17:23,2067.59,Barbeque Nation,Dining out - dinner,Food,UPI,SBI,Success
+TXN202412260431,2024-12-26,22:40:53,7055.33,Flipkart,Online shopping - clothing,Shopping,UPI,Bank of Baroda,Success
+TXN202412260453,2024-12-26,08:58:05,1396.5,Swiggy,Food delivery order,Food,Net Banking,PNB,Failed
+TXN202412270076,2024-12-27,15:44:55,1162.38,Haldiram's,Sweets and snacks purchase,Food,Debit Card,IDFC First,Success
+TXN202412270448,2024-12-27,07:10:24,24120,Meesho,Budget fashion shopping,Shopping,UPI,ICICI Bank,Success
+TXN202412290273,2024-12-29,19:10:39,3740,Croma,Electronics purchase,Shopping,Credit Card,SBI,Success
+TXN202412300240,2024-12-30,18:59:04,7692.14,Decathlon India,Sports equipment,Shopping,Cash,IndusInd Bank,Success
+TXN202412310340,2024-12-31,07:32:36,13509.81,RedBus,Bus ticket booking,Transport,UPI,HDFC Bank,Success

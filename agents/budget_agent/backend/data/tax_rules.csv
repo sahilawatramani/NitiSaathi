@@ -1,0 +1,29 @@
+category,sub_category,deductible,section,description,conditions,limit_notes
+medical,health_insurance,yes,80D,Health insurance premium,Self/family/parents premium paid,Up to ₹25k (₹50k for senior citizens)
+medical,preventive_checkup,yes,80D,Preventive health checkups,Included within 80D limit,Up to ₹5k within overall 80D
+medical,medical_treatment,yes,80D,Medical expenses for senior citizens (no insurance),Allowed if no insurance for seniors,Within 80D caps
+rent,hra,yes,HRA,House Rent Allowance exemption,Salaried individual receiving HRA and paying rent,Least of 3 rules (HRA calc)
+housing,home_loan_interest,yes,24(b),Interest on home loan (self-occupied),Property owned and loan taken,Up to ₹2L (self-occupied)
+housing,first_time_homebuyer,yes,80EE,Additional interest deduction (first-time buyer),Loan sanctioned within specified period,Up to ₹50k extra
+housing,affordable_housing,yes,80EEA,Additional interest for affordable housing,Conditions per scheme timelines,Up to ₹1.5L extra
+investment,ppf,yes,80C,Public Provident Fund investment,Within overall 80C basket,Up to ₹1.5L combined
+investment,elss,yes,80C,Equity Linked Savings Scheme,Lock-in 3 years,Within ₹1.5L combined
+investment,life_insurance,yes,80C,Life insurance premium,Policy conditions apply,Within ₹1.5L combined
+investment,epf,yes,80C,Employee Provident Fund contribution,Salary deduction,Within ₹1.5L combined
+investment,nsc,yes,80C,National Savings Certificate,Fixed tenure savings,Within ₹1.5L combined
+retirement,nps,yes,80CCD(1B),Additional NPS contribution,Over and above 80C,Extra ₹50k
+education,tuition_fees,yes,80C,Tuition fees for children,Only tuition (not donation),Within ₹1.5L combined
+education,education_loan_interest,yes,80E,Interest on education loan,No upper limit but limited tenure,8 years max benefit
+donation,charity,yes,80G,Donations to eligible institutions,Eligible NGOs/charities only,50%/100% depending on org
+income,savings_interest,yes,80TTA,Interest on savings account,Non-senior citizens,Up to ₹10k
+income,senior_savings_interest,yes,80TTB,Interest for senior citizens,Savings/FD interest,Up to ₹50k
+salary,standard_deduction,yes,Standard,Flat deduction on salary income,Available to salaried/pensioners,₹50k standard deduction
+travel,lta,yes,LTA,Leave Travel Allowance,Domestic travel only,2 journeys in 4 years (block)
+transport,commute,no,-,Daily commute expenses,Not deductible,Not allowed
+food,dining,no,-,Food and restaurant expenses,Personal consumption,Not allowed
+shopping,general,no,-,Clothing and general purchases,Personal use,Not allowed
+utilities,electricity,no,-,Electricity bills,Household expense,Not allowed
+utilities,internet,no,-,Internet/mobile bills,Personal use,Not allowed
+entertainment,subscriptions,no,-,OTT and entertainment,Personal expense,Not allowed
+health,gym,no,-,Gym/fitness subscriptions,Not covered under 80D,Not allowed
+travel,international,no,-,International travel,Not covered under LTA,Not allowed
