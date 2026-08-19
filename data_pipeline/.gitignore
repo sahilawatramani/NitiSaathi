@@ -1,0 +1,9 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Large generated datasets
+data/transactions.csv
+data/weekly_transactions.csv
+data/features.csv
