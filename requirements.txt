@@ -1,0 +1,23 @@
+# Core Dependencies for Scheme Agent & Fraud Guard
+fastapi>=0.115.0
+uvicorn[standard]>=0.24.0
+pydantic>=2.5.0
+python-jose>=3.3.0
+python-multipart>=0.0.6
+starlette>=1.0.0
+
+# Data Processing
+numpy>=1.24.0
+pandas>=2.0.0
+
+# Testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.1.0
+
+# Optional: For production deployment
+gunicorn>=21.2.0
+python-dotenv>=1.0.0
+
+# Optional: For enhanced fraud detection
+scikit-learn>=1.3.0  # If adding ML models
