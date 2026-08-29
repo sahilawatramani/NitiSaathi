@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Home, UploadCloud, BarChart3, MessageSquare, Receipt, LogOut, Layers } from 'lucide-react';
+import { Home, UploadCloud, BarChart3, MessageSquare, Receipt, LogOut, Layers, Wallet, Target, Tag, Clock } from 'lucide-react';
 import { useAuth } from '../context/useAuth';
 
 export default function Sidebar() {
@@ -13,10 +13,26 @@ export default function Sidebar() {
 
   return (
     <aside className="sidebar">
-      <div className="sidebar-logo">FinAssist AI</div>
-      <div className="sidebar-subtitle">Personal Finance Intelligence</div>
+      <div className="sidebar-logo">NitiSaathi</div>
+      <div className="sidebar-subtitle">AI Budget & Wealth Assistant</div>
 
       <nav className="sidebar-nav">
+        <div className="nav-group">
+          <div className="nav-group-title">Gig Budget</div>
+          <NavLink to="/budget" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+            <Wallet size={18} /> Budget Dashboard
+          </NavLink>
+          <NavLink to="/goals" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+            <Target size={18} /> Saving Goals
+          </NavLink>
+          <NavLink to="/categories" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+            <Tag size={18} /> Categories
+          </NavLink>
+          <NavLink to="/pending" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}>
+            <Clock size={18} /> Pending
+          </NavLink>
+        </div>
+
         <div className="nav-group">
           <div className="nav-group-title">Wealth & Planning</div>
           <NavLink to="/" className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`} end>

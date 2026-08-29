@@ -109,14 +109,36 @@ def send_monthly_reports() -> None:
             total_spend = round(sum(t.amount for t in txns), 2)
             deductible = report["report_summary"]["total_deductions_claimed"]
 
+            # Generate PDF and email it
+            try:
+                from app.services.pdf_report_service import (
+                    generate_weekly_report_pdf,
+                    generate_report_text_fallback,
+                )
+                from app.services.email_service import send_weekly_report_email
+
+                pdf_bytes = generate_weekly_report_pdf(user.id, db)
+                text_report = generate_report_text_fallback(user.id, db)
+                send_weekly_report_email(
+                    to_email=user.email,
+                    pdf_bytes=pdf_bytes,
+                    text_report=text_report,
+                )
+            except Exception:
+                import logging
+                logging.getLogger(__name__).exception(
+                    "Failed to send monthly PDF report to %s", user.email
+                )
+
             create_notification(
                 db=db,
                 user_id=user.id,
                 notification_type="monthly_report",
-                title="Your monthly FinAssist report is ready",
+                title="Your monthly NitiSaathi report is ready",
                 message=(
-                    f"You spent Rs. {total_spend:.2f} in the last {REPORT_LOOKBACK_DAYS} days. "
-                    f"Potential deductions identified: Rs. {deductible:.2f}."
+                    f"You spent ₹{total_spend:,.2f} in the last {REPORT_LOOKBACK_DAYS} days. "
+                    f"Potential deductions identified: ₹{deductible:,.2f}. "
+                    "Check your email for the full PDF report."
                 ),
                 payload={
                     "month": month_key,
