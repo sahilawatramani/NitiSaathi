@@ -9,6 +9,9 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import JSONResponse
 from sqlalchemy import inspect, text
 from app.routers import transactions, auth, analytics, chat, tax, realtime
+from app.routers import goals as goals_router
+from app.routers import categories as categories_router
+from app.routers import insights as insights_router
 from app.models.database import engine, Base
 from app.config import (
     AUTO_CREATE_TABLES,
@@ -46,6 +49,8 @@ def _ensure_dev_schema_compatibility() -> None:
         tx_existing = {col["name"] for col in inspector.get_columns("transactions")}
         if "user_id" not in tx_existing:
             statements.append("ALTER TABLE transactions ADD COLUMN user_id INTEGER REFERENCES users(id)")
+        if "direction" not in tx_existing:
+            statements.append("ALTER TABLE transactions ADD COLUMN direction VARCHAR NOT NULL DEFAULT 'debit'")
 
     if "user_profiles" in inspector.get_table_names():
         up_existing = {col["name"] for col in inspector.get_columns("user_profiles")}
@@ -111,6 +116,13 @@ app.include_router(realtime.router, prefix="/api/realtime", tags=["Realtime"])
 from app.routers import profile, portfolio
 app.include_router(profile.router, prefix="/api/profile", tags=["Profile & Planning"])
 app.include_router(portfolio.router, prefix="/api/portfolio", tags=["Portfolio"])
+app.include_router(goals_router.router, prefix="/api/goals", tags=["Goals"])
+app.include_router(categories_router.router, prefix="/api/categories", tags=["Categories"])
+app.include_router(insights_router.router, prefix="/api/insights", tags=["Insights"])
+from app.routers import reports as reports_router
+app.include_router(reports_router.router, prefix="/api/reports", tags=["Reports"])
+from app.routers import recurring_debits as debits_router
+app.include_router(debits_router.router, prefix="/api/recurring-debits", tags=["Recurring Debits"])
 
 @app.middleware("http")
 async def request_id_middleware(request: Request, call_next):

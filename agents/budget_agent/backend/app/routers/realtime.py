@@ -1,10 +1,11 @@
 from collections import Counter
+import asyncio
 import json
 from datetime import datetime
 import os
-from typing import List, TypedDict
+from typing import Dict, List, Set, TypedDict
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
+from fastapi import APIRouter, Depends, Header, HTTPException, Request, WebSocket, WebSocketDisconnect, status
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
@@ -48,9 +49,102 @@ from app.services.auth_service import get_current_user
 from app.services.notification_service import create_notification
 from app.services.rate_limit_service import enforce_rate_limit
 from app.services.sms_parser_service import build_sms_external_txn_id, parse_bank_sms
+from app.services.wma_service import compute_full_budget_state
+from app.services.temporal_memory_service import record_event as record_temporal_event
 from app.utils.time import utcnow
 
 router = APIRouter()
+
+
+# ─── WebSocket Connection Manager ────────────────────────────────────────────
+
+class _ConnectionManager:
+    """Manages per-user WebSocket connections for real-time budget events.
+
+    Event types emitted:
+      NEW_PENDING_TRANSACTION  — a new transaction arrived and needs classification
+      BUDGET_STATE_UPDATED     — budget metrics have been recalculated (post-classify)
+    """
+
+    def __init__(self) -> None:
+        # user_id → set of active WebSocket connections
+        self._connections: Dict[int, Set[WebSocket]] = {}
+
+    async def connect(self, user_id: int, ws: WebSocket) -> None:
+        await ws.accept()
+        self._connections.setdefault(user_id, set()).add(ws)
+        import logging
+        logging.getLogger(__name__).info("WS connect user=%s total=%s", user_id, len(self._connections[user_id]))
+
+    def disconnect(self, user_id: int, ws: WebSocket) -> None:
+        conns = self._connections.get(user_id, set())
+        conns.discard(ws)
+        if not conns:
+            self._connections.pop(user_id, None)
+
+    async def emit(self, user_id: int, event_type: str, payload: dict) -> None:
+        """Send a typed event to all connections for *user_id*.  Stale sockets are pruned."""
+        message = json.dumps({"type": event_type, "payload": payload})
+        dead: List[WebSocket] = []
+        for ws in list(self._connections.get(user_id, set())):
+            try:
+                await ws.send_text(message)
+            except Exception:
+                dead.append(ws)
+        for ws in dead:
+            self.disconnect(user_id, ws)
+
+    async def emit_new_pending_transaction(self, user_id: int, event_payload: dict) -> None:
+        await self.emit(user_id, "NEW_PENDING_TRANSACTION", event_payload)
+
+    async def emit_budget_state_updated(self, user_id: int, budget_state: dict) -> None:
+        await self.emit(user_id, "BUDGET_STATE_UPDATED", budget_state)
+
+
+ws_manager = _ConnectionManager()
+
+
+@router.websocket("/ws")
+async def websocket_budget_updates(
+    websocket: WebSocket,
+    token: str,
+    db: Session = Depends(get_db),
+):
+    """WebSocket endpoint for real-time budget events.
+
+    Connect:  ws://<host>/api/realtime/ws?token=<jwt>
+
+    Emits:
+      { "type": "NEW_PENDING_TRANSACTION", "payload": { ...PendingClassificationResponse } }
+      { "type": "BUDGET_STATE_UPDATED",    "payload": { ...DailyInsightResponse } }
+    """
+    from jose import JWTError, jwt as jose_jwt
+    from app.config import JWT_SECRET_KEY, JWT_ALGORITHM
+
+    try:
+        payload = jose_jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
+        email: str = payload.get("sub")
+        if not email:
+            await websocket.close(code=4001)
+            return
+    except JWTError:
+        await websocket.close(code=4001)
+        return
+
+    user: User | None = db.query(User).filter(User.email == email).first()
+    if not user:
+        await websocket.close(code=4001)
+        return
+
+    await ws_manager.connect(user.id, websocket)
+    try:
+        while True:
+            # Keep connection alive; client can send "ping" to check liveness
+            data = await websocket.receive_text()
+            if data == "ping":
+                await websocket.send_text("pong")
+    except WebSocketDisconnect:
+        ws_manager.disconnect(user.id, websocket)
 
 
 class AutoDecisionState(TypedDict):
@@ -700,7 +794,7 @@ def ingest_transaction_webhook(
     if not user:
         raise HTTPException(status_code=404, detail="User not found for webhook payload")
 
-    return _create_pending_event(
+    result = _create_pending_event(
         db=db,
         user=user,
         provider=payload.provider,
@@ -710,6 +804,16 @@ def ingest_transaction_webhook(
         description=payload.description,
         txn_date=payload.txn_date or utcnow(),
     )
+    # Emit WebSocket event if the transaction is pending classification
+    if result.get("status") == "pending_classification":
+        try:
+            loop = asyncio.get_event_loop()
+            loop.create_task(
+                ws_manager.emit_new_pending_transaction(user.id, result)
+            )
+        except RuntimeError:
+            pass  # No running event loop in sync context — WS emit skipped
+    return result
 
 
 @router.post("/sms/ingest")
@@ -722,80 +826,92 @@ def ingest_sms_transaction(
     directly as a Transaction so it appears in Analytics/Tax/Dashboard."""
     from app.agents.expense_agent import _rule_based_classify, CONFIDENCE_THRESHOLD
 
-    parsed = parse_bank_sms(payload.sms_text)
+    parsed = parse_bank_sms(payload.sms_text, sender=payload.sender)
     if not parsed.get("is_transaction"):
         return {
             "status": "ignored",
             "reason": parsed.get("reason", "Unable to parse SMS"),
         }
 
-    if parsed.get("direction") != "debit":
+    direction = parsed.get("direction", "debit")
+
+    # Credits from gig platforms go through the pending classification flow
+    # so users can confirm income source (platform_payout vs informal_borrowing)
+    if direction == "credit":
+        external_txn_id = payload.external_txn_id or build_sms_external_txn_id(
+            sender=payload.sender,
+            sms_text=payload.sms_text,
+            received_at=payload.received_at,
+        )
+        result = _create_pending_event(
+            db=db,
+            user=current_user,
+            provider=payload.provider,
+            external_txn_id=external_txn_id,
+            amount=parsed["amount"],
+            merchant=parsed["merchant"],
+            description=parsed.get("description"),
+            txn_date=parsed.get("txn_date") or utcnow(),
+        )
+        if result.get("status") == "pending_classification":
+            try:
+                loop = asyncio.get_event_loop()
+                loop.create_task(
+                    ws_manager.emit_new_pending_transaction(current_user.id, result)
+                )
+            except RuntimeError:
+                pass
+        result["parsed"] = {
+            "amount": parsed["amount"],
+            "merchant": parsed["merchant"],
+            "direction": "credit",
+            "bank": parsed.get("bank"),
+            "balance": parsed.get("balance"),
+            "upi_ref": parsed.get("upi_ref"),
+        }
+        return result
+
+    if direction != "debit":
         return {
             "status": "ignored",
-            "reason": f"Non-debit transaction detected ({parsed.get('direction')})",
+            "reason": f"Unknown direction ({direction})",
         }
 
-    merchant = parsed["merchant"]
-    amount = parsed["amount"]
-    description = parsed.get("description", "")
-    txn_date = parsed.get("txn_date") or utcnow()
-
-    # --- Auto-classify expense using rule-based engine (instant, no LLM) ---
-    rule_result = _rule_based_classify(merchant, description)
-    if rule_result and rule_result["confidence_score"] >= CONFIDENCE_THRESHOLD:
-        category = rule_result["category"]
-        confidence = rule_result["confidence_score"]
-    else:
-        category = "Miscellaneous"
-        confidence = 0.5
-
-    # --- Auto-determine tax deductibility (instant, no LLM) ---
-    TAX_RULES_MAP = {
-        "Insurance": {"is_tax_deductible": True, "tax_category": "Section 80C / 80D"},
-        "Healthcare": {"is_tax_deductible": True, "tax_category": "Section 80D"},
-        "Education": {"is_tax_deductible": True, "tax_category": "Section 80C / 80E"},
-        "Investment": {"is_tax_deductible": True, "tax_category": "Section 80C / 80CCD"},
-        "Rent": {"is_tax_deductible": True, "tax_category": "Section 10(13A) / 80GG"},
-        "EMI & Loans": {"is_tax_deductible": True, "tax_category": "Section 24(b) / 80E"},
-    }
-    tax_info = TAX_RULES_MAP.get(category, {"is_tax_deductible": False, "tax_category": None})
-
-    # --- Save directly as a Transaction (merges with CSV data) ---
-    db_txn = Transaction(
-        user_id=current_user.id,
-        date=txn_date,
-        amount=amount,
-        merchant=merchant,
-        description=description,
-        category=category,
-        confidence_score=confidence,
-        is_tax_deductible=tax_info["is_tax_deductible"],
-        tax_category=tax_info.get("tax_category"),
+    # Route debit SMS through the pending classification flow — consistent with
+    # the forwarder endpoint and giving users control over every categorisation.
+    external_txn_id = payload.external_txn_id or build_sms_external_txn_id(
+        sender=payload.sender,
+        sms_text=payload.sms_text,
+        received_at=payload.received_at,
     )
-    db.add(db_txn)
-    db.commit()
-    db.refresh(db_txn)
-
-    return {
-        "status": "saved",
-        "message": f"Transaction saved as '{category}' (confidence: {confidence:.0%})",
-        "transaction": {
-            "id": db_txn.id,
-            "date": str(db_txn.date),
-            "merchant": db_txn.merchant,
-            "amount": db_txn.amount,
-            "category": db_txn.category,
-            "is_tax_deductible": db_txn.is_tax_deductible,
-            "tax_category": db_txn.tax_category,
-        },
-        "parsed": {
-            "amount": amount,
-            "merchant": merchant,
-            "txn_date": str(txn_date),
-            "provider": payload.provider,
-            "sender": payload.sender,
-        },
+    result = _create_pending_event(
+        db=db,
+        user=current_user,
+        provider=payload.provider,
+        external_txn_id=external_txn_id,
+        amount=parsed["amount"],
+        merchant=parsed["merchant"],
+        description=parsed.get("description"),
+        txn_date=parsed.get("txn_date") or utcnow(),
+    )
+    if result.get("status") == "pending_classification":
+        try:
+            loop = asyncio.get_event_loop()
+            loop.create_task(
+                ws_manager.emit_new_pending_transaction(current_user.id, result)
+            )
+        except RuntimeError:
+            pass
+    result["parsed"] = {
+        "amount": parsed["amount"],
+        "merchant": parsed["merchant"],
+        "direction": "debit",
+        "bank": parsed.get("bank"),
+        "balance": parsed.get("balance"),
+        "upi_ref": parsed.get("upi_ref"),
+        "account_last4": parsed.get("account_last4"),
     }
+    return result
 
 
 @router.post("/sms/forward")
@@ -830,11 +946,14 @@ def ingest_sms_forwarder(
     if not user:
         raise HTTPException(status_code=404, detail="User not found for SMS forward payload")
 
-    parsed = parse_bank_sms(payload.sms_text)
+    parsed = parse_bank_sms(payload.sms_text, sender=payload.sender)
     if not parsed.get("is_transaction"):
         return {"status": "ignored", "reason": parsed.get("reason", "Unable to parse SMS")}
-    if parsed.get("direction") != "debit":
-        return {"status": "ignored", "reason": f"Non-debit transaction detected ({parsed.get('direction')})"}
+
+    direction = parsed.get("direction", "debit")
+    # Accept both debits AND credits (gig platform payouts are credits)
+    if direction == "unknown":
+        return {"status": "ignored", "reason": "Cannot determine debit/credit direction"}
 
     external_txn_id = payload.external_txn_id or build_sms_external_txn_id(
         sender=payload.sender,
@@ -855,11 +974,27 @@ def ingest_sms_forwarder(
     response["parsed"] = {
         "amount": parsed["amount"],
         "merchant": parsed["merchant"],
-        "txn_date": parsed.get("txn_date"),
+        "direction": direction,
+        "bank": parsed.get("bank"),
+        "balance": parsed.get("balance"),
+        "upi_ref": parsed.get("upi_ref"),
+        "account_last4": parsed.get("account_last4"),
+        "txn_date": str(parsed.get("txn_date")),
         "provider": payload.provider,
         "sender": payload.sender,
         "user_email": user_email,
     }
+
+    # Emit WebSocket event for pending transactions
+    if response.get("status") == "pending_classification":
+        try:
+            loop = asyncio.get_event_loop()
+            loop.create_task(
+                ws_manager.emit_new_pending_transaction(user.id, response)
+            )
+        except RuntimeError:
+            pass
+
     return response
 
 
@@ -978,6 +1113,18 @@ def classify_pending_event(
         payload={"transaction_id": db_txn.id, "event_id": event.id},
     )
 
+    budget_state = _recalculate_budget_after_classify(db, current_user, event, category)
+
+    # Emit BUDGET_STATE_UPDATED over WebSocket (fire-and-forget)
+    if budget_state:
+        try:
+            loop = asyncio.get_event_loop()
+            loop.create_task(
+                ws_manager.emit_budget_state_updated(current_user.id, budget_state)
+            )
+        except RuntimeError:
+            pass  # No running event loop in sync context — WS emit skipped
+
     return {
         "status": "classified",
         "transaction_id": db_txn.id,
@@ -986,7 +1133,43 @@ def classify_pending_event(
         "was_prediction_accepted": category == predicted_category if predicted_category else None,
         "is_tax_deductible": db_txn.is_tax_deductible,
         "tax_category": db_txn.tax_category,
+        "budget_state": budget_state,
     }
+
+
+def _recalculate_budget_after_classify(
+    db: Session,
+    user: User,
+    event: RealtimeTransactionEvent,
+    category: str,
+) -> dict | None:
+    """Recalculate budget state after a classification.
+
+    Called inline from classify_pending_event to provide the frontend
+    with an immediate budget state update (no second API call needed).
+    Also records a temporal memory event for significant transactions.
+    """
+    try:
+        budget_state = compute_full_budget_state(user.id, db)
+
+        # Record temporal memory for significant amounts
+        if event.amount and event.amount >= 500:
+            record_temporal_event(
+                user_id=user.id,
+                db=db,
+                event_type="transaction_classified",
+                description=f"{event.merchant}: ₹{event.amount:,.0f} → {category}",
+                impact_score=min(event.amount / 1000, 5.0),
+                amount=event.amount,
+            )
+
+        return budget_state
+    except Exception:
+        import logging
+        logging.getLogger(__name__).exception(
+            "Failed to recalculate budget state after classify (user=%s)", user.email,
+        )
+        return None
 
 
 @router.post("/transactions/{transaction_id}/reclassify")

@@ -18,7 +18,11 @@ except Exception:  # pragma: no cover
 
 
 _openai_client = OpenAI(api_key=OPENAI_API_KEY) if (OpenAI and OPENAI_API_KEY) else None
-_ollama_client = OpenAI(api_key="ollama", base_url=OLLAMA_API_BASE_URL) if OpenAI else None
+
+_ollama_base = OLLAMA_API_BASE_URL.rstrip("/")
+if not _ollama_base.endswith("/v1"):
+    _ollama_base += "/v1"
+_ollama_client = OpenAI(api_key="ollama", base_url=_ollama_base) if OpenAI else None
 
 
 def _extract_json_object(raw: str) -> Optional[dict]:
@@ -39,52 +43,61 @@ def _extract_json_object(raw: str) -> Optional[dict]:
 
 
 def generate_chat_completion(system_prompt: str, user_prompt: str, temperature: float = 0.2) -> str:
-    provider = LLM_PROVIDER
+    providers_to_try = [LLM_PROVIDER]
+    for p in ["gemini", "openai", "ollama"]:
+        if p not in providers_to_try:
+            providers_to_try.append(p)
 
-    if provider == "gemini" and GEMINI_API_KEY:
-        try:
-            import google.generativeai as genai
+    for provider in providers_to_try:
+        if provider == "gemini" and GEMINI_API_KEY:
+            try:
+                import google.generativeai as genai
+                genai.configure(api_key=GEMINI_API_KEY)
+                model = genai.GenerativeModel(GEMINI_CHAT_MODEL)
+                response = model.generate_content(
+                    [
+                        {"role": "user", "parts": [f"System: {system_prompt}"]},
+                        {"role": "user", "parts": [user_prompt]},
+                    ],
+                    generation_config={"temperature": temperature},
+                )
+                res_text = (response.text or "").strip()
+                if res_text:
+                    return res_text
+            except Exception:
+                pass
 
-            genai.configure(api_key=GEMINI_API_KEY)
-            model = genai.GenerativeModel(GEMINI_CHAT_MODEL)
-            response = model.generate_content(
-                [
-                    {"role": "user", "parts": [f"System: {system_prompt}"]},
-                    {"role": "user", "parts": [user_prompt]},
-                ],
-                generation_config={"temperature": temperature},
-            )
-            return (response.text or "").strip()
-        except Exception as exc:
-            return f"LLM provider error (gemini): {exc}"
+        if provider == "openai" and _openai_client:
+            try:
+                response = _openai_client.chat.completions.create(
+                    model=OPENAI_CHAT_MODEL,
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt},
+                    ],
+                    temperature=temperature,
+                )
+                res_text = (response.choices[0].message.content or "").strip()
+                if res_text:
+                    return res_text
+            except Exception:
+                pass
 
-    if provider == "ollama" and _ollama_client:
-        try:
-            response = _ollama_client.chat.completions.create(
-                model=OLLAMA_CHAT_MODEL,
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt},
-                ],
-                temperature=temperature,
-            )
-            return (response.choices[0].message.content or "").strip()
-        except Exception as exc:
-            return f"LLM provider error (ollama): {exc}"
-
-    if provider == "openai" and _openai_client:
-        try:
-            response = _openai_client.chat.completions.create(
-                model=OPENAI_CHAT_MODEL,
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt},
-                ],
-                temperature=temperature,
-            )
-            return (response.choices[0].message.content or "").strip()
-        except Exception as exc:
-            return f"LLM provider error (openai): {exc}"
+        if provider == "ollama" and _ollama_client:
+            try:
+                response = _ollama_client.chat.completions.create(
+                    model=OLLAMA_CHAT_MODEL,
+                    messages=[
+                        {"role": "system", "content": system_prompt},
+                        {"role": "user", "content": user_prompt},
+                    ],
+                    temperature=temperature,
+                )
+                res_text = (response.choices[0].message.content or "").strip()
+                if res_text:
+                    return res_text
+            except Exception:
+                pass
 
     return ""
 

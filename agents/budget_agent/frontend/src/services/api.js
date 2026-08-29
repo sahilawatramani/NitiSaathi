@@ -91,4 +91,36 @@ export const sendChatMessage = (message) =>
 export const getProfile = () => api.get('/profile/');
 export const saveProfile = (data) => api.post('/profile/', data);
 
+// ── Budget Agent: Goals ──────────────────────────────────────────────
+export const getGoals = (activeOnly = true) =>
+  api.get(`/goals/?active_only=${activeOnly}`);
+export const createGoal = (data) => api.post('/goals/', data);
+export const updateGoal = (goalId, data) => api.put(`/goals/${goalId}`, data);
+export const addSavingsToGoal = (goalId, amount) =>
+  api.post(`/goals/${goalId}/add-savings`, { amount });
+export const archiveGoal = (goalId) => api.delete(`/goals/${goalId}`);
+
+// ── Budget Agent: Categories ─────────────────────────────────────────
+export const getCategories = () => api.get('/categories/');
+export const createCategory = (data) => api.post('/categories/', data);
+export const deleteCategory = (categoryId) =>
+  api.delete(`/categories/${categoryId}`);
+
+// ── Budget Agent: Insights ───────────────────────────────────────────
+export const getDailyInsights = () => api.get('/insights/daily');
+export const getCausalChains = () => api.get('/insights/causal-chains');
+export const recalculateWeeklyFeatures = () => api.post('/insights/recalculate');
+
+// ── Budget Agent: Reports ────────────────────────────────────────────
+export const downloadWeeklyReport = () =>
+  api.get('/reports/weekly/download', { responseType: 'blob' });
+export const emailWeeklyReport = () => api.post('/reports/weekly/email');
+
+// ── Budget Agent: Recurring Debits ───────────────────────────────────
+export const getRecurringDebits = (activeOnly = true) =>
+  api.get(`/recurring-debits/?active_only=${activeOnly}`);
+export const createRecurringDebit = (data) => api.post('/recurring-debits/', data);
+export const updateRecurringDebit = (id, data) => api.put(`/recurring-debits/${id}`, data);
+export const deleteRecurringDebit = (id) => api.delete(`/recurring-debits/${id}`);
+
 export default api;

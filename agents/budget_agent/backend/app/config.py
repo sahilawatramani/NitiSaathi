@@ -13,7 +13,7 @@ LLM_PROVIDER = os.getenv("LLM_PROVIDER", "openai").lower()
 OPENAI_CHAT_MODEL = os.getenv("OPENAI_CHAT_MODEL", "gpt-3.5-turbo")
 GEMINI_CHAT_MODEL = os.getenv("GEMINI_CHAT_MODEL", "gemini-1.5-flash")
 OLLAMA_API_BASE_URL = os.getenv("OLLAMA_API_BASE_URL", "http://localhost:11434")
-OLLAMA_CHAT_MODEL = os.getenv("OLLAMA_CHAT_MODEL", "mistral")
+OLLAMA_CHAT_MODEL = os.getenv("OLLAMA_CHAT_MODEL", "phi3")
 WEBHOOK_SECRET = os.getenv("WEBHOOK_SECRET", "finassist-dev-secret")
 SMS_FORWARD_SECRET = os.getenv("SMS_FORWARD_SECRET", "")
 SMS_FORWARD_DEFAULT_USER_EMAIL = os.getenv("SMS_FORWARD_DEFAULT_USER_EMAIL", "")
@@ -47,6 +47,13 @@ FAST2SMS_API_KEY = os.getenv("FAST2SMS_API_KEY", "")
 RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID", "")
 RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET", "")
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY", "")
+
+# SMTP / Email Service
+SMTP_HOST = os.getenv("SMTP_HOST", "")
+SMTP_PORT = os.getenv("SMTP_PORT", "587")
+SMTP_USER = os.getenv("SMTP_USER", "")
+SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
+SMTP_FROM_EMAIL = os.getenv("SMTP_FROM_EMAIL", "")
 
 # Fix: use absolute path so db location is consistent regardless of working directory
 DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{os.path.join(BASE_DIR, 'data', 'finassist.db')}")
