@@ -1,0 +1,317 @@
+{
+  "last_updated": "2026-08-20",
+  "data_sources": [
+    "https://www.businesstoday.in/personal-finance/news/story/upi-fraud-is-surging-heres-how-fintechs-and-regulators-are-fighting-back-522822-2026-03-28",
+    "https://abhilashs385253.substack.com/i/193752698/the-numbers-that-alarmed-the-central-bank",
+    "RBI Department of Payment and Settlement Systems reports 2026"
+  ],
+  "fraud_statistics": {
+    "total_cases_fy2023_24": 1342000,
+    "total_loss_fy2023_24_crores": 1087,
+    "total_cases_fy2024_25_first_8_months": 2800000,
+    "total_loss_fy2024_25_first_8_months_crores": 805,
+    "growth_rate": "10x increase in 4 years (2021-2025)",
+    "target_demographics": "Gig workers disproportionately affected due to daily UPI transactions and lower financial literacy"
+  },
+  "hard_rules": {
+    "rule_1": {
+      "name": "NEVER_ASK_FOR_PIN_OR_OTP",
+      "description": "System must NEVER ask user for UPI PIN or OTP under any circumstances",
+      "violation_response": "If any message from ANY source contains 'enter your PIN' or 'share your OTP', surface IMMEDIATE fraud alert",
+      "priority": "CRITICAL",
+      "implementation": "String matching + LLM classification to detect PIN/OTP requests in ANY context"
+    },
+    "rule_2": {
+      "name": "ALWAYS_WARN_ABOUT_PIN_OTP_REQUESTS",
+      "description": "If fraud pattern involves someone asking for PIN/OTP, explicitly warn user to NEVER share",
+      "warning_template": "⚠️ FRAUD ALERT: Never share your UPI PIN or OTP with anyone. No bank, government agency, or platform will ever ask for your PIN."
+    }
+  },
+  "fraud_patterns": {
+    "fake_kyc_call": {
+      "pattern_id": "FP001",
+      "name": "Fake KYC Verification Call",
+      "description": "Fraudster poses as bank/UPI provider claiming KYC will expire or is incomplete",
+      "common_phrases": [
+        "Your KYC will expire",
+        "Your UPI account will be blocked",
+        "Complete KYC verification immediately",
+        "Click this link to update KYC",
+        "Your bank account is suspended"
+      ],
+      "detection_signals": [
+        "Urgency language (immediately, today, within 2 hours)",
+        "Threat of account blocking/suspension",
+        "Link sent via SMS/WhatsApp (not official app)",
+        "Request to enter OTP or PIN",
+        "Call from unofficial number"
+      ],
+      "target_group": "All UPI users, especially gig workers who receive frequent platform payouts",
+      "severity": "HIGH",
+      "action_on_detection": "Block transaction, alert user with explanation, log incident",
+      "user_warning": "Banks NEVER ask you to verify KYC via links sent in SMS. Visit official website or branch only."
+    },
+    "fake_qr_overlay": {
+      "pattern_id": "FP002",
+      "name": "Fake QR Code Overlay at Merchant",
+      "description": "Physical QR code sticker placed over legitimate merchant QR at petrol pumps, food stalls, shops",
+      "detection_signals": [
+        "Payment to new/unknown counterparty at location user frequently visits",
+        "Merchant name mismatch (e.g., paying 'RAJESH KUMAR' at 'HP Petrol Pump')",
+        "First-time counterparty at known merchant category (fuel, food)",
+        "Transaction amount within normal range but counterparty suspicious"
+      ],
+      "transaction_pattern": {
+        "category": "fuel, food, recharge",
+        "counterparty_match": false,
+        "amount_range": "normal for category",
+        "frequency": "first occurrence with this counterparty"
+      },
+      "target_group": "Gig workers who frequently refuel or eat at roadside stalls",
+      "severity": "MEDIUM",
+      "action_on_detection": "Flag transaction for user review BEFORE payment (pre-transaction alert)",
+      "user_warning": "Check merchant name carefully before paying. If name looks wrong, ask merchant to confirm QR code. Physical QR stickers can be fake."
+    },
+    "task_based_job_scam": {
+      "pattern_id": "FP003",
+      "name": "Task-Based Job Scam (Advance Fee Fraud)",
+      "description": "Fraudster offers fake job requiring upfront 'registration fee' or 'security deposit' with promise of high returns",
+      "common_phrases": [
+        "Earn ₹5,000 daily from home",
+        "Send ₹500 registration fee to activate account",
+        "Complete 10 tasks and get ₹10,000",
+        "Investment of ₹1,000 will return ₹50,000",
+        "Work-from-home opportunity"
+      ],
+      "detection_signals": [
+        "Debit transaction with description containing 'registration', 'activation', 'security deposit', 'job fee'",
+        "Counterparty is individual (not company/known platform)",
+        "Amount: ₹300-₹5,000 range (typical scam amounts)",
+        "User's recent transaction history shows platform payout (suggesting they are looking for additional income)"
+      ],
+      "transaction_pattern": {
+        "direction": "debit",
+        "amount_range": [300, 5000],
+        "counterparty_type": "individual",
+        "keywords": ["registration", "activation", "job", "task", "security", "deposit", "earning", "opportunity"]
+      },
+      "target_group": "Gig workers seeking additional income sources",
+      "severity": "HIGH",
+      "action_on_detection": "Block transaction if possible, alert user BEFORE completing payment",
+      "user_warning": "Legitimate jobs NEVER ask for upfront payment. If someone asks you to pay to get a job, it is a scam."
+    },
+    "fake_refund_request": {
+      "pattern_id": "FP004",
+      "name": "Fake Refund/Wrong Payment Scam",
+      "description": "Fraudster claims they accidentally sent money to user and requests return via UPI collect or direct transfer",
+      "common_phrases": [
+        "I sent you money by mistake",
+        "Please return the amount",
+        "Wrong UPI transfer",
+        "Accidental payment, please refund",
+        "My child sent you money by mistake"
+      ],
+      "detection_signals": [
+        "Incoming credit from unknown counterparty",
+        "Followed by UPI collect request or message requesting return",
+        "Amount: typically ₹500-₹2,000",
+        "Collect request amount may be HIGHER than credited amount (classic scam)"
+      ],
+      "transaction_pattern": {
+        "step_1": "User receives credit from unknown person",
+        "step_2": "Within minutes/hours, receive collect request or message asking for return",
+        "step_3": "Collect amount may exceed credited amount"
+      },
+      "target_group": "All UPI users, especially those who receive frequent payouts (confusion factor)",
+      "severity": "HIGH",
+      "action_on_detection": "Alert user BEFORE accepting collect request; verify credit actually exists; warn about amount mismatch",
+      "user_warning": "If someone claims they sent you money by mistake, check your bank statement first. Never return money via UPI collect. Contact your bank if unsure."
+    },
+    "collect_request_new_counterparty_large": {
+      "pattern_id": "FP005",
+      "name": "UPI Collect Request from New Counterparty - Large Amount",
+      "description": "User receives UPI collect request from unknown/new counterparty for large amount",
+      "detection_signals": [
+        "UPI collect request (not direct debit)",
+        "Counterparty: new (first interaction)",
+        "Amount: > 2x user's average transaction OR > ₹1,000",
+        "No recent credit from this counterparty (rules out legitimate refund)"
+      ],
+      "transaction_pattern": {
+        "type": "upi_collect_request",
+        "counterparty_history": "new or <2 interactions",
+        "amount_threshold": "max(2 * avg_transaction, 1000)"
+      },
+      "target_group": "All UPI users",
+      "severity": "MEDIUM",
+      "action_on_detection": "Alert user before accepting; show counterparty name/number; ask for confirmation",
+      "user_warning": "You received a payment request from someone you haven't paid before. Verify the person and reason before accepting."
+    },
+    "rapid_micro_debits": {
+      "pattern_id": "FP006",
+      "name": "Rapid Micro-Debits (Card Testing / Account Probing)",
+      "description": "Multiple small debits in short time window to same or multiple counterparties - often precursor to larger fraud",
+      "detection_signals": [
+        "3+ debits within 10 minutes",
+        "Each amount: ₹1-₹50",
+        "Same counterparty OR multiple new counterparties",
+        "No corresponding credits (rules out split payments to friends)"
+      ],
+      "transaction_pattern": {
+        "debit_count": "≥3",
+        "time_window_minutes": 10,
+        "amount_per_transaction": [1, 50],
+        "purpose": "Testing if card/UPI is active before attempting large fraud"
+      },
+      "target_group": "All UPI users",
+      "severity": "HIGH",
+      "action_on_detection": "Block subsequent transactions temporarily; alert user; recommend changing UPI PIN",
+      "user_warning": "We detected multiple small debits from your account in quick succession. This may indicate your UPI PIN is compromised. Change your PIN immediately."
+    },
+    "large_atypical_debit": {
+      "pattern_id": "FP007",
+      "name": "Large Atypical Debit",
+      "description": "Single debit significantly larger than user's historical pattern",
+      "detection_signals": [
+        "Debit amount > 3x user's average debit",
+        "Category: discretionary or uncategorized",
+        "Counterparty: new or rarely used",
+        "Time: unusual hour (late night/early morning)"
+      ],
+      "transaction_pattern": {
+        "amount_threshold": "3 * avg_debit_amount",
+        "time_unusual": "22:00-06:00",
+        "counterparty_frequency": "new or <3 interactions"
+      },
+      "target_group": "All users, especially those with consistent spending patterns",
+      "severity": "MEDIUM",
+      "action_on_detection": "Flag for user review; send notification asking for confirmation",
+      "user_warning": "This transaction is much larger than your usual spending. If you didn't make this payment, contact your bank immediately."
+    },
+    "duplicate_transaction": {
+      "pattern_id": "FP008",
+      "name": "Duplicate Transaction",
+      "description": "Exact same amount to same counterparty within short time window - may indicate technical glitch or fraud",
+      "detection_signals": [
+        "Same amount",
+        "Same counterparty",
+        "Within 5 minutes of previous transaction"
+      ],
+      "transaction_pattern": {
+        "amount_match": "exact",
+        "counterparty_match": "exact",
+        "time_window_minutes": 5
+      },
+      "target_group": "All users",
+      "severity": "LOW",
+      "action_on_detection": "Alert user about duplicate; may be accidental double-click",
+      "user_warning": "You just made the same payment twice. If this was a mistake, contact the recipient or your bank for refund."
+    },
+    "unauthorized_recurring_payment": {
+      "pattern_id": "FP009",
+      "name": "Unauthorized Auto-Debit / Recurring Payment",
+      "description": "Recurring debit that user did not authorize or forgot about",
+      "detection_signals": [
+        "Monthly/weekly recurring debit",
+        "Category: subscription or uncategorized",
+        "User has not interacted with service recently",
+        "Amount: ₹50-₹500 (typical subscription range)"
+      ],
+      "transaction_pattern": {
+        "frequency": "recurring_monthly or recurring_weekly",
+        "amount_range": [50, 500],
+        "category": ["subscription", "uncategorized"]
+      },
+      "target_group": "All users with multiple subscription services",
+      "severity": "LOW",
+      "action_on_detection": "Notify user of recurring charge; provide option to review/cancel mandates",
+      "user_warning": "You have a recurring payment active. If you don't recognize it, cancel the auto-debit mandate in your bank app."
+    }
+  },
+  "anomaly_detection_features": {
+    "description": "Features to compute for ML-based anomaly detection (complement to rule-based patterns)",
+    "features": [
+      {
+        "name": "amount_deviation_score",
+        "formula": "(transaction_amount - user_avg_transaction) / user_stddev_transaction",
+        "interpretation": "Z-score; >3 is highly unusual"
+      },
+      {
+        "name": "counterparty_frequency",
+        "formula": "count(transactions with same counterparty in last 90 days)",
+        "interpretation": "0 = new counterparty (higher risk)"
+      },
+      {
+        "name": "time_of_day_unusual",
+        "formula": "transaction hour outside user's normal pattern (e.g., 2 AM for user who never transacts late)",
+        "interpretation": "Binary flag"
+      },
+      {
+        "name": "velocity_score",
+        "formula": "count(transactions in last 10 minutes)",
+        "interpretation": ">3 indicates rapid-fire transactions"
+      },
+      {
+        "name": "category_mismatch",
+        "formula": "transaction category != user's frequent categories",
+        "interpretation": "E.g., 'jewelry' for user who only spends on fuel/food"
+      },
+      {
+        "name": "balance_drop_percentage",
+        "formula": "(balance_before - balance_after) / balance_before",
+        "interpretation": ">0.50 (50% balance drop in one transaction) is high risk"
+      }
+    ]
+  },
+  "rbi_registered_lender_whitelist": {
+    "description": "Cross-reference for loan/lending transaction legitimacy",
+    "source": "RBI Master List of Regulated Entities (NBFCs, Banks, Payment Banks)",
+    "check_url": "https://rbi.org.in/Scripts/BS_NBFCListDisplay.aspx",
+    "usage": "If transaction is to/from entity claiming to be lender, verify against RBI list",
+    "common_fake_lenders": [
+      "Instant loan apps with Chinese names",
+      "Apps asking for unrestricted phone access",
+      "Lenders charging >36% APR (cap per RBI norms)",
+      "Apps without RBI registration number visible"
+    ]
+  },
+  "ground_truth_labels": {
+    "description": "Ground truth labels in synthetic transactions.csv for evaluation",
+    "label_column": "is_flagged_anomaly",
+    "anomaly_type_column": "anomaly_type",
+    "total_anomalies": 455,
+    "anomaly_distribution": {
+      "large_atypical_debit": "~35%",
+      "rapid_micro_debits": "~25%",
+      "new_counterparty_large_debit": "~25%",
+      "duplicate_transaction": "~15%"
+    },
+    "evaluation_metric": "Recall > 0.85 (missing fraud is worse than false positive)"
+  },
+  "response_templates": {
+    "fraud_detected_high": {
+      "title": "⚠️ FRAUD ALERT",
+      "message_template": "This transaction matches the '{pattern_name}' fraud pattern. {specific_warning}",
+      "action_required": "Transaction blocked. Review details before proceeding.",
+      "color": "red"
+    },
+    "fraud_detected_medium": {
+      "title": "⚠️ Suspicious Activity",
+      "message_template": "This transaction looks unusual: {reason}. Please confirm you authorized this.",
+      "action_required": "Review transaction details.",
+      "color": "orange"
+    },
+    "fraud_detected_low": {
+      "title": "ℹ️ Transaction Notice",
+      "message_template": "{observation}",
+      "action_required": "No action needed unless you didn't make this payment.",
+      "color": "yellow"
+    },
+    "pin_otp_warning": {
+      "title": "🚨 CRITICAL SECURITY WARNING",
+      "message": "NEVER share your UPI PIN or OTP with anyone. No bank, government agency, UPI app, or employer will EVER ask for your PIN. If someone asks, it is 100% a scam. Hang up immediately and report to cyber cell.",
+      "color": "red",
+      "always_show": true
+    }
+  }
+}
