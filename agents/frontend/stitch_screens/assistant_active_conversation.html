@@ -1,0 +1,299 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>nitisaathi - Assistant Active Conversation</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-low": "#f6f3f2",
+                        "on-tertiary-fixed": "#00210d",
+                        "on-primary": "#ffffff",
+                        "tertiary-fixed": "#8df9ac",
+                        "inverse-surface": "#313030",
+                        "on-surface-variant": "#594140",
+                        "on-tertiary-container": "#75e096",
+                        "inverse-primary": "#ffb3b2",
+                        "tertiary-fixed-dim": "#71dc92",
+                        "surface-container": "#f0eded",
+                        "on-secondary-fixed": "#410007",
+                        "surface-dim": "#dcd9d9",
+                        "secondary-container": "#db313f",
+                        "on-primary-fixed": "#410009",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-background": "#1c1b1b",
+                        "background-off-white": "#F7F5F2",
+                        "error": "#ba1a1a",
+                        "text-warm-gray": "#6B6560",
+                        "caution-tint": "#F8D7DC",
+                        "primary": "#82001b",
+                        "primary-fixed": "#ffdad9",
+                        "on-error": "#ffffff",
+                        "inverse-on-surface": "#f3f0ef",
+                        "on-secondary-container": "#fffbff",
+                        "primary-container": "#a61c2e",
+                        "on-primary-container": "#ffb9b8",
+                        "on-error-container": "#93000a",
+                        "secondary-fixed-dim": "#ffb3b1",
+                        "outline-variant": "#e1bebd",
+                        "on-secondary-fixed-variant": "#92001c",
+                        "on-secondary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface-variant": "#e5e2e1",
+                        "surface": "#fcf9f8",
+                        "tertiary": "#004923",
+                        "on-surface": "#1c1b1b",
+                        "on-tertiary": "#ffffff",
+                        "outline": "#8d706f",
+                        "surface-bright": "#fcf9f8",
+                        "tertiary-container": "#006332",
+                        "background": "#fcf9f8",
+                        "primary-fixed-dim": "#ffb3b2",
+                        "on-primary-fixed-variant": "#910621",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary": "#b7102a",
+                        "surface-container-high": "#eae7e7",
+                        "on-tertiary-fixed-variant": "#005229",
+                        "secondary-fixed": "#ffdad8",
+                        "surface-tint": "#b32736"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-lg": "32px",
+                        "margin-page": "48px",
+                        "container-max": "1200px",
+                        "gutter": "24px",
+                        "sidebar-width": "260px",
+                        "stack-md": "16px",
+                        "stack-sm": "8px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Noto Sans"],
+                        "headline-md": ["Noto Sans"],
+                        "label-lg": ["Noto Sans"],
+                        "label-sm": ["Noto Sans"],
+                        "headline-sm": ["Noto Sans"],
+                        "headline-lg": ["Noto Sans"],
+                        "body-md": ["Noto Sans"],
+                        "display-lg": ["Noto Sans"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Noto Sans', sans-serif; }
+        .typing-dot {
+            animation: typing 1.4s infinite ease-in-out both;
+        }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+        
+        /* Message bubble animations */
+        .msg-enter {
+            animation: slideUpFade 0.3s ease-out forwards;
+        }
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background antialiased flex h-screen overflow-hidden">
+<!-- TopNavBar (Mobile Only) -->
+<nav class="md:hidden bg-surface flex justify-between items-center w-full px-margin-page py-stack-md h-16 shadow-sm fixed top-0 z-50">
+<div class="font-headline-md text-headline-md font-bold text-primary">nitisaathi</div>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-primary" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined text-primary" data-icon="account_circle">account_circle</span>
+</div>
+</nav>
+<!-- SideNavBar (Desktop Only) -->
+<nav class="fixed left-0 top-0 h-screen w-[240px] bg-background-off-white flex flex-col py-stack-lg border-r border-surface-variant z-40"><div class="px-6 mb-8">
+    <h1 class="font-display-lg text-[32px] font-semibold tracking-tight text-[#1A1A1A]">nitisaathi</h1>
+  </div>
+  
+  <div class="flex-1 overflow-y-auto flex flex-col gap-1">
+    <!-- Home -->
+    <a href="#" class="flex items-center gap-4 py-3 px-6 text-[#1A1A1A] hover:bg-surface-container transition-colors">
+      <span class="material-symbols-outlined">house</span>
+      <span class="font-label-lg">गृह / Home</span>
+    </a>
+    
+    <!-- Budget -->
+    <a href="#" class="flex items-center gap-4 py-3 px-6 text-[#1A1A1A] hover:bg-surface-container transition-colors">
+      <span class="material-symbols-outlined">payments</span>
+      <span class="font-label-lg">बजट / Budget</span>
+    </a>
+    
+    <!-- Assistant (Active) -->
+    <a href="#" class="flex items-center gap-4 py-3 px-6 bg-[#A61C2E]/5 border-l-4 border-[#A61C2E] text-[#A61C2E] font-semibold">
+      <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">forum</span>
+      <span class="font-label-lg font-bold">साथी / Assistant</span>
+    </a>
+    
+    <!-- Schemes -->
+    <a href="#" class="flex items-center gap-4 py-3 px-6 text-[#1A1A1A] hover:bg-surface-container transition-colors">
+      <span class="material-symbols-outlined">description</span>
+      <span class="font-label-lg">योजनाएं / Schemes</span>
+    </a>
+    
+    <!-- Fraud Check -->
+    <a href="#" class="flex items-center gap-4 py-3 px-6 text-[#1A1A1A] hover:bg-surface-container transition-colors">
+      <span class="material-symbols-outlined">gpp_maybe</span>
+      <span class="font-label-lg">धोखाधड़ी जांच / Fraud Check</span>
+    </a>
+    
+    <!-- Nudges -->
+    <a href="#" class="flex items-center gap-4 py-3 px-6 text-[#1A1A1A] hover:bg-surface-container transition-colors">
+      <span class="material-symbols-outlined">notifications</span>
+      <span class="font-label-lg">सूचनाएं / Nudges</span>
+    </a>
+    
+    <!-- Reports -->
+    <a href="#" class="flex items-center gap-4 py-3 px-6 text-[#1A1A1A] hover:bg-surface-container transition-colors">
+      <span class="material-symbols-outlined">assessment</span>
+      <span class="font-label-lg">रिपोर्ट / Reports</span>
+    </a>
+  </div>
+
+  <div class="mt-auto">
+    <div class="mx-6 border-t border-outline-variant/30 mb-2"></div>
+    <a href="#" class="flex items-center gap-4 py-3 px-6 text-[#1A1A1A] hover:bg-surface-container transition-colors">
+      <span class="material-symbols-outlined">settings</span>
+      <span class="font-label-lg">सेटिंग्स / Settings</span>
+    </a>
+    
+    <div class="flex items-center gap-3 px-6 pt-4 mt-2 border-t border-outline-variant/30">
+      <img alt="User profile" class="w-10 h-10 rounded-full object-cover border border-outline-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuChE6ZjgmIsElm75eDkeBd-oolXBf8hqfyD_UMaC1DI9QAhnUfGZTjPpY9Vk1SYiT9NGAVbBwfyRR8KVs94QU7SR1X_3WIido9pbvP0Svr_zcz69sg-R9cZrorbq0uwVMbyTOnP0u7jJ_KLjJf-TLvHo0Bwnv7WgIHmb2fR-dERz9A1ZjxhvpJ3Icq12lG2tpxir80ow24qBMo3QI4oI2n5ZhQ8Q5L9NJ0c7UF9JylGIm10Sx1DFvfX6A">
+      <div class="overflow-hidden">
+        <p class="font-label-lg text-[#1A1A1A] truncate">राजेश</p>
+        <p class="font-label-sm text-text-warm-gray truncate">Delivery Partner</p>
+      </div>
+    </div>
+  </div></nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-sidebar-width h-full bg-surface relative flex flex-col pt-16 md:pt-0">
+<!-- Header -->
+<header class="w-full bg-surface-bright border-b border-surface-container-high px-gutter py-stack-md flex justify-between items-center shadow-sm z-10 sticky top-0 md:top-0">
+<h1 class="font-headline-md text-headline-md text-on-background">साथी / Assistant</h1>
+<a class="flex items-center gap-2 text-primary hover:text-secondary transition-colors font-label-lg text-label-lg" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="add_circle">add_circle</span>
+                नई बातचीत / New chat
+            </a>
+</header>
+<!-- Chat Area Container -->
+<div class="flex-1 overflow-y-auto w-full flex justify-center pb-32 pt-6">
+<div class="w-full max-w-[700px] px-gutter flex flex-col gap-6">
+<!-- Date divider -->
+<div class="text-center w-full">
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container-low px-3 py-1 rounded-full">Today</span>
+</div>
+<!-- User Message -->
+<div class="flex justify-end w-full msg-enter">
+<div class="bg-primary-container text-on-primary-container p-4 rounded-2xl rounded-tr-sm max-w-[85%] shadow-[0_4px_20px_rgba(26,26,26,0.05)] border border-primary/10">
+<p class="font-body-md text-body-md">क्या मुझे PM-SYM में शामिल होना चाहिए? / Should I enroll in PM-SYM?</p>
+</div>
+</div>
+<!-- Assistant Response -->
+<div class="flex justify-start w-full gap-3 msg-enter" style="animation-delay: 0.2s;">
+<!-- Avatar -->
+<div class="flex-shrink-0 mt-1">
+<div class="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined text-[18px]" data-icon="smart_toy">smart_toy</span>
+</div>
+</div>
+<div class="flex flex-col gap-3 max-w-[85%]">
+<!-- Primary Bubble -->
+<div class="bg-background-off-white text-on-background p-4 rounded-2xl rounded-tl-sm shadow-[0_4px_20px_rgba(26,26,26,0.05)] border border-outline-variant/30 hover:shadow-md transition-shadow relative group">
+<p class="font-body-md text-body-md mb-4 text-on-background">आप PM-SYM के लिए योग्य हैं। आपका योगदान ₹55/महीना होगा। / You're eligible for PM-SYM. Your contribution would be ₹55/month.</p>
+<!-- Tradeoff Card -->
+<div class="bg-caution-tint/40 border border-caution-tint rounded-lg p-3 mb-4">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-secondary text-sm" data-icon="balance">balance</span>
+<h4 class="font-label-lg text-label-lg text-on-background">यहां एक बात ध्यान देने वाली है / Here's something to consider</h4>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant">आपकी कमाई पिछले 8 हफ्तों में से 3 में स्थिर रही है। 4 और स्थिर हफ्तों का इंतज़ार करने की सलाह है। / Your income has been stable in only 3 of the last 8 weeks. We recommend waiting 4 more stable weeks.</p>
+</div>
+<!-- Trust Metadata Row -->
+<div class="flex flex-wrap items-center gap-3 text-on-surface-variant mb-2">
+<div class="flex items-center gap-1 bg-surface-container-low px-2 py-1 rounded">
+<span class="material-symbols-outlined text-[14px]" data-icon="schedule">schedule</span>
+<span class="font-label-sm text-label-sm">पिछले 4 हफ्तों पर आधारित, 2 दिन पहले अपडेट हुआ / Based on last 4 weeks, updated 2 days ago</span>
+</div>
+<div class="flex items-center gap-1 bg-tertiary-fixed/30 text-tertiary px-2 py-1 rounded">
+<span class="material-symbols-outlined text-[14px]" data-icon="verified">verified</span>
+<span class="font-label-sm text-label-sm">85% confidence / 85% भरोसा</span>
+</div>
+</div>
+<!-- Disclaimer -->
+<p class="font-label-sm text-label-sm italic text-text-warm-gray border-t border-surface-container-high pt-2 mt-2">यह जानकारी सामान्य मार्गदर्शन के लिए है। किसी भी योजना में दाखिला लेने से पहले आधिकारिक वेबसाइट पर जाँचें। / This is general guidance — verify on the official website before enrolling.</p>
+<!-- TTS Play Icon -->
+<button class="absolute bottom-3 right-3 text-on-surface-variant hover:text-primary transition-colors bg-surface-container-low rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm">
+<span class="material-symbols-outlined text-[20px]" data-icon="volume_up">volume_up</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Thinking State -->
+<div class="flex justify-start w-full gap-3 msg-enter" style="animation-delay: 0.5s;">
+<div class="flex-shrink-0 w-8"></div>
+<div class="flex items-center gap-3 bg-transparent text-on-surface-variant px-2 py-1">
+<div class="flex gap-1">
+<div class="w-2 h-2 rounded-full bg-primary/40 typing-dot"></div>
+<div class="w-2 h-2 rounded-full bg-primary/60 typing-dot"></div>
+<div class="w-2 h-2 rounded-full bg-primary/80 typing-dot"></div>
+</div>
+<span class="font-label-sm text-label-sm italic">बजट और योजनाएं देख रहे हैं... / Checking your budget and eligible schemes...</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Fixed Input Bar -->
+<div class="absolute bottom-0 left-0 w-full bg-surface/90 backdrop-blur-md border-t border-surface-container-high p-4 flex justify-center pb-8 z-20">
+<div class="w-full max-w-[700px]">
+<div class="relative flex items-center w-full shadow-sm rounded-lg overflow-hidden group">
+<!-- Audio Input Btn -->
+<button class="absolute left-3 text-on-surface-variant hover:text-primary transition-colors focus:outline-none">
+<span class="material-symbols-outlined" data-icon="mic">mic</span>
+</button>
+<input class="w-full pl-12 pr-14 py-4 bg-background-off-white border border-outline-variant focus:bg-on-primary focus:border-primary-container focus:ring-2 focus:ring-primary/20 rounded-lg transition-all font-body-md text-body-md text-on-background placeholder:text-text-warm-gray" placeholder="पूछें या टाइप करें... / Ask or type here..." type="text">
+<!-- Send Btn -->
+<button class="absolute right-3 bg-primary text-on-primary p-2 rounded hover:bg-secondary transition-colors shadow-sm focus:ring-2 focus:ring-primary/50 focus:outline-none">
+<span class="material-symbols-outlined text-[20px]" data-icon="send">send</span>
+</button>
+</div>
+<div class="text-center mt-2">
+<span class="font-label-sm text-label-sm text-text-warm-gray">साथी गलती कर सकता है। महत्वपूर्ण जानकारी की पुष्टि करें। / Saathi can make mistakes. Verify important info.</span>
+</div>
+</div>
+</div>
+</main>
+
+
+</body></html>

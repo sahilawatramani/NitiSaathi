@@ -1,0 +1,431 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>nitisaathi - Budget</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&amp;family=Noto+Sans+Devanagari:wght@100..900&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "inverse-primary": "#ffb3b2",
+                        "surface-bright": "#fcf9f8",
+                        "on-secondary-container": "#fffbff",
+                        "on-secondary-fixed": "#410007",
+                        "inverse-on-surface": "#f3f0ef",
+                        "primary-fixed": "#ffdad9",
+                        "on-secondary": "#ffffff",
+                        "surface-container-low": "#f6f3f2",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed": "#8df9ac",
+                        "tertiary-fixed-dim": "#71dc92",
+                        "on-tertiary-container": "#75e096",
+                        "on-error": "#ffffff",
+                        "on-tertiary-fixed-variant": "#005229",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed": "#410009",
+                        "surface-container": "#f0eded",
+                        "primary-fixed-dim": "#ffb3b2",
+                        "on-tertiary-fixed": "#00210d",
+                        "caution-tint": "#F8D7DC",
+                        "secondary-fixed-dim": "#ffb3b1",
+                        "surface-tint": "#b32736",
+                        "text-warm-gray": "#6B6560",
+                        "background-off-white": "#F7F5F2",
+                        "surface-container-lowest": "#ffffff",
+                        "error": "#ba1a1a",
+                        "surface-container-highest": "#e5e2e1",
+                        "on-primary-fixed-variant": "#910621",
+                        "on-primary": "#ffffff",
+                        "on-surface": "#1c1b1b",
+                        "on-background": "#1c1b1b",
+                        "outline-variant": "#e1bebd",
+                        "on-secondary-fixed-variant": "#92001c",
+                        "primary-container": "#a61c2e",
+                        "tertiary": "#004923",
+                        "secondary-container": "#db313f",
+                        "primary": "#82001b",
+                        "surface-container-high": "#eae7e7",
+                        "surface-variant": "#e5e2e1",
+                        "secondary-fixed": "#ffdad8",
+                        "inverse-surface": "#313030",
+                        "surface": "#fcf9f8",
+                        "tertiary-container": "#006332",
+                        "secondary": "#b7102a",
+                        "outline": "#8d706f",
+                        "surface-dim": "#dcd9d9",
+                        "error-container": "#ffdad6",
+                        "on-primary-container": "#ffb9b8",
+                        "on-surface-variant": "#594140",
+                        "background": "#fcf9f8"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "sidebar-width": "260px",
+                        "container-max": "1200px",
+                        "margin-page": "48px",
+                        "stack-md": "16px",
+                        "stack-lg": "32px",
+                        "stack-sm": "8px",
+                        "gutter": "24px"
+                    },
+                    fontFamily: {
+                        "label-sm": ["Noto Sans", "Noto Sans Devanagari", "sans-serif"],
+                        "headline-md": ["Noto Sans", "Noto Sans Devanagari", "sans-serif"],
+                        "label-lg": ["Noto Sans", "Noto Sans Devanagari", "sans-serif"],
+                        "headline-sm": ["Noto Sans", "Noto Sans Devanagari", "sans-serif"],
+                        "body-lg": ["Noto Sans", "Noto Sans Devanagari", "sans-serif"],
+                        "headline-lg": ["Noto Sans", "Noto Sans Devanagari", "sans-serif"],
+                        "display-lg": ["Noto Sans", "Noto Sans Devanagari", "sans-serif"],
+                        "body-md": ["Noto Sans", "Noto Sans Devanagari", "sans-serif"]
+                    },
+                    fontSize: {
+                        "label-sm": ["12px", { lineHeight: "16px", fontWeight: "500" }],
+                        "headline-md": ["24px", { lineHeight: "32px", fontWeight: "600" }],
+                        "label-lg": ["14px", { lineHeight: "20px", letterSpacing: "0.01em", fontWeight: "600" }],
+                        "headline-sm": ["20px", { lineHeight: "28px", fontWeight: "600" }],
+                        "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
+                        "headline-lg": ["32px", { lineHeight: "40px", fontWeight: "600" }],
+                        "display-lg": ["48px", { lineHeight: "56px", letterSpacing: "-0.02em", fontWeight: "600" }],
+                        "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Noto Sans', 'Noto Sans Devanagari', sans-serif; }
+        .card-shadow { box-shadow: 0px 4px 20px rgba(26, 26, 26, 0.05); transition: box-shadow 0.2s ease, border-color 0.2s ease; }
+        .card-shadow:hover { box-shadow: 0px 8px 30px rgba(26, 26, 26, 0.08); border-color: rgba(166, 28, 46, 0.1); }
+        .focus-ring:focus { outline: none; box-shadow: 0 0 0 2px #E63946; }
+        
+        /* Custom scrollbar for better appearance */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #fcf9f8; }
+        ::-webkit-scrollbar-thumb { background: #dcd9d9; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #8d706f; }
+    </style>
+</head>
+<body class="bg-background text-on-surface h-screen overflow-hidden flex font-body-md">
+<!-- SideNavBar -->
+<nav class="fixed left-0 top-0 h-screen w-[240px] bg-[#F7F5F2] border-r border-outline-variant/30 flex flex-col py-8 z-50">
+  <div class="px-6 mb-8">
+    <h1 class="font-display-lg text-[32px] font-semibold tracking-tight text-[#1A1A1A]">nitisaathi</h1>
+  </div>
+  
+  <div class="flex-1 overflow-y-auto flex flex-col gap-1">
+    <!-- Home -->
+    <a href="#" class="flex items-center gap-4 py-3 px-6 text-[#1A1A1A] hover:bg-surface-container transition-colors">
+      <span class="material-symbols-outlined">house</span>
+      <span class="font-label-lg">गृह / Home</span>
+    </a>
+    
+    <!-- Budget (Active) -->
+    <a href="#" class="flex items-center gap-4 py-3 px-6 bg-[#A61C2E]/5 border-l-4 border-[#A61C2E] text-[#A61C2E] font-semibold">
+      <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">payments</span>
+      <span class="font-label-lg">बजट / Budget</span>
+    </a>
+    
+    <!-- Assistant (Emphasized) -->
+    <a href="#" class="flex items-center gap-4 py-3 px-6 text-[#1A1A1A] hover:bg-surface-container transition-colors">
+      <span class="material-symbols-outlined text-[#A61C2E]">forum</span>
+      <span class="font-label-lg font-bold">साथी / Assistant</span>
+    </a>
+    
+    <!-- Schemes -->
+    <a href="#" class="flex items-center gap-4 py-3 px-6 text-[#1A1A1A] hover:bg-surface-container transition-colors">
+      <span class="material-symbols-outlined">description</span>
+      <span class="font-label-lg">योजनाएं / Schemes</span>
+    </a>
+    
+    <!-- Fraud Check -->
+    <a href="#" class="flex items-center gap-4 py-3 px-6 text-[#1A1A1A] hover:bg-surface-container transition-colors">
+      <span class="material-symbols-outlined">gpp_maybe</span>
+      <span class="font-label-lg">धोखाधड़ी जांच / Fraud Check</span>
+    </a>
+    
+    <!-- Nudges -->
+    <a href="#" class="flex items-center gap-4 py-3 px-6 text-[#1A1A1A] hover:bg-surface-container transition-colors">
+      <span class="material-symbols-outlined">notifications</span>
+      <span class="font-label-lg">सूचनाएं / Nudges</span>
+    </a>
+    
+    <!-- Reports -->
+    <a href="#" class="flex items-center gap-4 py-3 px-6 text-[#1A1A1A] hover:bg-surface-container transition-colors">
+      <span class="material-symbols-outlined">assessment</span>
+      <span class="font-label-lg">रिपोर्ट / Reports</span>
+    </a>
+  </div>
+
+  <div class="mt-auto">
+    <div class="mx-6 border-t border-outline-variant/30 mb-2"></div>
+    <a href="#" class="flex items-center gap-4 py-3 px-6 text-[#1A1A1A] hover:bg-surface-container transition-colors">
+      <span class="material-symbols-outlined">settings</span>
+      <span class="font-label-lg">सेटिंग्स / Settings</span>
+    </a>
+    
+    <div class="flex items-center gap-3 px-6 pt-4 mt-2 border-t border-outline-variant/30">
+      <img alt="User profile" class="w-10 h-10 rounded-full object-cover border border-outline-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuChE6ZjgmIsElm75eDkeBd-oolXBf8hqfyD_UMaC1DI9QAhnUfGZTjPpY9Vk1SYiT9NGAVbBwfyRR8KVs94QU7SR1X_3WIido9pbvP0Svr_zcz69sg-R9cZrorbq0uwVMbyTOnP0u7jJ_KLjJf-TLvHo0Bwnv7WgIHmb2fR-dERz9A1ZjxhvpJ3Icq12lG2tpxir80ow24qBMo3QI4oI2n5ZhQ8Q5L9NJ0c7UF9JylGIm10Sx1DFvfX6A">
+      <div class="overflow-hidden">
+        <p class="font-label-lg text-[#1A1A1A] truncate">राजेश</p>
+        <p class="font-label-sm text-text-warm-gray truncate">Delivery Partner</p>
+      </div>
+    </div>
+  </div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col h-screen overflow-hidden bg-background ml-[240px]">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-surface-dim docked full-width top-0 h-20 shadow-sm dark:shadow-none flex justify-between items-center px-margin-page max-w-container-max mx-auto w-full z-10 sticky top-0 border-b border-surface-variant">
+<div class="flex items-center gap-4">
+<h2 class="font-display-lg text-display-lg font-black text-primary dark:text-primary-fixed-dim hidden">nitisaathi</h2>
+<!-- Search could go here -->
+</div>
+<div class="flex items-center gap-4">
+<button aria-label="notifications" class="w-10 h-10 rounded-full flex items-center justify-center text-primary dark:text-primary-fixed-dim hover:bg-surface-container-lowest dark:hover:bg-surface-container-low transition-colors scale-95 active:scale-90 transition-transform focus-ring">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button aria-label="account circle" class="w-10 h-10 rounded-full flex items-center justify-center text-primary dark:text-primary-fixed-dim hover:bg-surface-container-lowest dark:hover:bg-surface-container-low transition-colors scale-95 active:scale-90 transition-transform focus-ring">
+<span class="material-symbols-outlined">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Scrollable Canvas -->
+<main class="flex-1 overflow-y-auto p-margin-page">
+<div class="max-w-container-max mx-auto space-y-gutter">
+<!-- Page Title -->
+<div class="mb-stack-md">
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">बजट / Budget</h1>
+<p class="font-body-md text-body-md text-text-warm-gray">Monitor your income, expenses, and financial goals.</p>
+</div>
+<!-- Main Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Left Column (Primary Data - 8 cols) -->
+<div class="lg:col-span-8 flex flex-col gap-gutter">
+<!-- Income Forecast Card -->
+<div class="bg-surface-container-lowest rounded-xl p-stack-lg card-shadow border border-transparent">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Income Forecast</h3>
+<button class="text-primary hover:text-primary-container transition-colors focus-ring rounded p-1">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<!-- Chart Area (Placeholder for actual chart integration) -->
+<div class="w-full h-64 bg-background-off-white rounded-lg flex items-end relative overflow-hidden mb-4 border border-surface-variant p-4">
+<!-- Dummy Grid Lines -->
+<div class="absolute inset-0 flex flex-col justify-between py-4 px-12 z-0 opacity-20 pointer-events-none">
+<div class="border-t border-text-warm-gray w-full"></div>
+<div class="border-t border-text-warm-gray w-full"></div>
+<div class="border-t border-text-warm-gray w-full"></div>
+<div class="border-t border-text-warm-gray w-full"></div>
+<div class="border-t border-text-warm-gray w-full"></div>
+</div>
+<!-- Dummy Chart Lines (SVG) -->
+<svg class="absolute inset-0 w-full h-full z-10" preserveAspectRatio="none" viewBox="0 0 100 100">
+<!-- Solid Line (History) -->
+<path d="M 10 70 L 25 65 L 40 75 L 55 60 L 70 65" fill="none" stroke="#A61C2E" stroke-width="2" vector-effect="non-scaling-stroke"></path>
+<!-- Dotted Line (Projection) -->
+<path d="M 70 65 L 85 55 L 95 60" fill="none" stroke="#E63946" stroke-dasharray="4 4" stroke-width="2" vector-effect="non-scaling-stroke"></path>
+<!-- Data Points (Hover targets) -->
+<circle class="hover:r-3 transition-all cursor-pointer" cx="10" cy="70" fill="#A61C2E" r="1.5"></circle>
+<circle class="hover:r-3 transition-all cursor-pointer" cx="40" cy="75" fill="#A61C2E" r="1.5"></circle>
+<circle class="hover:r-3 transition-all cursor-pointer" cx="70" cy="65" fill="#A61C2E" r="1.5"></circle>
+<circle class="hover:r-3 transition-all cursor-pointer" cx="85" cy="55" fill="#E63946" r="1.5"></circle>
+</svg>
+<!-- X Axis Labels -->
+<div class="absolute bottom-1 left-0 right-0 flex justify-between px-12 z-20">
+<span class="font-label-sm text-label-sm text-text-warm-gray">W1</span>
+<span class="font-label-sm text-label-sm text-text-warm-gray">W3</span>
+<span class="font-label-sm text-label-sm text-text-warm-gray">W5</span>
+<span class="font-label-sm text-label-sm text-text-warm-gray">W7</span>
+<span class="font-label-sm text-label-sm text-text-warm-gray font-bold text-primary">Proj</span>
+</div>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant bg-surface-container p-4 rounded-lg flex items-start gap-3">
+<span class="material-symbols-outlined text-primary mt-0.5">info</span>
+                                पिछले 2 महीनों में आपकी कमाई काफी स्थिर रही है / Your income has been fairly steady over the last 2 months
+                            </p>
+</div>
+<!-- Savings Rate Card -->
+<div class="bg-surface-container-lowest rounded-xl p-stack-lg card-shadow border border-transparent">
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-4">Savings Rate</h3>
+<div class="flex items-center gap-6">
+<div class="w-32 h-32 rounded-full border-8 border-surface-container-high border-t-primary flex items-center justify-center">
+<span class="font-display-lg text-display-lg font-black text-on-surface">10%</span>
+</div>
+<div class="flex-1">
+<p class="font-body-md text-body-md text-text-warm-gray mb-2">Based on your recent transactions, you are saving 10% of your total income. This is slightly below the recommended 20% target.</p>
+<div class="w-full bg-surface-container rounded-full h-2.5 mb-1 overflow-hidden flex">
+<div class="bg-primary h-2.5 rounded-l-full" style="width: 10%"></div>
+</div>
+<div class="flex justify-between font-label-sm text-label-sm text-text-warm-gray">
+<span class="">Current: ₹2,400</span>
+<span class="">Target: ₹4,800</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column (Action/Secondary Data - 4 cols) -->
+<div class="lg:col-span-4 flex flex-col gap-gutter">
+<!-- Expense Breakdown Card -->
+<div class="bg-surface-container-lowest rounded-xl p-stack-lg card-shadow border border-transparent flex-1 flex flex-col">
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-6">Expense Breakdown</h3>
+<!-- Donut Chart Placeholder -->
+<div class="flex justify-center mb-6">
+<div class="w-48 h-48 rounded-full border-[16px] border-background-off-white relative flex items-center justify-center">
+<!-- CSS simulated donut segments (Simplified for structural rep) -->
+<div class="absolute inset-0 rounded-full border-[16px] border-primary clip-half opacity-80" style="clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);"></div>
+<div class="absolute inset-0 rounded-full border-[16px] border-secondary clip-quarter opacity-90" style="clip-path: polygon(0 0, 50% 0, 50% 50%, 0 50%); transform: rotate(180deg);"></div>
+<div class="absolute inset-0 rounded-full border-[16px] border-tertiary clip-quarter" style="clip-path: polygon(0 50%, 50% 50%, 50% 100%, 0 100%);"></div>
+<div class="text-center z-10">
+<span class="block font-label-sm text-label-sm text-text-warm-gray">Total</span>
+<span class="block font-headline-md text-headline-md font-bold text-on-surface">₹21,600</span>
+</div>
+</div>
+</div>
+<!-- Category List -->
+<ul class="space-y-2 flex-1 overflow-y-auto max-h-64 pr-2">
+<li class="flex justify-between items-center p-2 rounded hover:bg-surface-container-low transition-colors group cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-3 h-3 rounded-full bg-primary"></div>
+<span class="font-label-lg text-label-lg text-on-surface group-hover:text-primary transition-colors">पेट्रोल/Fuel</span>
+</div>
+<span class="font-body-md text-body-md">35%</span>
+</li>
+<li class="flex justify-between items-center p-2 rounded hover:bg-surface-container-low transition-colors group cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-3 h-3 rounded-full bg-secondary"></div>
+<span class="font-label-lg text-label-lg text-on-surface group-hover:text-primary transition-colors">खाना/Food</span>
+</div>
+<span class="font-body-md text-body-md">25%</span>
+</li>
+<li class="flex justify-between items-center p-2 rounded hover:bg-surface-container-low transition-colors group cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-3 h-3 rounded-full bg-tertiary"></div>
+<span class="font-label-lg text-label-lg text-on-surface group-hover:text-primary transition-colors">किराया/Rent</span>
+</div>
+<span class="font-body-md text-body-md">20%</span>
+</li>
+<li class="flex justify-between items-center p-2 rounded hover:bg-surface-container-low transition-colors group cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-3 h-3 rounded-full bg-outline"></div>
+<span class="font-label-lg text-label-lg text-on-surface group-hover:text-primary transition-colors">परिवार को भेजा/Family</span>
+</div>
+<span class="font-body-md text-body-md">10%</span>
+</li>
+<li class="flex justify-between items-center p-2 rounded hover:bg-surface-container-low transition-colors group cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-3 h-3 rounded-full bg-outline-variant"></div>
+<span class="font-label-lg text-label-lg text-on-surface group-hover:text-primary transition-colors">EMI</span>
+</div>
+<span class="font-body-md text-body-md">5%</span>
+</li>
+<li class="flex justify-between items-center p-2 rounded hover:bg-surface-container-low transition-colors group cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-3 h-3 rounded-full bg-surface-variant"></div>
+<span class="font-label-lg text-label-lg text-on-surface group-hover:text-primary transition-colors">अन्य/Other</span>
+</div>
+<span class="font-body-md text-body-md">5%</span>
+</li>
+</ul>
+</div>
+<!-- Goals Section -->
+<div class="bg-surface-container-lowest rounded-xl p-stack-lg card-shadow border border-transparent">
+<div class="flex justify-between items-center mb-4">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Financial Goals</h3>
+<button class="bg-[#E63946] hover:bg-primary-container text-white font-label-lg text-label-lg py-2 px-4 rounded-lg transition-colors focus-ring flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                                    नया लक्ष्य
+                                </button>
+</div>
+<div class="flex flex-col gap-3">
+<!-- Goal 1 -->
+<div class="border border-surface-variant rounded-lg p-4 bg-background-off-white hover:border-primary-fixed-dim transition-colors cursor-pointer">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">two_wheeler</span>
+<span class="font-label-lg text-label-lg text-on-surface">Bike Maintenance</span>
+</div>
+<span class="font-label-sm text-label-sm font-bold">60%</span>
+</div>
+<div class="w-full bg-surface-container-high rounded-full h-2 mb-1 overflow-hidden">
+<div class="bg-secondary h-2 rounded-l-full" style="width: 60%"></div>
+</div>
+<p class="font-label-sm text-label-sm text-text-warm-gray text-right">₹3,000 / ₹5,000</p>
+</div>
+<!-- Goal 2 -->
+<div class="border border-surface-variant rounded-lg p-4 bg-background-off-white hover:border-primary-fixed-dim transition-colors cursor-pointer">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">medical_services</span>
+<span class="font-label-lg text-label-lg text-on-surface">Emergency Fund</span>
+</div>
+<span class="font-label-sm text-label-sm font-bold">25%</span>
+</div>
+<div class="w-full bg-surface-container-high rounded-full h-2 mb-1 overflow-hidden">
+<div class="bg-primary h-2 rounded-l-full" style="width: 25%"></div>
+</div>
+<p class="font-label-sm text-label-sm text-text-warm-gray text-right">₹2,500 / ₹10,000</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Full-Width Row -->
+<div class="w-full space-y-gutter mt-stack-md pb-stack-lg">
+<!-- Custom Categories Strip -->
+<div class="bg-surface-container-lowest rounded-xl p-4 card-shadow border border-transparent flex flex-wrap items-center gap-4">
+<span class="font-label-lg text-label-lg text-on-surface min-w-max mr-2">Quick Categories:</span>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1.5 rounded-full bg-surface-container-low border border-surface-variant font-label-sm text-label-sm flex items-center gap-1 cursor-pointer hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[16px] text-text-warm-gray">local_gas_station</span> Fuel
+                            </span>
+<span class="px-3 py-1.5 rounded-full bg-surface-container-low border border-surface-variant font-label-sm text-label-sm flex items-center gap-1 cursor-pointer hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[16px] text-text-warm-gray">phone_iphone</span> Recharge
+                            </span>
+<span class="px-3 py-1.5 rounded-full bg-surface-container-low border border-surface-variant font-label-sm text-label-sm flex items-center gap-1 cursor-pointer hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[16px] text-text-warm-gray">restaurant</span> Food
+                            </span>
+<span class="px-3 py-1.5 rounded-full bg-surface-container-low border border-surface-variant font-label-sm text-label-sm flex items-center gap-1 cursor-pointer hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-[16px] text-text-warm-gray">home_work</span> Rent
+                            </span>
+<button class="px-3 py-1.5 rounded-full bg-background border border-dashed border-primary font-label-sm text-label-sm text-primary flex items-center gap-1 cursor-pointer hover:bg-surface-container-low transition-colors focus-ring">
+<span class="material-symbols-outlined text-[16px]">add</span> Manage
+                            </button>
+</div>
+</div>
+<!-- Causal-chain summary card (Alert) -->
+<div class="bg-caution-tint rounded-xl p-stack-lg border-2 border-primary-container relative overflow-hidden flex items-start gap-4">
+<div class="absolute -right-10 -top-10 opacity-10 pointer-events-none">
+<span class="material-symbols-outlined text-[120px]">warning</span>
+</div>
+<div class="bg-primary-container rounded-full p-2 flex-shrink-0 mt-1">
+<span class="material-symbols-outlined text-white">trending_up</span>
+</div>
+<div class="flex-1">
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-2">High Expenditure Warning</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4 max-w-3xl">
+                                Your expenses in the 'Fuel' category have increased by 40% compared to last week. If this trend continues, you may fall short of your 'Emergency Fund' goal by ₹1,200 this month.
+                            </p>
+<a class="inline-flex items-center gap-1 font-label-lg text-label-lg text-primary-container hover:text-primary transition-colors font-bold underline decoration-2 underline-offset-4 focus-ring rounded" href="#">
+                                विस्तार से देखें / See details <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+
+</body></html>

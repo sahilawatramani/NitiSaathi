@@ -1,98 +1,103 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+import React, { useEffect, useState } from 'react';
+import { View, ScrollView, ActivityIndicator } from 'react-native';
+import { getDashboardData } from '../api/budget';
+import { getRecentNudges } from '../api/nudges';
+import { UrgentBanner } from '../components/home/UrgentBanner';
+import { CalmBanner } from '../components/home/CalmBanner';
+import { BalanceDisplay } from '../components/home/BalanceDisplay';
+import { IncomeMiniChart } from '../components/home/IncomeMiniChart';
+import { GoalsRow } from '../components/home/GoalsRow';
+import { RecentNudges } from '../components/home/RecentNudges';
+import { HealthIndicator } from '../components/home/HealthIndicator';
+import { EmptyDashboard } from '../components/home/EmptyDashboard';
+import { AppLayout } from '../components/shared/AppLayout';
 
 export default function HomeScreen() {
+  const [data, setData] = useState<any>(null);
+  const [nudges, setNudges] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [dashData, nudgesData] = await Promise.all([
+          getDashboardData(),
+          getRecentNudges()
+        ]);
+        setData(dashData);
+        setNudges(nudgesData);
+      } catch (e) {
+        console.error(e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <AppLayout title="गृह / Home" hideHeader>
+        <View className="flex-1 bg-surface justify-center items-center">
+          <ActivityIndicator size="large" color="#a61c2e" />
+        </View>
+      </AppLayout>
+    );
+  }
+
+  // Branch 3: Empty State (New user / no transaction history)
+  if (data?.hasHistory === false) {
+    return (
+      <AppLayout title="गृह / Home">
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="bg-surface-bright">
+          <EmptyDashboard />
+        </ScrollView>
+      </AppLayout>
+    );
+  }
+
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
-
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
-
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
+    <AppLayout title="गृह / Home">
+      <ScrollView contentContainerStyle={{ padding: 24, gap: 32 }} className="bg-surface">
+        
+        {/* Conditional Top Banner based on low_balance_flag */}
+        {data?.low_balance_flag && data?.urgentAlert ? (
+          <UrgentBanner 
+            title={data.urgentAlert.title}
+            message={data.urgentAlert.message}
+            actionText={data.urgentAlert.action}
+            secondaryActionText={data.urgentAlert.secondaryAction}
+            onAction={() => console.log('Action pressed')}
+            onSecondaryAction={() => console.log('Secondary action pressed')}
           />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
-
-        {Platform.OS === 'web' && <WebBadge />}
-      </SafeAreaView>
-    </ThemedView>
+        ) : data?.calmMessage ? (
+          <CalmBanner message={data.calmMessage} />
+        ) : null}
+        
+        <View className="flex-col md:flex-row gap-8 w-full">
+          {/* Left Column */}
+          <View className="flex-1 flex-col gap-8">
+            <View className="bg-surface-container-lowest rounded-xl p-stack-lg shadow-[0px_4px_20px_rgba(26,26,26,0.05)] border border-outline-variant/30 transition-all hover:shadow-[0px_8px_30px_rgba(26,26,26,0.08)] hover:border-primary-container/20 group">
+              <BalanceDisplay balance={data?.balance || 0} />
+              <IncomeMiniChart data={data?.incomeForecast || []} />
+            </View>
+            
+            <GoalsRow goals={data?.goals || []} />
+          </View>
+          
+          {/* Right Column (Sidebar equivalent for large screens) */}
+          <View className="w-full md:w-[320px] lg:w-[350px] flex-col gap-8">
+            <RecentNudges nudges={nudges} />
+            {data?.health && (
+              <HealthIndicator 
+                type={data.health.type} 
+                status={data.health.status} 
+                message={data.health.message} 
+              />
+            )}
+          </View>
+        </View>
+      </ScrollView>
+    </AppLayout>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
-  },
-  title: {
-    textAlign: 'center',
-  },
-  code: {
-    textTransform: 'uppercase',
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
-  },
-});

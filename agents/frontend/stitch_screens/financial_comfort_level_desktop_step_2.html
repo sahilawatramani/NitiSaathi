@@ -1,0 +1,238 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Onboarding Step 2 - NitiSaathi</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700&amp;family=Noto+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&amp;display=swap" rel="stylesheet">
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface-variant": "#594140",
+                        "on-secondary-fixed": "#410007",
+                        "surface-container": "#f0eded",
+                        "error-container": "#ffdad6",
+                        "on-secondary-fixed-variant": "#92001c",
+                        "error": "#ba1a1a",
+                        "on-surface": "#1c1b1b",
+                        "on-primary-container": "#ffb9b8",
+                        "on-primary": "#ffffff",
+                        "surface-container-low": "#f6f3f2",
+                        "surface-tint": "#b32736",
+                        "on-background": "#1c1b1b",
+                        "surface": "#fcf9f8",
+                        "primary-container": "#a61c2e",
+                        "secondary-fixed-dim": "#ffb3b1",
+                        "on-secondary": "#ffffff",
+                        "tertiary": "#004923",
+                        "text-warm-gray": "#6B6560",
+                        "on-tertiary-container": "#75e096",
+                        "secondary-container": "#db313f",
+                        "primary": "#82001b",
+                        "on-primary-fixed-variant": "#910621",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-container": "#fffbff",
+                        "surface-bright": "#fcf9f8",
+                        "on-error": "#ffffff",
+                        "secondary-fixed": "#ffdad8",
+                        "secondary": "#b7102a",
+                        "tertiary-fixed-dim": "#71dc92",
+                        "tertiary-fixed": "#8df9ac",
+                        "background": "#fcf9f8",
+                        "on-tertiary-fixed": "#00210d",
+                        "on-tertiary-fixed-variant": "#005229",
+                        "surface-container-high": "#eae7e7",
+                        "inverse-primary": "#ffb3b2",
+                        "outline-variant": "#e1bebd",
+                        "outline": "#8d706f",
+                        "primary-fixed-dim": "#ffb3b2",
+                        "surface-variant": "#e5e2e1",
+                        "surface-container-highest": "#e5e2e1",
+                        "inverse-surface": "#313030",
+                        "caution-tint": "#F8D7DC",
+                        "on-primary-fixed": "#410009",
+                        "inverse-on-surface": "#f3f0ef",
+                        "background-off-white": "#F7F5F2",
+                        "surface-dim": "#dcd9d9",
+                        "on-error-container": "#93000a",
+                        "primary-fixed": "#ffdad9",
+                        "tertiary-container": "#006332",
+                        "vivid-red": "#E63946"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "sidebar-width": "260px",
+                        "gutter": "24px",
+                        "stack-sm": "8px",
+                        "stack-lg": "32px",
+                        "stack-md": "16px",
+                        "margin-page": "48px",
+                        "container-max": "1200px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Noto Sans", "Noto Sans Devanagari", "sans-serif"],
+                        "headline-sm": ["Noto Sans", "Noto Sans Devanagari", "sans-serif"],
+                        "body-md": ["Noto Sans", "Noto Sans Devanagari", "sans-serif"],
+                        "display-lg": ["Noto Sans", "Noto Sans Devanagari", "sans-serif"],
+                        "label-lg": ["Noto Sans", "Noto Sans Devanagari", "sans-serif"],
+                        "body-lg": ["Noto Sans", "Noto Sans Devanagari", "sans-serif"],
+                        "headline-lg": ["Noto Sans", "Noto Sans Devanagari", "sans-serif"],
+                        "label-sm": ["Noto Sans", "Noto Sans Devanagari", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.filled {
+          font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-off-white min-h-screen flex items-center justify-center font-body-md text-on-surface antialiased p-4">
+<!-- Main Card Container -->
+<main class="w-full max-w-[480px] bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(26,26,26,0.05)] p-stack-lg flex flex-col gap-8 relative">
+<!-- Top Navigation Area -->
+<div class="flex items-center justify-between mb-8">
+<button aria-label="Go back" class="text-primary-container hover:text-primary transition-colors flex items-center justify-center p-2 rounded-full hover:bg-surface-container-low group">
+<span class="material-symbols-outlined transition-transform group-hover:-translate-x-1">arrow_back</span>
+</button>
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-label-sm text-text-warm-gray mr-2 uppercase tracking-wider">Step 2 of 4</span>
+<div class="flex gap-1.5">
+<div class="h-2 w-2 rounded-full bg-surface-variant"></div>
+<div class="h-2 w-4 rounded-full bg-primary-container transition-all"></div>
+<div class="h-2 w-2 rounded-full bg-surface-variant"></div>
+<div class="h-2 w-2 rounded-full bg-surface-variant"></div>
+</div>
+</div>
+</div>
+<!-- Header Content -->
+<div class="mb-10 text-center">
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">
+                वित्तीय शब्दों के साथ आप कितने सहज हैं?
+            </h1>
+<h2 class="font-body-md text-body-md text-text-warm-gray">
+                How comfortable are you with financial terms?
+            </h2>
+</div>
+<!-- Options Form -->
+<form action="#" class="flex flex-col gap-4" onsubmit="event.preventDefault();">
+<!-- Option 1 -->
+<label class="relative flex items-center p-4 border border-outline-variant rounded-lg cursor-pointer transition-all duration-200 hover:border-primary-container hover:shadow-[0px_4px_12px_rgba(26,26,26,0.05)] bg-surface-container-lowest group has-[:checked]:bg-caution-tint has-[:checked]:border-primary-container has-[:checked]:shadow-none">
+<input class="peer sr-only" name="comfort_level" type="radio" value="beginner">
+<div class="flex-1">
+<p class="font-body-md text-body-md text-on-surface font-medium group-has-[:checked]:text-primary">
+                        मुझे ज्यादातर शब्द समझ नहीं आते, सरल भाषा में बताएं
+                    </p>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1 group-has-[:checked]:text-primary/80">
+                        I don't understand most terms, please keep it simple
+                    </p>
+</div>
+<span class="material-symbols-outlined text-primary-container opacity-0 peer-checked:opacity-100 transition-opacity ml-4 filled text-2xl">check_circle</span>
+</label>
+<!-- Option 2 (Pre-selected for demonstration) -->
+<label class="relative flex items-center p-4 border border-primary-container rounded-lg cursor-pointer transition-all duration-200 hover:border-primary-container hover:shadow-[0px_4px_12px_rgba(26,26,26,0.05)] bg-caution-tint group has-[:checked]:bg-caution-tint has-[:checked]:border-primary-container has-[:checked]:shadow-none">
+<input checked="" class="peer sr-only" name="comfort_level" type="radio" value="intermediate">
+<div class="flex-1">
+<p class="font-body-md text-body-md text-primary font-medium">
+                        मुझे कुछ शब्द पता हैं, पर पूरी जानकारी नहीं
+                    </p>
+<p class="font-label-sm text-label-sm text-primary/80 mt-1">
+                        I know some terms but not all the details
+                    </p>
+</div>
+<span class="material-symbols-outlined text-primary-container opacity-100 transition-opacity ml-4 filled text-2xl">check_circle</span>
+</label>
+<!-- Option 3 -->
+<label class="relative flex items-center p-4 border border-outline-variant rounded-lg cursor-pointer transition-all duration-200 hover:border-primary-container hover:shadow-[0px_4px_12px_rgba(26,26,26,0.05)] bg-surface-container-lowest group has-[:checked]:bg-caution-tint has-[:checked]:border-primary-container has-[:checked]:shadow-none">
+<input class="peer sr-only" name="comfort_level" type="radio" value="advanced">
+<div class="flex-1">
+<p class="font-body-md text-body-md text-on-surface font-medium group-has-[:checked]:text-primary">
+                        मुझे वित्तीय शब्द अच्छे से समझ आते हैं
+                    </p>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1 group-has-[:checked]:text-primary/80">
+                        I'm comfortable with financial terminology
+                    </p>
+</div>
+<span class="material-symbols-outlined text-primary-container opacity-0 peer-checked:opacity-100 transition-opacity ml-4 filled text-2xl">check_circle</span>
+</label>
+<!-- Submit Button -->
+<button class="mt-4 w-full bg-vivid-red hover:bg-primary-container text-white font-label-lg text-label-lg py-4 px-6 rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-vivid-red focus:ring-offset-2 flex items-center justify-center gap-2" type="submit">
+                आगे बढ़ें / Continue
+                <span class="material-symbols-outlined text-xl">arrow_forward</span>
+</button>
+</form>
+</main>
+<script>
+        // Simple script to handle visual state changes for radio buttons
+        // Tailwind 'peer' and 'has-[:checked]' classes handle most of this, 
+        // but this ensures fallback behavior and cleans up manual classes
+        document.querySelectorAll('input[type="radio"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                // Reset all labels
+                document.querySelectorAll('label').forEach(label => {
+                    label.classList.remove('border-primary-container', 'bg-caution-tint');
+                    label.classList.add('border-outline-variant', 'bg-surface-container-lowest');
+                    
+                    const texts = label.querySelectorAll('p');
+                    texts[0].classList.remove('text-primary');
+                    texts[0].classList.add('text-on-surface');
+                    texts[1].classList.remove('text-primary/80');
+                    texts[1].classList.add('text-on-surface-variant');
+                    
+                    const icon = label.querySelector('.material-symbols-outlined');
+                    icon.classList.remove('opacity-100');
+                    icon.classList.add('opacity-0');
+                });
+
+                // Apply active styles to selected label
+                if (e.target.checked) {
+                    const activeLabel = e.target.closest('label');
+                    activeLabel.classList.remove('border-outline-variant', 'bg-surface-container-lowest');
+                    activeLabel.classList.add('border-primary-container', 'bg-caution-tint');
+                    
+                    const activeTexts = activeLabel.querySelectorAll('p');
+                    activeTexts[0].classList.remove('text-on-surface');
+                    activeTexts[0].classList.add('text-primary');
+                    activeTexts[1].classList.remove('text-on-surface-variant');
+                    activeTexts[1].classList.add('text-primary/80');
+                    
+                    const activeIcon = activeLabel.querySelector('.material-symbols-outlined');
+                    activeIcon.classList.remove('opacity-0');
+                    activeIcon.classList.add('opacity-100');
+                }
+            });
+        });
+    </script>
+
+
+</body></html>

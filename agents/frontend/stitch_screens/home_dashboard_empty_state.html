@@ -1,0 +1,203 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>NitiSaathi - Home Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-bright": "#fcf9f8",
+                        "outline-variant": "#e1bebd",
+                        "tertiary-container": "#006332",
+                        "on-surface": "#1c1b1b",
+                        "primary-fixed-dim": "#ffb3b2",
+                        "error": "#ba1a1a",
+                        "on-primary-container": "#ffb9b8",
+                        "secondary-fixed-dim": "#ffb3b1",
+                        "on-tertiary-fixed": "#00210d",
+                        "background-off-white": "#F7F5F2",
+                        "primary-fixed": "#ffdad9",
+                        "tertiary-fixed-dim": "#71dc92",
+                        "on-tertiary": "#ffffff",
+                        "on-tertiary-fixed-variant": "#005229",
+                        "secondary": "#b7102a",
+                        "inverse-primary": "#ffb3b2",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed-variant": "#92001c",
+                        "surface-container-high": "#eae7e7",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#a61c2e",
+                        "background": "#fcf9f8",
+                        "on-error-container": "#93000a",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed": "#ffdad8",
+                        "text-warm-gray": "#6B6560",
+                        "tertiary-fixed": "#8df9ac",
+                        "error-container": "#ffdad6",
+                        "inverse-surface": "#313030",
+                        "surface-variant": "#e5e2e1",
+                        "on-primary-fixed": "#410009",
+                        "on-tertiary-container": "#75e096",
+                        "surface-dim": "#dcd9d9",
+                        "primary": "#82001b",
+                        "on-secondary-container": "#fffbff",
+                        "surface-container-low": "#f6f3f2",
+                        "on-background": "#1c1b1b",
+                        "on-secondary-fixed": "#410007",
+                        "caution-tint": "#F8D7DC",
+                        "inverse-on-surface": "#f3f0ef",
+                        "surface": "#fcf9f8",
+                        "surface-tint": "#b32736",
+                        "tertiary": "#004923",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed-variant": "#910621",
+                        "secondary-container": "#db313f",
+                        "surface-container-highest": "#e5e2e1",
+                        "outline": "#8d706f",
+                        "on-surface-variant": "#594140",
+                        "surface-container": "#f0eded"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-md": "16px",
+                        "container-max": "1200px",
+                        "stack-sm": "8px",
+                        "stack-lg": "32px",
+                        "sidebar-width": "260px",
+                        "margin-page": "48px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "label-lg": ["Noto Sans"],
+                        "headline-sm": ["Noto Sans"],
+                        "body-md": ["Noto Sans"],
+                        "label-sm": ["Noto Sans"],
+                        "headline-lg": ["Noto Sans"],
+                        "headline-md": ["Noto Sans"],
+                        "body-lg": ["Noto Sans"],
+                        "display-lg": ["Noto Sans"]
+                    },
+                    "fontSize": {
+                        "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Noto Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-screen w-[240px] bg-[#F7F5F2] border-r border-outline-variant/30 flex flex-col py-8 z-50"><div class="px-6 mb-8">
+<h1 class="font-display-lg text-[32px] font-semibold tracking-tight text-[#1A1A1A]">nitisaathi</h1>
+</div>
+<div class="flex-1 overflow-y-auto flex flex-col gap-1">
+<!-- Home (Active) -->
+<a class="flex items-center gap-4 py-3 px-6 bg-[#A61C2E]/5 border-l-4 border-[#A61C2E] text-[#A61C2E] font-semibold" href="#">
+<span class="material-symbols-outlined">house</span>
+<span class="font-label-lg">गृह / Home</span>
+</a>
+<!-- Budget -->
+<a class="flex items-center gap-4 py-3 px-6 text-[#1A1A1A] hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-lg">बजट / Budget</span>
+</a>
+<!-- Assistant (Emphasized) -->
+<a class="flex items-center gap-4 py-3 px-6 text-[#1A1A1A] hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined text-[#A61C2E]">forum</span>
+<span class="font-label-lg font-bold">साथी / Assistant</span>
+</a>
+<!-- Schemes -->
+<a class="flex items-center gap-4 py-3 px-6 text-[#1A1A1A] hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="font-label-lg">योजनाएं / Schemes</span>
+</a>
+<!-- Fraud Check -->
+<a class="flex items-center gap-4 py-3 px-6 text-[#1A1A1A] hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined">gpp_maybe</span>
+<span class="font-label-lg">धोखाधड़ी जांच / Fraud Check</span>
+</a>
+<!-- Nudges -->
+<a class="flex items-center gap-4 py-3 px-6 text-[#1A1A1A] hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined">notifications</span>
+<span class="font-label-lg">सूचनाएं / Nudges</span>
+</a>
+<!-- Reports -->
+<a class="flex items-center gap-4 py-3 px-6 text-[#1A1A1A] hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined">assessment</span>
+<span class="font-label-lg">रिपोर्ट / Reports</span>
+</a>
+</div>
+<div class="mt-auto">
+<div class="mx-6 border-t border-outline-variant/30 mb-2"></div>
+<a class="flex items-center gap-4 py-3 px-6 text-[#1A1A1A] hover:bg-surface-container transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-label-lg">सेटिंग्स / Settings</span>
+</a>
+<div class="flex items-center gap-3 px-6 pt-4 mt-2 border-t border-outline-variant/30">
+<img alt="User profile" class="w-10 h-10 rounded-full object-cover border border-outline-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuChE6ZjgmIsElm75eDkeBd-oolXBf8hqfyD_UMaC1DI9QAhnUfGZTjPpY9Vk1SYiT9NGAVbBwfyRR8KVs94QU7SR1X_3WIido9pbvP0Svr_zcz69sg-R9cZrorbq0uwVMbyTOnP0u7jJ_KLjJf-TLvHo0Bwnv7WgIHmb2fR-dERz9A1ZjxhvpJ3Icq12lG2tpxir80ow24qBMo3QI4oI2n5ZhQ8Q5L9NJ0c7UF9JylGIm10Sx1DFvfX6A">
+<div class="overflow-hidden">
+<p class="font-label-lg text-[#1A1A1A] truncate">राजेश</p>
+<p class="font-label-sm text-text-warm-gray truncate">Delivery Partner</p>
+</div>
+</div>
+</div></aside>
+<!-- TopAppBar -->
+<header class="fixed top-0 right-0 w-[calc(100%-240px)] h-16 bg-surface dark:bg-surface-dim border-b border-outline-variant dark:border-outline flex justify-between items-center px-8 z-40"><div class="flex items-center"><span class="font-headline-sm text-headline-sm font-bold text-[#1A1A1A]">होम / Home</span></div><div class="flex items-center"><button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined">notifications</span></button></div></header>
+<!-- Main Content Area -->
+<main class="ml-[240px] mt-16 flex-1 bg-surface-bright flex items-center justify-center p-8 min-h-[calc(100vh-64px)]">
+<!-- Centered Empty State Container -->
+<div class="w-full max-w-[480px] flex flex-col items-center text-center space-y-stack-lg">
+<!-- Illustration -->
+<div class="w-64 h-64 md:w-80 md:h-80 relative flex items-center justify-center">
+<img alt="Illustration of a smartphone with a Rupee symbol and a delivery scooter" class="w-full h-full object-contain" src="https://lh3.googleusercontent.com/aida/AP1WRLs3B7w5JR1nWR_dYHyQ_22jPqhWw1-00FpuyFKVQRPoeO39a_b4oxtjB_qgDShEqMS0mVYqqqHF7O7bKcMNHoe_ACkiQOV1eCusE61so_09FX5BnwKu3_QyA1EsUr5iBbFnmiTGVSvwG1xMbQCGvtu37mjX5067vZNmu8NGddJ85dsStP6C2K37jmLRUZKTI15kneskloJLs0I9tF8myAltsGCAxd9iydjLGWYxcy1opWUwLDii-hopjoex">
+</div>
+<!-- Text Content -->
+<div class="space-y-stack-sm px-4">
+<h2 class="font-headline-lg text-headline-lg text-on-surface">
+                    आइए शुरू करते हैं <br>
+<span class="text-primary-container font-headline-md text-headline-md block mt-1">Let's get started</span>
+</h2>
+<p class="font-body-lg text-body-lg text-text-warm-gray mt-4 max-w-sm mx-auto">
+                    अपने लेनदेन जोड़ें ताकि हम आपकी मदद कर सकें <br>
+<span class="text-sm block mt-1">Add your transactions so we can start helping you</span>
+</p>
+</div>
+<!-- Actions -->
+<div class="flex flex-col items-center gap-4 pt-4 w-full">
+<button class="bg-[#E63946] text-white font-label-lg text-label-lg py-4 px-10 rounded-lg shadow-[0px_4px_20px_rgba(26,26,26,0.05)] hover:shadow-[0px_6px_24px_rgba(26,26,26,0.1)] hover:-translate-y-0.5 hover:border hover:border-[#A61C2E]/10 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#E63946]">
+                    लेनदेन जोड़ें / Connect Transactions
+                </button>
+<button class="text-on-surface-variant font-label-md hover:text-primary-container transition-colors duration-200 underline underline-offset-4 decoration-outline-variant/50 hover:decoration-primary-container">
+                    बाद में करें / Do this later
+                </button>
+</div>
+</div>
+</main>
+
+
+
+
+
+
+</body></html>
