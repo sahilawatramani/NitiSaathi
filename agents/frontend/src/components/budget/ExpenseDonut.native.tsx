@@ -1,31 +1,38 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import { VictoryPie } from 'victory-native';
+import { PolarChart, Pie } from 'victory-native';
+
+type DonutChartData = {
+  value: number;
+  color: string;
+  label: string;
+};
 
 export function ExpenseDonutNative({ total, categories }: any) {
-  const colorScale = categories.map((c: any) => {
-    if (c.color === 'bg-primary') return '#82001b';
-    if (c.color === 'bg-secondary') return '#b7102a';
-    if (c.color === 'bg-tertiary') return '#004923';
-    if (c.color === 'bg-outline') return '#8d706f';
-    if (c.color === 'bg-outline-variant') return '#e1bebd';
-    return '#e5e2e1'; // bg-surface-variant
+  const chartData: DonutChartData[] = categories.map((c: any) => {
+    let color = '#e5e2e1'; // bg-surface-variant
+    if (c.color === 'bg-primary') color = '#82001b';
+    else if (c.color === 'bg-secondary') color = '#b7102a';
+    else if (c.color === 'bg-tertiary') color = '#004923';
+    else if (c.color === 'bg-outline') color = '#8d706f';
+    else if (c.color === 'bg-outline-variant') color = '#e1bebd';
+    return {
+      value: c.percentage,
+      color,
+      label: c.name
+    };
   });
-
-  const chartData = categories.map((c: any) => ({
-    x: c.name,
-    y: c.percentage
-  }));
 
   return (
     <View style={{ width: 192, height: 192, position: 'relative', alignItems: 'center', justifyContent: 'center' }}>
-      <VictoryPie 
+      <PolarChart
         data={chartData}
-        colorScale={colorScale}
-        innerRadius={70}
-        labels={() => null} // Hide labels on pie
-        padding={0}
-      />
+        colorKey={"color"}
+        valueKey={"value"}
+        labelKey={"label"}
+      >
+        <Pie.Chart innerRadius={"70%"} />
+      </PolarChart>
       <View style={{ position: 'absolute', alignItems: 'center' }}>
         <Text style={{ fontSize: 12, color: '#6B6560' }}>Total</Text>
         <Text style={{ fontSize: 24, fontWeight: 'bold', color: '#1c1b1b' }}>₹{total}</Text>
@@ -35,3 +42,4 @@ export function ExpenseDonutNative({ total, categories }: any) {
 }
 
 export default ExpenseDonutNative;
+

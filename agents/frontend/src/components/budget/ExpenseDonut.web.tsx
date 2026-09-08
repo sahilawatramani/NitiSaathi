@@ -34,3 +34,6 @@ export function ExpenseDonutWeb({ total, categories }: any) {
     </View>
   );
 }
+
+export default ExpenseDonutWeb;
+
