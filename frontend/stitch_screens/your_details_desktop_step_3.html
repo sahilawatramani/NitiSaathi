@@ -1,0 +1,269 @@
+<!DOCTYPE html><html class="light" lang="en" style="width: 1280px; height: 938px; overflow: hidden; position: relative;"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>NitiSaathi - Onboarding Step 3</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;900&amp;family=Noto+Sans+Devanagari:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-container": "#006332",
+                        "caution-tint": "#F8D7DC",
+                        "tertiary-fixed-dim": "#71dc92",
+                        "on-surface-variant": "#594140",
+                        "surface-variant": "#e5e2e1",
+                        "on-error": "#ffffff",
+                        "surface-tint": "#b32736",
+                        "on-tertiary-fixed": "#00210d",
+                        "on-tertiary-container": "#75e096",
+                        "on-background": "#1c1b1b",
+                        "primary": "#82001b",
+                        "inverse-on-surface": "#f3f0ef",
+                        "surface-container-high": "#eae7e7",
+                        "secondary-fixed": "#ffdad8",
+                        "on-surface": "#1c1b1b",
+                        "tertiary-fixed": "#8df9ac",
+                        "on-primary-fixed-variant": "#910621",
+                        "on-primary-fixed": "#410009",
+                        "outline-variant": "#e1bebd",
+                        "surface-container": "#f0eded",
+                        "inverse-surface": "#313030",
+                        "on-secondary-container": "#fffbff",
+                        "primary-fixed": "#ffdad9",
+                        "surface-dim": "#dcd9d9",
+                        "error": "#ba1a1a",
+                        "surface-container-low": "#f6f3f2",
+                        "secondary-container": "#db313f",
+                        "secondary-fixed-dim": "#ffb3b1",
+                        "outline": "#8d706f",
+                        "on-secondary": "#ffffff",
+                        "on-primary-container": "#ffb9b8",
+                        "tertiary": "#004923",
+                        "background": "#fcf9f8",
+                        "secondary": "#b7102a",
+                        "on-tertiary": "#ffffff",
+                        "surface-bright": "#fcf9f8",
+                        "text-warm-gray": "#6B6560",
+                        "on-tertiary-fixed-variant": "#005229",
+                        "primary-container": "#a61c2e",
+                        "on-secondary-fixed": "#410007",
+                        "surface-container-highest": "#e5e2e1",
+                        "primary-fixed-dim": "#ffb3b2",
+                        "background-off-white": "#F7F5F2",
+                        "on-secondary-fixed-variant": "#92001c",
+                        "surface": "#fcf9f8",
+                        "inverse-primary": "#ffb3b2",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-sm": "8px",
+                        "gutter": "24px",
+                        "sidebar-width": "260px",
+                        "stack-lg": "32px",
+                        "margin-page": "48px",
+                        "container-max": "1200px",
+                        "stack-md": "16px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Noto Sans", "Noto Sans Devanagari", "sans-serif"],
+                        "headline-md": ["Noto Sans", "Noto Sans Devanagari", "sans-serif"],
+                        "body-lg": ["Noto Sans", "Noto Sans Devanagari", "sans-serif"],
+                        "label-sm": ["Noto Sans", "Noto Sans Devanagari", "sans-serif"],
+                        "body-md": ["Noto Sans", "Noto Sans Devanagari", "sans-serif"],
+                        "headline-sm": ["Noto Sans", "Noto Sans Devanagari", "sans-serif"],
+                        "headline-lg": ["Noto Sans", "Noto Sans Devanagari", "sans-serif"],
+                        "label-lg": ["Noto Sans", "Noto Sans Devanagari", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "600" }],
+                        "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }]
+                    },
+                    "boxShadow": {
+                        "card-elevation": "0px 4px 20px rgba(26, 26, 26, 0.05)",
+                        "card-hover": "0px 8px 30px rgba(26, 26, 26, 0.08)"
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .custom-ring:focus-within {
+            box-shadow: 0 0 0 2px #E63946;
+        }
+        .chip-selected {
+            background-color: #a61c2e;
+            color: #ffffff;
+            border-color: #a61c2e;
+        }
+        .chip-unselected {
+            background-color: transparent;
+            color: #1c1b1b;
+            border-color: #e1bebd;
+        }
+        .segmented-btn-selected {
+            background-color: #F8D7DC;
+            color: #a61c2e;
+            font-weight: 600;
+        }
+        .segmented-btn-unselected {
+            background-color: transparent;
+            color: #594140;
+        }
+    </style>
+</head>
+<body class="bg-background-off-white text-on-background min-h-screen flex items-center justify-center font-body-md py-12">
+<!-- Main Container -->
+<main class="w-full max-w-[600px] mx-auto px-4">
+<!-- Onboarding Card -->
+<div class="bg-surface-container-lowest rounded-xl shadow-card-elevation p-stack-lg transition-shadow duration-300 hover:shadow-card-hover border border-transparent hover:border-primary-container/10">
+<!-- Top: Back & Steps -->
+<div class="flex items-center justify-between mb-8">
+<button aria-label="Go back" class="text-primary-container hover:text-primary transition-colors flex items-center justify-center p-2 rounded-full hover:bg-surface-container-low group">
+<span class="material-symbols-outlined transition-transform group-hover:-translate-x-1">arrow_back</span>
+</button>
+<div class="flex items-center gap-2">
+<span class="font-label-sm text-label-sm text-text-warm-gray mr-2 uppercase tracking-wider">Step 3 of 4</span>
+<div class="flex gap-1.5">
+<div class="h-2 w-2 rounded-full bg-surface-variant"></div>
+<div class="h-2 w-2 rounded-full bg-surface-variant"></div>
+<div class="h-2 w-4 rounded-full bg-primary-container transition-all"></div>
+<div class="h-2 w-2 rounded-full bg-surface-variant"></div>
+</div>
+</div>
+</div>
+<!-- Header -->
+<div class="mb-10 text-center">
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">आपकी जानकारी / Your Details</h1>
+<p class="font-body-md text-body-md text-text-warm-gray">यह जानकारी सही योजनाएं दिखाने में मदद करती है / This helps us show you the right schemes.</p>
+</div>
+<!-- Form -->
+<form class="space-y-gutter">
+<!-- Two Column Grid for Row 1 -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<!-- Field 1: Age -->
+<div class="flex flex-col gap-2">
+<label class="font-label-lg text-label-lg text-on-surface" for="age">उम्र / Age</label>
+<div class="relative custom-ring rounded">
+<input class="w-full h-12 bg-background-off-white border-0 rounded px-4 text-on-surface focus:bg-surface-container-lowest focus:ring-0 transition-colors" id="age" name="age" placeholder="e.g. 32" type="number">
+</div>
+<span class="font-label-sm text-label-sm text-text-warm-gray">कुछ सरकारी योजनाओं की उम्र सीमा होती है / Some schemes have age limits</span>
+</div>
+<!-- Field 2: Income -->
+<div class="flex flex-col gap-2">
+<label class="font-label-lg text-label-lg text-on-surface" for="income">पिछले महीने की अनुमानित कमाई / Approximate income last month</label>
+<div class="relative custom-ring rounded flex items-center bg-background-off-white focus-within:bg-surface-container-lowest transition-colors">
+<span class="pl-4 text-on-surface-variant font-body-md">₹</span>
+<input class="w-full h-12 bg-transparent border-0 rounded-r px-2 text-on-surface focus:ring-0" id="income" name="income" placeholder="0" type="number">
+</div>
+</div>
+</div>
+<!-- Field 3: Platforms (Full Width) -->
+<div class="flex flex-col gap-3">
+<label class="font-label-lg text-label-lg text-on-surface">आप किस प्लेटफॉर्म पर काम करते हैं? / Which platform(s) do you work with?</label>
+<div class="flex flex-wrap gap-3">
+<button class="chip-selected px-4 py-2 rounded-full border font-label-lg text-label-lg transition-colors cursor-pointer hover:bg-opacity-90" type="button">Swiggy</button>
+<button class="chip-unselected px-4 py-2 rounded-full border font-label-lg text-label-lg transition-colors cursor-pointer hover:bg-caution-tint hover:border-primary-container hover:text-primary-container" type="button">Zomato</button>
+<button class="chip-unselected px-4 py-2 rounded-full border font-label-lg text-label-lg transition-colors cursor-pointer hover:bg-caution-tint hover:border-primary-container hover:text-primary-container" type="button">Ola</button>
+<button class="chip-unselected px-4 py-2 rounded-full border font-label-lg text-label-lg transition-colors cursor-pointer hover:bg-caution-tint hover:border-primary-container hover:text-primary-container" type="button">Uber</button>
+<button class="chip-selected px-4 py-2 rounded-full border font-label-lg text-label-lg transition-colors cursor-pointer hover:bg-opacity-90" type="button">Rapido</button>
+<button class="chip-unselected px-4 py-2 rounded-full border font-label-lg text-label-lg transition-colors cursor-pointer hover:bg-caution-tint hover:border-primary-container hover:text-primary-container" type="button">Other</button>
+</div>
+</div>
+<!-- Two Column Grid for Row 3 & 4 (Segmented Toggles) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter pt-4 border-t border-surface-container-highest">
+<!-- Field 4: EMI -->
+<div class="flex flex-col gap-3">
+<label class="font-label-lg text-label-lg text-on-surface">क्या आपकी कोई EMI चल रही है? / Ongoing EMI?</label>
+<div class="flex p-1 bg-background-off-white rounded-lg border border-surface-container-high w-fit">
+<button class="segmented-btn-selected px-6 py-2 rounded-md font-label-lg text-label-lg transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-container" type="button">Yes</button>
+<button class="segmented-btn-unselected px-6 py-2 rounded-md font-label-lg text-label-lg transition-colors hover:bg-surface-variant focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-container" type="button">No</button>
+</div>
+</div>
+<!-- Field 5: e-Shram -->
+<div class="flex flex-col gap-3">
+<label class="font-label-lg text-label-lg text-on-surface">क्या आप e-Shram में रजिस्टर्ड हैं? / Registered with e-Shram?</label>
+<div class="flex p-1 bg-background-off-white rounded-lg border border-surface-container-high w-fit">
+<button class="segmented-btn-unselected px-4 py-2 rounded-md font-label-lg text-label-lg transition-colors hover:bg-surface-variant focus:outline-none" type="button">Yes</button>
+<button class="segmented-btn-unselected px-4 py-2 rounded-md font-label-lg text-label-lg transition-colors hover:bg-surface-variant focus:outline-none" type="button">No</button>
+<button class="segmented-btn-selected px-4 py-2 rounded-md font-label-lg text-label-lg transition-colors focus:outline-none" type="button">Not sure</button>
+</div>
+</div>
+</div>
+<!-- Field 6: EPFO/ESIC (Full Width) -->
+<div class="flex flex-col gap-3 pt-4 border-t border-surface-container-highest">
+<label class="font-label-lg text-label-lg text-on-surface">क्या आप EPFO/ESIC में रजिस्टर्ड हैं? / Registered with EPFO/ESIC?</label>
+<div class="flex p-1 bg-background-off-white rounded-lg border border-surface-container-high w-full md:w-fit">
+<button class="flex-1 md:flex-none segmented-btn-unselected px-6 py-2 rounded-md font-label-lg text-label-lg transition-colors hover:bg-surface-variant focus:outline-none" type="button">Yes</button>
+<button class="flex-1 md:flex-none segmented-btn-selected px-6 py-2 rounded-md font-label-lg text-label-lg transition-colors focus:outline-none" type="button">No</button>
+<button class="flex-1 md:flex-none segmented-btn-unselected px-6 py-2 rounded-md font-label-lg text-label-lg transition-colors hover:bg-surface-variant focus:outline-none" type="button">Not sure</button>
+</div>
+</div>
+<!-- Bottom Action -->
+<div class="pt-8 flex justify-center">
+<button class="w-full bg-[#E63946] hover:bg-primary-container text-on-primary py-4 rounded-xl font-headline-sm transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-2" type="button">
+                        आगे बढ़ें / Continue
+                        <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</form>
+</div>
+</main>
+<!-- Optional Interaction Script -->
+<script>
+        // Simple script to toggle chip selection for demonstration purposes
+        document.addEventListener('DOMContentLoaded', () => {
+            const chips = document.querySelectorAll('button[class*="chip-"]');
+            chips.forEach(chip => {
+                chip.addEventListener('click', function() {
+                    if (this.classList.contains('chip-selected')) {
+                        this.classList.replace('chip-selected', 'chip-unselected');
+                    } else {
+                        this.classList.replace('chip-unselected', 'chip-selected');
+                    }
+                });
+            });
+
+            // Segmented control logic
+            const segmentedGroups = document.querySelectorAll('.flex.p-1.bg-background-off-white');
+            segmentedGroups.forEach(group => {
+                const buttons = group.querySelectorAll('button');
+                buttons.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        buttons.forEach(b => {
+                            b.classList.replace('segmented-btn-selected', 'segmented-btn-unselected');
+                        });
+                        this.classList.replace('segmented-btn-unselected', 'segmented-btn-selected');
+                    });
+                });
+            });
+        });
+    </script>
+
+
+</body></html>

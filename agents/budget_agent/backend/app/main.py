@@ -58,6 +58,26 @@ def _ensure_dev_schema_compatibility() -> None:
             statements.append("ALTER TABLE user_profiles ADD COLUMN is_couple BOOLEAN NOT NULL DEFAULT 0")
             statements.append("ALTER TABLE user_profiles ADD COLUMN partner_age INTEGER")
             statements.append("ALTER TABLE user_profiles ADD COLUMN partner_income FLOAT")
+        profile_columns = {
+            "epfo_esic_status": "BOOLEAN NOT NULL DEFAULT 0",
+            "income_tax_payer": "BOOLEAN NOT NULL DEFAULT 0",
+            "e_shram_registered": "BOOLEAN NOT NULL DEFAULT 0",
+            "days_active_with_aggregator": "INTEGER",
+            "state": "VARCHAR",
+            "savings_bank_account": "BOOLEAN NOT NULL DEFAULT 1",
+            "aadhaar_linked": "BOOLEAN NOT NULL DEFAULT 1",
+            "language_pref": "VARCHAR NOT NULL DEFAULT 'en'",
+            "literacy_level": "VARCHAR NOT NULL DEFAULT 'medium'",
+        }
+        for column, declaration in profile_columns.items():
+            if column not in up_existing:
+                statements.append(f"ALTER TABLE user_profiles ADD COLUMN {column} {declaration}")
+
+    if "consent_audit_logs" not in inspector.get_table_names():
+        statements.append("CREATE TABLE consent_audit_logs (id INTEGER PRIMARY KEY, user_id INTEGER NOT NULL REFERENCES users(id), purpose VARCHAR NOT NULL, action VARCHAR NOT NULL, policy_version VARCHAR NOT NULL DEFAULT 'v1', created_at DATETIME NOT NULL)")
+
+    if "nudge_suppressions" not in inspector.get_table_names():
+        statements.append("CREATE TABLE nudge_suppressions (id INTEGER PRIMARY KEY, nudge_type VARCHAR NOT NULL UNIQUE, suppressed_at DATETIME NOT NULL, reason VARCHAR)")
 
     if not statements:
         return
@@ -121,8 +141,12 @@ app.include_router(categories_router.router, prefix="/api/categories", tags=["Ca
 app.include_router(insights_router.router, prefix="/api/insights", tags=["Insights"])
 from app.routers import reports as reports_router
 app.include_router(reports_router.router, prefix="/api/reports", tags=["Reports"])
+from app.routers import privacy as privacy_router
+app.include_router(privacy_router.router, prefix="/api/privacy", tags=["Privacy & Consent"])
 from app.routers import recurring_debits as debits_router
 app.include_router(debits_router.router, prefix="/api/recurring-debits", tags=["Recurring Debits"])
+from app.routers import nudge_feedback as nudge_feedback_router
+app.include_router(nudge_feedback_router.router, prefix='/api/nudges', tags=['Nudges'])
 
 @app.middleware("http")
 async def request_id_middleware(request: Request, call_next):

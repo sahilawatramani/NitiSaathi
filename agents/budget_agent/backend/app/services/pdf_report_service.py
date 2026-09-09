@@ -288,6 +288,193 @@ def generate_weekly_report_pdf(user_id: int, db: Session) -> Optional[bytes]:
     return pdf_bytes
 
 
+def generate_monthly_report_pdf(user_id: int, db: Session, year: int, month: int) -> Optional[bytes]:
+    """Generate a monthly PDF report aggregating all weekly features for the given month."""
+    if not REPORTLAB_AVAILABLE:
+        logger.warning("reportlab not installed — skipping PDF generation")
+        return None
+
+    # Date range for month
+    start_date = date(year, month, 1)
+    if month == 12:
+        end_date = date(year + 1, 1, 1) - timedelta(days=1)
+    else:
+        end_date = date(year, month + 1, 1) - timedelta(days=1)
+
+    weeks = (
+        db.query(UserWeeklyFeatures)
+        .filter(UserWeeklyFeatures.user_id == user_id)
+        .filter(UserWeeklyFeatures.week_start >= start_date)
+        .filter(UserWeeklyFeatures.week_start <= end_date)
+        .order_by(UserWeeklyFeatures.week_start)
+        .all()
+    )
+
+    total_income = sum(w.total_income for w in weeks)
+    total_expense = sum(w.total_expense for w in weeks)
+    avg_balance = sum(w.closing_balance for w in weeks) / len(weeks) if weeks else 0
+
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=20*mm, leftMargin=20*mm, topMargin=15*mm, bottomMargin=15*mm)
+    styles = getSampleStyleSheet()
+
+    title_style = ParagraphStyle("ReportTitle", parent=styles["Heading1"], fontSize=22, textColor=HexColor(BRAND_PRIMARY), spaceAfter=6, alignment=TA_CENTER)
+    subtitle_style = ParagraphStyle("ReportSubtitle", parent=styles["Normal"], fontSize=10, textColor=HexColor(TEXT_MUTED), spaceAfter=20, alignment=TA_CENTER)
+    section_style = ParagraphStyle("SectionTitle", parent=styles["Heading2"], fontSize=14, textColor=HexColor(BRAND_PRIMARY), spaceBefore=16, spaceAfter=8)
+
+    elements = []
+    elements.append(Paragraph("NitiSaathi", title_style))
+    elements.append(Paragraph("Monthly Financial Report", subtitle_style))
+    elements.append(Paragraph(f"{start_date.strftime('%b %Y')}", subtitle_style))
+    elements.append(HRFlowable(width="100%", color=HexColor(BRAND_PRIMARY), thickness=1))
+    elements.append(Spacer(1, 12))
+
+    elements.append(Paragraph("📊 Monthly Pulse", section_style))
+    pulse_data = [
+        ["Metric", "Value"],
+        ["Total Income", f"₹{total_income:,.0f}"],
+        ["Total Expense", f"₹{total_expense:,.0f}"],
+        ["Average Closing Balance", f"₹{avg_balance:,.0f}"],
+    ]
+    pulse_table = Table(pulse_data, colWidths=[120 * mm, 50 * mm])
+    pulse_table.setStyle(TableStyle([
+        ("BACKGROUND", (0, 0), (-1, 0), HexColor(BRAND_PRIMARY)),
+        ("TEXTCOLOR", (0, 0), (-1, 0), HexColor("#ffffff")),
+        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+        ("BACKGROUND", (0, 1), (-1, -1), HexColor(BG_LIGHT)),
+        ("GRID", (0, 0), (-1, -1), 0.5, HexColor("#e2e8f0")),
+    ]))
+    elements.append(pulse_table)
+
+    doc.build(elements)
+    pdf_bytes = buffer.getvalue()
+    buffer.close()
+    return pdf_bytes
+
+
+def generate_quarterly_report_pdf(user_id: int, db: Session, year: int, quarter: int) -> Optional[bytes]:
+    """Quarter 1=Jan-Mar, 2=Apr-Jun, 3=Jul-Sep, 4=Oct-Dec"""
+    if not REPORTLAB_AVAILABLE:
+        return None
+    start_month = (quarter - 1) * 3 + 1
+    start_date = date(year, start_month, 1)
+    if start_month + 3 > 12:
+        end_date = date(year + 1, 1, 1) - timedelta(days=1)
+    else:
+        end_date = date(year, start_month + 3, 1) - timedelta(days=1)
+
+    weeks = db.query(UserWeeklyFeatures).filter(UserWeeklyFeatures.user_id == user_id, UserWeeklyFeatures.week_start >= start_date, UserWeeklyFeatures.week_start <= end_date).all()
+    total_income = sum(w.total_income for w in weeks)
+    total_expense = sum(w.total_expense for w in weeks)
+    avg_balance = sum(w.closing_balance for w in weeks) / len(weeks) if weeks else 0
+
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=20*mm, leftMargin=20*mm, topMargin=15*mm, bottomMargin=15*mm)
+    styles = getSampleStyleSheet()
+
+    title_style = ParagraphStyle("ReportTitle", parent=styles["Heading1"], fontSize=22, textColor=HexColor(BRAND_PRIMARY), spaceAfter=6, alignment=TA_CENTER)
+    subtitle_style = ParagraphStyle("ReportSubtitle", parent=styles["Normal"], fontSize=10, textColor=HexColor(TEXT_MUTED), spaceAfter=20, alignment=TA_CENTER)
+    section_style = ParagraphStyle("SectionTitle", parent=styles["Heading2"], fontSize=14, textColor=HexColor(BRAND_PRIMARY), spaceBefore=16, spaceAfter=8)
+
+    elements = []
+    elements.append(Paragraph("NitiSaathi", title_style))
+    elements.append(Paragraph("Quarterly Financial Report", subtitle_style))
+    elements.append(Paragraph(f"Q{quarter} {year}", subtitle_style))
+    elements.append(HRFlowable(width="100%", color=HexColor(BRAND_PRIMARY), thickness=1))
+    elements.append(Spacer(1, 12))
+
+    elements.append(Paragraph("📊 Quarterly Pulse", section_style))
+    pulse_data = [
+        ["Metric", "Value"],
+        ["Total Income", f"₹{total_income:,.0f}"],
+        ["Total Expense", f"₹{total_expense:,.0f}"],
+        ["Average Closing Balance", f"₹{avg_balance:,.0f}"],
+    ]
+    pulse_table = Table(pulse_data, colWidths=[120 * mm, 50 * mm])
+    pulse_table.setStyle(TableStyle([("BACKGROUND", (0, 0), (-1, 0), HexColor(BRAND_PRIMARY)), ("TEXTCOLOR", (0, 0), (-1, 0), HexColor("#ffffff")), ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"), ("GRID", (0, 0), (-1, -1), 0.5, HexColor("#e2e8f0"))]))
+    elements.append(pulse_table)
+    doc.build(elements)
+    pdf_bytes = buffer.getvalue()
+    buffer.close()
+    return pdf_bytes
+
+
+def generate_yearly_report_pdf(user_id: int, db: Session, year: int) -> Optional[bytes]:
+    """Full year — 12 month breakdown + annual totals"""
+    if not REPORTLAB_AVAILABLE:
+        return None
+    start_date = date(year, 1, 1)
+    end_date = date(year, 12, 31)
+
+    weeks = db.query(UserWeeklyFeatures).filter(UserWeeklyFeatures.user_id == user_id, UserWeeklyFeatures.week_start >= start_date, UserWeeklyFeatures.week_start <= end_date).all()
+    total_income = sum(w.total_income for w in weeks)
+    total_expense = sum(w.total_expense for w in weeks)
+    avg_balance = sum(w.closing_balance for w in weeks) / len(weeks) if weeks else 0
+
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4, rightMargin=20*mm, leftMargin=20*mm, topMargin=15*mm, bottomMargin=15*mm)
+    styles = getSampleStyleSheet()
+
+    title_style = ParagraphStyle("ReportTitle", parent=styles["Heading1"], fontSize=22, textColor=HexColor(BRAND_PRIMARY), spaceAfter=6, alignment=TA_CENTER)
+    subtitle_style = ParagraphStyle("ReportSubtitle", parent=styles["Normal"], fontSize=10, textColor=HexColor(TEXT_MUTED), spaceAfter=20, alignment=TA_CENTER)
+    section_style = ParagraphStyle("SectionTitle", parent=styles["Heading2"], fontSize=14, textColor=HexColor(BRAND_PRIMARY), spaceBefore=16, spaceAfter=8)
+
+    elements = []
+    elements.append(Paragraph("NitiSaathi", title_style))
+    elements.append(Paragraph("Yearly Financial Report", subtitle_style))
+    elements.append(Paragraph(f"{year}", subtitle_style))
+    elements.append(HRFlowable(width="100%", color=HexColor(BRAND_PRIMARY), thickness=1))
+    elements.append(Spacer(1, 12))
+
+    elements.append(Paragraph("📊 Yearly Pulse", section_style))
+    pulse_data = [
+        ["Metric", "Value"],
+        ["Total Income", f"₹{total_income:,.0f}"],
+        ["Total Expense", f"₹{total_expense:,.0f}"],
+        ["Average Closing Balance", f"₹{avg_balance:,.0f}"],
+    ]
+    pulse_table = Table(pulse_data, colWidths=[120 * mm, 50 * mm])
+    pulse_table.setStyle(TableStyle([("BACKGROUND", (0, 0), (-1, 0), HexColor(BRAND_PRIMARY)), ("TEXTCOLOR", (0, 0), (-1, 0), HexColor("#ffffff")), ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"), ("GRID", (0, 0), (-1, -1), 0.5, HexColor("#e2e8f0"))]))
+    elements.append(pulse_table)
+    doc.build(elements)
+    pdf_bytes = buffer.getvalue()
+    buffer.close()
+    return pdf_bytes
+
+
+def generate_monthly_report_text_fallback(user_id: int, db: Session, year: int, month: int) -> str:
+    """Text fallback when reportlab not installed"""
+    start_date = date(year, month, 1)
+    if month == 12:
+        end_date = date(year + 1, 1, 1) - timedelta(days=1)
+    else:
+        end_date = date(year, month + 1, 1) - timedelta(days=1)
+
+    weeks = (
+        db.query(UserWeeklyFeatures)
+        .filter(UserWeeklyFeatures.user_id == user_id)
+        .filter(UserWeeklyFeatures.week_start >= start_date)
+        .filter(UserWeeklyFeatures.week_start <= end_date)
+        .all()
+    )
+
+    total_income = sum(w.total_income for w in weeks)
+    total_expense = sum(w.total_expense for w in weeks)
+    avg_balance = sum(w.closing_balance for w in weeks) / len(weeks) if weeks else 0
+
+    lines = [
+        "═══════════════════════════════════════",
+        "  NitiSaathi — Monthly Financial Report",
+        "═══════════════════════════════════════",
+        "",
+        f"  Total Income:              ₹{total_income:,.0f}",
+        f"  Total Expense:             ₹{total_expense:,.0f}",
+        f"  Average Closing Balance:   ₹{avg_balance:,.0f}",
+        "═══════════════════════════════════════"
+    ]
+    return "\n".join(lines)
+
+
 def generate_report_text_fallback(user_id: int, db: Session) -> str:
     """Plain-text fallback report when reportlab is not available."""
     budget = compute_full_budget_state(user_id, db)

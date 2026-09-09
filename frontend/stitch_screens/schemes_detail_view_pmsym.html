@@ -1,0 +1,263 @@
+<!DOCTYPE html><html class="light" lang="en" style="width: 1280px; height: 1036px; overflow: hidden; position: relative;"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>NitiSaathi - Scheme Detail View</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-container": "#fffbff",
+                        "outline-variant": "#e1bebd",
+                        "inverse-primary": "#ffb3b2",
+                        "caution-tint": "#F8D7DC",
+                        "outline": "#8d706f",
+                        "primary-fixed-dim": "#ffb3b2",
+                        "text-warm-gray": "#6B6560",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "surface-container-low": "#f6f3f2",
+                        "surface-container-high": "#eae7e7",
+                        "on-tertiary-fixed-variant": "#005229",
+                        "secondary-fixed": "#ffdad8",
+                        "primary-fixed": "#ffdad9",
+                        "on-primary-container": "#ffb9b8",
+                        "on-tertiary-fixed": "#00210d",
+                        "secondary": "#b7102a",
+                        "background": "#fcf9f8",
+                        "inverse-surface": "#313030",
+                        "surface-dim": "#dcd9d9",
+                        "on-tertiary-container": "#75e096",
+                        "surface-variant": "#e5e2e1",
+                        "on-secondary-fixed": "#410007",
+                        "on-surface-variant": "#594140",
+                        "surface-container-highest": "#e5e2e1",
+                        "tertiary-container": "#006332",
+                        "on-error-container": "#93000a",
+                        "background-off-white": "#F7F5F2",
+                        "primary-container": "#a61c2e",
+                        "secondary-fixed-dim": "#ffb3b1",
+                        "error": "#ba1a1a",
+                        "inverse-on-surface": "#f3f0ef",
+                        "secondary-container": "#db313f",
+                        "error-container": "#ffdad6",
+                        "on-primary-fixed-variant": "#910621",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed": "#410009",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#004923",
+                        "surface-container": "#f0eded",
+                        "on-secondary-fixed-variant": "#92001c",
+                        "primary": "#82001b",
+                        "surface-container-lowest": "#ffffff",
+                        "on-background": "#1c1b1b",
+                        "tertiary-fixed": "#8df9ac",
+                        "on-surface": "#1c1b1b",
+                        "surface": "#fcf9f8",
+                        "surface-bright": "#fcf9f8",
+                        "tertiary-fixed-dim": "#71dc92",
+                        "surface-tint": "#b32736"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-max": "1200px",
+                        "gutter": "24px",
+                        "stack-md": "16px",
+                        "stack-sm": "8px",
+                        "stack-lg": "32px",
+                        "margin-page": "48px",
+                        "sidebar-width": "260px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Noto Sans"],
+                        "label-sm": ["Noto Sans"],
+                        "label-lg": ["Noto Sans"],
+                        "body-lg": ["Noto Sans"],
+                        "headline-md": ["Noto Sans"],
+                        "headline-sm": ["Noto Sans"],
+                        "display-lg": ["Noto Sans"],
+                        "body-md": ["Noto Sans"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .elevation-1 { box-shadow: 0px 4px 20px rgba(26, 26, 26, 0.05); }
+        .hover-elevation-interactive:hover { box-shadow: 0px 8px 24px rgba(26, 26, 26, 0.08); border-color: rgba(166, 28, 46, 0.1); }
+        .focus-ring:focus-within { outline: none; box-shadow: 0 0 0 2px #E63946; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen antialiased flex flex-col items-center pl-[240px]"><aside class="fixed left-0 top-0 h-screen w-[240px] bg-[#F7F5F2] border-r border-surface-variant flex flex-col z-50">
+    <div class="p-6 mb-4">
+        <span class="font-headline-md text-primary tracking-tight">nitisaathi</span>
+    </div>
+    <nav class="flex-grow flex flex-col gap-1 px-2">
+        <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#1A1A1A] hover:bg-surface-container transition-colors">
+            <span class="material-symbols-outlined">home</span>
+            <span class="font-label-lg">गृह / Home</span>
+        </a>
+        <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#1A1A1A] hover:bg-surface-container transition-colors">
+            <span class="material-symbols-outlined">account_balance</span>
+            <span class="font-label-lg">बजट / Budget</span>
+        </a>
+        <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#1A1A1A] hover:bg-surface-container transition-colors">
+            <span class="material-symbols-outlined">smart_toy</span>
+            <span class="font-label-lg">साथी / Assistant</span>
+        </a>
+        <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-[#A61C2E]/10 text-[#A61C2E] relative">
+            <div class="absolute left-0 top-2 bottom-2 w-1 bg-[#A61C2E] rounded-r-full"></div>
+            <span class="material-symbols-outlined">grid_view</span>
+            <span class="font-label-lg">योजनाएं / Schemes</span>
+        </a>
+        <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#1A1A1A] hover:bg-surface-container transition-colors">
+            <span class="material-symbols-outlined">gpp_maybe</span>
+            <span class="font-label-lg">धोखाधड़ी जांच / Fraud Check</span>
+        </a>
+        <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#1A1A1A] hover:bg-surface-container transition-colors">
+            <span class="material-symbols-outlined">notifications</span>
+            <span class="font-label-lg">सूचनाएं / Nudges</span>
+        </a>
+        <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#1A1A1A] hover:bg-surface-container transition-colors">
+            <span class="material-symbols-outlined">description</span>
+            <span class="font-label-lg">रिपोर्ट / Reports</span>
+        </a>
+        <div class="my-2 border-t border-surface-variant mx-4"></div>
+        <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#1A1A1A] hover:bg-surface-container transition-colors">
+            <span class="material-symbols-outlined">settings</span>
+            <span class="font-label-lg">सेटिंग्स / Settings</span>
+        </a>
+    </nav>
+    <div class="p-4 border-t border-surface-variant flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center text-on-surface-variant">
+            <span class="material-symbols-outlined">person</span>
+        </div>
+        <div class="flex flex-col">
+            <span class="text-label-lg text-on-surface">User Name</span>
+            <span class="text-label-sm text-text-warm-gray">View Profile</span>
+        </div>
+    </div>
+</aside>
+<!-- Top Navigation Placeholder (Hidden for this specific sub-page view context as it's a detail view with a back link) -->
+<main class="w-full max-w-[900px] px-gutter py-margin-page flex-grow flex flex-col gap-stack-lg">
+<!-- Header Section -->
+<header class="flex flex-col gap-stack-md border-b border-surface-variant pb-stack-md">
+<a class="inline-flex items-center gap-stack-sm text-primary hover:opacity-80 transition-opacity font-label-lg text-label-lg w-fit" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">arrow_back</span>
+                Schemes
+            </a>
+<div class="flex flex-wrap items-center justify-between gap-stack-md">
+<div class="flex items-center gap-stack-md">
+<h1 class="font-headline-lg text-headline-lg text-on-background m-0">PM-SYM</h1>
+<span class="inline-flex items-center px-3 py-1 bg-tertiary-container text-on-tertiary-container rounded-full font-label-sm text-label-sm uppercase tracking-wider">
+                        Eligible
+                    </span>
+</div>
+<div class="flex items-center gap-stack-sm text-text-warm-gray bg-surface-container-low px-4 py-2 rounded-lg border border-surface-variant">
+<span class="material-symbols-outlined text-tertiary" style="font-variation-settings: 'FILL' 1;">security</span>
+<span class="font-body-md text-body-md">अंतिम सत्यापित: 1 जुलाई 2026</span>
+</div>
+</div>
+</header>
+<!-- Main Content Area: Two Columns -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Left Column -->
+<div class="md:col-span-7 flex flex-col gap-stack-lg">
+<!-- What it is -->
+<section class="flex flex-col gap-stack-sm">
+<h2 class="font-headline-sm text-headline-sm text-on-background">यह क्या है / What it is</h2>
+<p class="font-body-md text-body-md text-on-surface-variant leading-relaxed">
+                        Pradhan Mantri Shram Yogi Maandhan (PM-SYM) is a voluntary and contributory pension scheme designed specifically for unorganised workers. It guarantees a minimum assured pension upon reaching the age of 60, providing financial security during retirement years.
+                    </p>
+</section>
+<!-- Benefits & Contribution Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-stack-md">
+<!-- Benefits Card -->
+<div class="bg-surface-container-lowest border border-surface-variant rounded-xl p-stack-lg elevation-1 hover-elevation-interactive transition-all duration-200 border border-transparent">
+<div class="flex items-center gap-stack-sm mb-stack-md text-tertiary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">featured_seasonal_and_gifts</span>
+<h3 class="font-label-lg text-label-lg uppercase tracking-wider">फायदे / Benefits</h3>
+</div>
+<div class="font-headline-md text-headline-md text-on-background mb-1">₹3,000/महीना</div>
+<div class="font-body-md text-body-md text-on-surface-variant">after age 60</div>
+</div>
+<!-- Contribution Card -->
+<div class="bg-surface-container-lowest border border-surface-variant rounded-xl p-stack-lg elevation-1 hover-elevation-interactive transition-all duration-200 border border-transparent">
+<div class="flex items-center gap-stack-sm mb-stack-md text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+<h3 class="font-label-lg text-label-lg uppercase tracking-wider">योगदान / Contribution</h3>
+</div>
+<div class="font-headline-md text-headline-md text-on-background mb-1">₹55/महीना</div>
+<div class="font-body-md text-body-md text-on-surface-variant">estimated starting amount</div>
+</div>
+</div>
+</div>
+<!-- Right Column -->
+<div class="md:col-span-5 flex flex-col gap-stack-lg">
+<!-- Joint Reasoning Card -->
+<div class="bg-caution-tint border border-outline-variant rounded-xl p-stack-lg shadow-sm">
+<div class="flex items-start gap-stack-md">
+<div class="flex-shrink-0 mt-1 text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">balance</span>
+</div>
+<div class="flex flex-col gap-stack-sm">
+<h3 class="font-headline-sm text-headline-sm text-on-secondary-fixed">बजट सलाह / Budget guidance</h3>
+<p class="font-body-md text-body-md text-on-secondary-fixed-variant">
+                                आपकी कमाई पिछले 8 हफ्तों में से 3 में स्थिर रही है। 4 और स्थिर हफ्तों का इंतज़ार करने की सलाह है।
+                            </p>
+<p class="font-body-md text-body-md text-on-secondary-fixed-variant italic">
+                                Your income has been stable in only 3 of the last 8 weeks. We recommend waiting 4 more stable weeks.
+                            </p>
+</div>
+</div>
+</div>
+<!-- How to enroll -->
+<section class="bg-surface-container-lowest border border-surface-variant rounded-xl p-stack-lg elevation-1 flex flex-col gap-stack-md">
+<h3 class="font-headline-sm text-headline-sm text-on-background flex items-center gap-stack-sm">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 0;">how_to_reg</span>
+                        कैसे शामिल हों / How to enroll
+                    </h3>
+<div class="bg-surface-container border border-surface-variant rounded-lg p-4 mb-stack-sm">
+<p class="font-body-md text-body-md text-on-surface-variant">
+<strong>nitisaathi सीधे दाखिला नहीं करता</strong> / nitisaathi does not enroll you directly. You must visit the official government portal to complete registration.
+                        </p>
+</div>
+<a class="inline-flex items-center justify-center gap-stack-sm bg-primary hover:bg-on-primary-fixed-variant text-on-primary font-label-lg text-label-lg py-3 px-6 rounded-lg transition-colors duration-200 text-center" href="#">
+                        पोर्टल पर जाएं / Go to portal
+                        <span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 0;">open_in_new</span>
+</a>
+</section>
+</div>
+</div>
+</main>
+<!-- Footer Disclaimer -->
+<footer class="w-full bg-surface-container-lowest border-t border-surface-variant py-stack-lg mt-auto pl-[240px]">
+<div class="max-w-[900px] mx-auto px-gutter text-center">
+<p class="font-body-md text-body-md text-text-warm-gray italic">
+                यह जानकारी सामान्य मार्गदर्शन के लिए है। आधिकारिक विवरण के लिए सरकारी पोर्टल देखें। / This is general guidance — check the official government portal for official details.
+            </p>
+</div>
+</footer>
+
+
+<div id="snapdom-sandbox" data-snapdom-sandbox="true" aria-hidden="true" style="position: absolute; left: -9999px; top: -9999px; width: 0px; height: 0px; overflow: hidden;"></div></body></html>

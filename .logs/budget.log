@@ -1,0 +1,233 @@
+INFO:     Started server process [75207]
+INFO:     Waiting for application startup.
+{"ts": "2026-09-09T09:41:17.511181+00:00", "level": "INFO", "logger": "apscheduler.scheduler", "message": "Adding job tentatively -- it will be properly scheduled when the scheduler starts"}
+{"ts": "2026-09-09T09:41:17.513715+00:00", "level": "INFO", "logger": "apscheduler.scheduler", "message": "Adding job tentatively -- it will be properly scheduled when the scheduler starts"}
+{"ts": "2026-09-09T09:41:17.514074+00:00", "level": "INFO", "logger": "apscheduler.scheduler", "message": "Adding job tentatively -- it will be properly scheduled when the scheduler starts"}
+{"ts": "2026-09-09T09:41:17.522121+00:00", "level": "INFO", "logger": "apscheduler.scheduler", "message": "Adding job tentatively -- it will be properly scheduled when the scheduler starts"}
+{"ts": "2026-09-09T09:41:17.522363+00:00", "level": "INFO", "logger": "apscheduler.scheduler", "message": "Adding job tentatively -- it will be properly scheduled when the scheduler starts"}
+{"ts": "2026-09-09T09:41:17.522562+00:00", "level": "INFO", "logger": "apscheduler.scheduler", "message": "Adding job tentatively -- it will be properly scheduled when the scheduler starts"}
+{"ts": "2026-09-09T09:41:17.522803+00:00", "level": "INFO", "logger": "apscheduler.scheduler", "message": "Added job \"send_daily_pending_classification_reminders\" to job store \"default\""}
+{"ts": "2026-09-09T09:41:17.523023+00:00", "level": "INFO", "logger": "apscheduler.scheduler", "message": "Added job \"start_scheduler.<locals>.wrapped_lifecycle_cleanup\" to job store \"default\""}
+{"ts": "2026-09-09T09:41:17.523176+00:00", "level": "INFO", "logger": "apscheduler.scheduler", "message": "Added job \"start_scheduler.<locals>.wrapped_proactive_nudge_scan\" to job store \"default\""}
+{"ts": "2026-09-09T09:41:17.523300+00:00", "level": "INFO", "logger": "apscheduler.scheduler", "message": "Added job \"send_monthly_reports\" to job store \"default\""}
+{"ts": "2026-09-09T09:41:17.523480+00:00", "level": "INFO", "logger": "apscheduler.scheduler", "message": "Added job \"start_scheduler.<locals>.wrapped_persona_update\" to job store \"default\""}
+{"ts": "2026-09-09T09:41:17.523667+00:00", "level": "INFO", "logger": "apscheduler.scheduler", "message": "Added job \"start_scheduler.<locals>.wrapped_aggregation\" to job store \"default\""}
+{"ts": "2026-09-09T09:41:17.523717+00:00", "level": "INFO", "logger": "apscheduler.scheduler", "message": "Scheduler started"}
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+{"ts": "2026-09-09T09:41:30.910967+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "f8c3049f-e7cc-49cc-84c3-3df5eb34db56", "path": "/docs", "method": "GET", "status_code": 200, "duration_ms": 0.28}
+Initializing RAG Knowledge Base...
+Loaded 28 tax rules into RAG.
+Loaded 55 FAQs into RAG.
+INFO:     127.0.0.1:43320 - "GET /docs HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:41:39.020180+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "61576915-b27d-4333-b205-513cf1486c91", "path": "/api/auth/signup", "method": "POST", "status_code": 201, "duration_ms": 33.11}
+INFO:     127.0.0.1:48614 - "POST /api/auth/signup HTTP/1.1" 201 Created
+{"ts": "2026-09-09T09:41:39.027847+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "daba4c66-a2db-46e6-ba78-5e88ee8a6bc1", "path": "/api/auth/login", "method": "POST", "status_code": 200, "duration_ms": 6.57}
+INFO:     127.0.0.1:48626 - "POST /api/auth/login HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:41:39.049452+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "99eacb0f-7184-4022-86f4-6a0f022e899b", "path": "/api/profile/", "method": "POST", "status_code": 200, "duration_ms": 20.55}
+INFO:     127.0.0.1:48628 - "POST /api/profile/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:41:39.068937+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "01b86aa8-a82c-4290-81b1-6620a026df6f", "path": "/api/privacy/consents", "method": "PUT", "status_code": 200, "duration_ms": 18.42}
+INFO:     127.0.0.1:48632 - "PUT /api/privacy/consents HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:41:39.076256+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "8cf069a8-6aa5-4fa5-b604-1b7c180150b5", "path": "/api/privacy/consents", "method": "PUT", "status_code": 200, "duration_ms": 6.31}
+INFO:     127.0.0.1:48642 - "PUT /api/privacy/consents HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:41:39.084283+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "43bfed35-6618-4c3e-9cd3-c47fcb8f306f", "path": "/api/privacy/consents", "method": "PUT", "status_code": 200, "duration_ms": 6.49}
+INFO:     127.0.0.1:48646 - "PUT /api/privacy/consents HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:41:39.091811+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "91ff6830-7279-4c62-a1c1-1ccb99a9a316", "path": "/api/privacy/consents", "method": "PUT", "status_code": 200, "duration_ms": 6.16}
+INFO:     127.0.0.1:48652 - "PUT /api/privacy/consents HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:41:39.099913+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "a21a79c7-2a8a-442a-b0b6-499af6da744e", "path": "/api/privacy/consents", "method": "PUT", "status_code": 200, "duration_ms": 6.41}
+INFO:     127.0.0.1:48664 - "PUT /api/privacy/consents HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:41.653765+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "196e284d-9142-4c95-91b6-fd77abb78db0", "path": "/api/auth/signup", "method": "OPTIONS", "status_code": 200, "duration_ms": 0.51}
+INFO:     127.0.0.1:42978 - "OPTIONS /api/auth/signup HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:41.698323+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "72465326-46c8-4bfb-9979-fd0ad52fa05e", "path": "/api/auth/signup", "method": "POST", "status_code": 201, "duration_ms": 39.39}
+INFO:     127.0.0.1:42978 - "POST /api/auth/signup HTTP/1.1" 201 Created
+{"ts": "2026-09-09T09:42:41.706588+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "034ba132-0e92-4e72-aa69-518d4e6b1339", "path": "/api/auth/login", "method": "OPTIONS", "status_code": 200, "duration_ms": 0.4}
+INFO:     127.0.0.1:42978 - "OPTIONS /api/auth/login HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:41.721211+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "3110e2bd-0ae4-4060-bc9e-0378248074b8", "path": "/api/auth/login", "method": "POST", "status_code": 200, "duration_ms": 10.78}
+INFO:     127.0.0.1:42978 - "POST /api/auth/login HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:41.727513+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "ac04aac1-ddb5-4b14-ad08-e0e0c8013bca", "path": "/api/profile/", "method": "OPTIONS", "status_code": 200, "duration_ms": 0.23}
+INFO:     127.0.0.1:42978 - "OPTIONS /api/profile/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:41.737566+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "6d2e34fe-64e2-4452-89c8-47ff28c20188", "path": "/api/profile/", "method": "POST", "status_code": 200, "duration_ms": 6.86}
+INFO:     127.0.0.1:42978 - "POST /api/profile/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:41.742307+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "52b98d24-9a77-42bb-9900-ecee71b48e0e", "path": "/api/privacy/consents", "method": "OPTIONS", "status_code": 200, "duration_ms": 0.29}
+INFO:     127.0.0.1:42978 - "OPTIONS /api/privacy/consents HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:41.751897+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "4dbac358-7d97-4e2e-a025-f580dc74ce6b", "path": "/api/privacy/consents", "method": "PUT", "status_code": 200, "duration_ms": 6.79}
+INFO:     127.0.0.1:42978 - "PUT /api/privacy/consents HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:41.762711+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "8aa2129a-ed44-4760-9d42-8484e6a26e01", "path": "/api/privacy/consents", "method": "PUT", "status_code": 200, "duration_ms": 6.88}
+INFO:     127.0.0.1:42978 - "PUT /api/privacy/consents HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:41.775272+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "8db56c61-6982-4e61-86b9-7eb2cbab176a", "path": "/api/privacy/consents", "method": "PUT", "status_code": 200, "duration_ms": 7.34}
+INFO:     127.0.0.1:42978 - "PUT /api/privacy/consents HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:41.786686+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "abaf5133-d410-411a-a444-580e7d172b8f", "path": "/api/privacy/consents", "method": "PUT", "status_code": 200, "duration_ms": 6.74}
+INFO:     127.0.0.1:42978 - "PUT /api/privacy/consents HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:41.798904+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "c0311bce-ecb1-4e1d-b437-e6b836652399", "path": "/api/privacy/consents", "method": "PUT", "status_code": 200, "duration_ms": 8.01}
+INFO:     127.0.0.1:42978 - "PUT /api/privacy/consents HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:41.824563+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "aa852542-e48f-4d0e-9582-b57f6fdf441b", "path": "/api/analytics/budget-state", "method": "OPTIONS", "status_code": 200, "duration_ms": 0.65}
+INFO:     127.0.0.1:42978 - "OPTIONS /api/analytics/budget-state HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:41.826031+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "18ccbdad-c6a2-4a67-a0af-72bd07a00205", "path": "/api/analytics/", "method": "OPTIONS", "status_code": 200, "duration_ms": 0.18}
+INFO:     127.0.0.1:42982 - "OPTIONS /api/analytics/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:41.826970+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "ad7395ed-ce26-4f70-9be9-261c27e4d4ba", "path": "/api/goals/", "method": "OPTIONS", "status_code": 200, "duration_ms": 0.49}
+INFO:     127.0.0.1:42996 - "OPTIONS /api/goals/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:41.827261+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "71a94295-cd9e-4152-9e90-e3a51842a188", "path": "/api/analytics/forecast", "method": "OPTIONS", "status_code": 200, "duration_ms": 0.56}
+INFO:     127.0.0.1:43006 - "OPTIONS /api/analytics/forecast HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:41.827475+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "1d65b9cf-7722-4ec4-b4d5-a9be4ac34acc", "path": "/api/realtime/notifications", "method": "OPTIONS", "status_code": 200, "duration_ms": 0.61}
+INFO:     127.0.0.1:43016 - "OPTIONS /api/realtime/notifications HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:41.869453+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "65175668-4982-4a04-8304-d9631bd191b7", "path": "/api/analytics/budget-state", "method": "GET", "status_code": 200, "duration_ms": 35.74}
+INFO:     127.0.0.1:42996 - "GET /api/analytics/budget-state HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:41.873627+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "50068770-321e-44b1-82d3-9fcc9d9fb58a", "path": "/api/goals/", "method": "GET", "status_code": 200, "duration_ms": 36.0}
+INFO:     127.0.0.1:43006 - "GET /api/goals/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:41.875152+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "c65d2014-960a-4a0f-a633-67f983db0aa0", "path": "/api/realtime/notifications", "method": "GET", "status_code": 200, "duration_ms": 23.82}
+INFO:     127.0.0.1:42978 - "GET /api/realtime/notifications HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:41.875869+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "15198c6c-b489-4437-8103-9b3b226b6774", "path": "/api/analytics/", "method": "GET", "status_code": 200, "duration_ms": 38.38}
+INFO:     127.0.0.1:43016 - "GET /api/analytics/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:41.876929+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "a7c17e86-b5c7-4237-b282-afd0a76c9793", "path": "/api/analytics/forecast", "method": "GET", "status_code": 200, "duration_ms": 26.65}
+INFO:     127.0.0.1:42982 - "GET /api/analytics/forecast HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:48.338906+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "2f7a3684-8466-412e-817e-661b9d892629", "path": "/api/analytics/budget-state", "method": "GET", "status_code": 200, "duration_ms": 17.22}
+INFO:     127.0.0.1:59502 - "GET /api/analytics/budget-state HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:48.341518+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "2e65f90c-1600-4101-9213-4000aa333ece", "path": "/api/analytics/forecast", "method": "GET", "status_code": 200, "duration_ms": 14.51}
+INFO:     127.0.0.1:59542 - "GET /api/analytics/forecast HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:48.342151+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "f4fdb5f6-4b0e-46a1-ad15-ba8f6c0a4ed3", "path": "/api/goals/", "method": "GET", "status_code": 200, "duration_ms": 15.81}
+INFO:     127.0.0.1:59526 - "GET /api/goals/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:48.343904+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "6b84ad17-3c6c-428c-9ecd-5c13c1652a4d", "path": "/api/analytics/", "method": "GET", "status_code": 200, "duration_ms": 18.93}
+INFO:     127.0.0.1:59516 - "GET /api/analytics/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:49.500942+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "d3bff902-8df2-4114-86d7-52fe30b05946", "path": "/api/analytics/", "method": "GET", "status_code": 200, "duration_ms": 13.39}
+INFO:     127.0.0.1:59526 - "GET /api/analytics/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:49.502597+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "7e64dd42-0380-49a0-a9b7-3eeb069356c5", "path": "/api/goals/", "method": "GET", "status_code": 200, "duration_ms": 14.42}
+INFO:     127.0.0.1:59542 - "GET /api/goals/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:49.503739+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "035886a7-a446-473c-94fc-1a37f5e430af", "path": "/api/analytics/forecast", "method": "GET", "status_code": 200, "duration_ms": 12.78}
+INFO:     127.0.0.1:59502 - "GET /api/analytics/forecast HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:49.506921+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "da16ed63-41fd-4747-8017-0a9ed3822533", "path": "/api/analytics/budget-state", "method": "GET", "status_code": 200, "duration_ms": 20.1}
+INFO:     127.0.0.1:59516 - "GET /api/analytics/budget-state HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:50.428197+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "4fba9608-2bfb-40cf-a2ae-cb4ffc2b79d5", "path": "/api/analytics/forecast", "method": "GET", "status_code": 200, "duration_ms": 13.5}
+INFO:     127.0.0.1:59526 - "GET /api/analytics/forecast HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:50.429244+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "3437c835-9e1c-40cc-a547-e499d654d926", "path": "/api/analytics/", "method": "GET", "status_code": 200, "duration_ms": 15.57}
+INFO:     127.0.0.1:59502 - "GET /api/analytics/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:50.429529+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "70a65611-85bb-482d-b889-ef77da1177a0", "path": "/api/analytics/budget-state", "method": "GET", "status_code": 200, "duration_ms": 18.14}
+INFO:     127.0.0.1:59516 - "GET /api/analytics/budget-state HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:50.430097+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "b3cf7dd2-e3b9-4a98-98ad-6f1ca3588827", "path": "/api/realtime/notifications", "method": "GET", "status_code": 200, "duration_ms": 14.49}
+INFO:     127.0.0.1:59558 - "GET /api/realtime/notifications HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:50.430731+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "af3ae589-961b-4489-8384-001d960cd238", "path": "/api/goals/", "method": "GET", "status_code": 200, "duration_ms": 16.9}
+INFO:     127.0.0.1:59542 - "GET /api/goals/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:50.979101+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "1549ed77-7811-4dd4-89d1-09603b042177", "path": "/api/analytics/", "method": "GET", "status_code": 200, "duration_ms": 9.79}
+INFO:     127.0.0.1:59558 - "GET /api/analytics/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:50.981228+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "7adb61de-15aa-49bd-9943-fa8ac210a3e6", "path": "/api/analytics/forecast", "method": "GET", "status_code": 200, "duration_ms": 6.93}
+INFO:     127.0.0.1:59516 - "GET /api/analytics/forecast HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:50.984573+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "84b59b84-10a2-442f-a973-de6d1d059ed1", "path": "/api/goals/", "method": "GET", "status_code": 200, "duration_ms": 10.75}
+INFO:     127.0.0.1:59502 - "GET /api/goals/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:50.989394+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "0ac4835f-86ed-4c02-adb8-9e17675a2e4c", "path": "/api/analytics/budget-state", "method": "GET", "status_code": 200, "duration_ms": 21.15}
+INFO:     127.0.0.1:59542 - "GET /api/analytics/budget-state HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:52.151668+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "0f4c4378-c8b4-4d5e-a4f6-f3ade90ddc7e", "path": "/api/privacy/consents", "method": "GET", "status_code": 200, "duration_ms": 4.55}
+INFO:     127.0.0.1:59542 - "GET /api/privacy/consents HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:52.161789+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "5f0a7572-46c5-4d37-8ae6-103f6bcdabbb", "path": "/api/profile/", "method": "GET", "status_code": 200, "duration_ms": 4.34}
+INFO:     127.0.0.1:59542 - "GET /api/profile/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:54.305798+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "e5befe1d-2443-4753-ab78-abfa9f8775f5", "path": "/api/privacy/consents", "method": "GET", "status_code": 200, "duration_ms": 3.4}
+INFO:     127.0.0.1:59542 - "GET /api/privacy/consents HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:54.318657+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "c6cf8235-1550-42d4-ad4d-1c241cca16f2", "path": "/api/profile/", "method": "GET", "status_code": 200, "duration_ms": 4.46}
+INFO:     127.0.0.1:59542 - "GET /api/profile/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:54.631278+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "cc9013df-098e-4b28-a02b-8cd5971d7d8d", "path": "/api/analytics/forecast", "method": "GET", "status_code": 200, "duration_ms": 9.1}
+INFO:     127.0.0.1:59558 - "GET /api/analytics/forecast HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:54.636327+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "73c714a1-ef91-483f-9654-c16250dab53a", "path": "/api/analytics/", "method": "GET", "status_code": 200, "duration_ms": 17.08}
+INFO:     127.0.0.1:59502 - "GET /api/analytics/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:54.637618+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "fea8eb15-cc14-454a-b659-9b68c4bb7f52", "path": "/api/goals/", "method": "GET", "status_code": 200, "duration_ms": 17.56}
+INFO:     127.0.0.1:59516 - "GET /api/goals/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:54.637840+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "ec2100fc-a481-4861-a15d-b06ffd21f26a", "path": "/api/analytics/budget-state", "method": "GET", "status_code": 200, "duration_ms": 21.77}
+INFO:     127.0.0.1:59542 - "GET /api/analytics/budget-state HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:56.169901+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "f3e52751-79b2-4416-9ed5-c3d8d66e32aa", "path": "/api/analytics/", "method": "GET", "status_code": 200, "duration_ms": 13.43}
+INFO:     127.0.0.1:59542 - "GET /api/analytics/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:56.173432+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "51ee17f6-3c5f-46f6-a193-00b6fd84f3c8", "path": "/api/analytics/forecast", "method": "GET", "status_code": 200, "duration_ms": 11.24}
+INFO:     127.0.0.1:59558 - "GET /api/analytics/forecast HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:56.175485+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "f62bced3-4b5c-4c95-9628-cabfc89081c6", "path": "/api/analytics/budget-state", "method": "GET", "status_code": 200, "duration_ms": 19.87}
+INFO:     127.0.0.1:59516 - "GET /api/analytics/budget-state HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:56.176155+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "a96fb094-366a-4fdc-bb57-d4c9028a730f", "path": "/api/goals/", "method": "GET", "status_code": 200, "duration_ms": 14.18}
+INFO:     127.0.0.1:59502 - "GET /api/goals/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:57.046049+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "1cd2bfb5-7077-4a74-938d-886701a94efa", "path": "/api/privacy/consents", "method": "GET", "status_code": 200, "duration_ms": 3.02}
+INFO:     127.0.0.1:59516 - "GET /api/privacy/consents HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:57.054373+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "f7b666cf-909d-4952-8e44-295e48b410e9", "path": "/api/profile/", "method": "GET", "status_code": 200, "duration_ms": 2.89}
+INFO:     127.0.0.1:59516 - "GET /api/profile/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:57.782780+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "47aa0d72-326d-4c27-a810-75269546ddf4", "path": "/api/privacy/consents", "method": "GET", "status_code": 200, "duration_ms": 3.28}
+INFO:     127.0.0.1:59516 - "GET /api/privacy/consents HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:57.788492+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "883b8b04-1cb3-4260-af12-5342551a289f", "path": "/api/transactions/", "method": "OPTIONS", "status_code": 200, "duration_ms": 0.27}
+INFO:     127.0.0.1:59516 - "OPTIONS /api/transactions/?limit=50 HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:42:57.795563+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "640158e6-6831-4e9e-a03a-838b21b08c14", "path": "/api/transactions/", "method": "GET", "status_code": 200, "duration_ms": 4.02}
+INFO:     127.0.0.1:59516 - "GET /api/transactions/?limit=50 HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:02.991605+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "ec130ae6-0c27-451e-b757-0dd2d71c65c5", "path": "/api/analytics/budget-state", "method": "GET", "status_code": 200, "duration_ms": 17.05}
+INFO:     127.0.0.1:41392 - "GET /api/analytics/budget-state HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:02.995322+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "dc88eb1b-9e5c-42fb-8b21-45a03bcabb3b", "path": "/api/analytics/forecast", "method": "GET", "status_code": 200, "duration_ms": 12.57}
+INFO:     127.0.0.1:41418 - "GET /api/analytics/forecast HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:02.997590+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "8aee3524-2d8d-4d3c-9e8c-38b65aa749f2", "path": "/api/goals/", "method": "GET", "status_code": 200, "duration_ms": 14.98}
+INFO:     127.0.0.1:41406 - "GET /api/goals/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:02.997953+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "5b9ead8a-5671-4beb-961d-c7a0580bcdd3", "path": "/api/analytics/", "method": "GET", "status_code": 200, "duration_ms": 16.9}
+INFO:     127.0.0.1:41404 - "GET /api/analytics/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:02.998291+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "d993aaa8-c33d-41c9-9955-f5ab07754919", "path": "/api/realtime/notifications", "method": "GET", "status_code": 200, "duration_ms": 15.45}
+INFO:     127.0.0.1:41430 - "GET /api/realtime/notifications HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:03.364882+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "d68f7aeb-4f57-4ed9-9c5b-3c2dba8fd9c8", "path": "/api/analytics/budget-state", "method": "GET", "status_code": 200, "duration_ms": 15.31}
+INFO:     127.0.0.1:41430 - "GET /api/analytics/budget-state HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:03.366662+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "80dbd561-af7a-4308-9b99-11bdbf9ea656", "path": "/api/analytics/forecast", "method": "GET", "status_code": 200, "duration_ms": 13.84}
+INFO:     127.0.0.1:41418 - "GET /api/analytics/forecast HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:03.369553+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "fcd0fd0d-25bc-4d53-bb64-cac5060c47ed", "path": "/api/goals/", "method": "GET", "status_code": 200, "duration_ms": 16.86}
+INFO:     127.0.0.1:41404 - "GET /api/goals/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:03.370790+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "07aee417-ae4d-48eb-913f-94ee248a3941", "path": "/api/analytics/", "method": "GET", "status_code": 200, "duration_ms": 20.1}
+INFO:     127.0.0.1:41406 - "GET /api/analytics/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:03.683789+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "be34615c-3bcb-4cfa-a6f6-d6518f85bd02", "path": "/api/analytics/budget-state", "method": "GET", "status_code": 200, "duration_ms": 15.05}
+INFO:     127.0.0.1:41406 - "GET /api/analytics/budget-state HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:03.685675+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "418be498-47b2-471a-b870-678e44fe5a58", "path": "/api/analytics/", "method": "GET", "status_code": 200, "duration_ms": 14.82}
+INFO:     127.0.0.1:41404 - "GET /api/analytics/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:03.687014+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "5c200cfd-4dca-4134-86c3-63e9ca09c4ed", "path": "/api/goals/", "method": "GET", "status_code": 200, "duration_ms": 15.95}
+INFO:     127.0.0.1:41418 - "GET /api/goals/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:03.687802+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "f0e3ac35-2502-4d45-9901-5895c76f5ad0", "path": "/api/analytics/forecast", "method": "GET", "status_code": 200, "duration_ms": 11.45}
+INFO:     127.0.0.1:41430 - "GET /api/analytics/forecast HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:03.690656+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "5c04d2d0-9546-4c9c-b64c-503cc33d80a7", "path": "/api/realtime/notifications", "method": "GET", "status_code": 200, "duration_ms": 14.17}
+INFO:     127.0.0.1:41392 - "GET /api/realtime/notifications HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:04.653834+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "808bac4a-f60c-4146-a3c9-27ded335cf8a", "path": "/api/analytics/", "method": "GET", "status_code": 200, "duration_ms": 10.76}
+INFO:     127.0.0.1:41430 - "GET /api/analytics/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:04.656414+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "3e1ca1ed-a1c8-48d3-9015-6a9c57a0e65d", "path": "/api/goals/", "method": "GET", "status_code": 200, "duration_ms": 12.01}
+INFO:     127.0.0.1:41418 - "GET /api/goals/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:04.656996+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "276b128c-e39e-4db9-9f45-8be9ab349dcc", "path": "/api/analytics/forecast", "method": "GET", "status_code": 200, "duration_ms": 10.51}
+INFO:     127.0.0.1:41406 - "GET /api/analytics/forecast HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:04.661345+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "5efbaf08-747a-4630-9ae3-9bf889c511d7", "path": "/api/analytics/budget-state", "method": "GET", "status_code": 200, "duration_ms": 21.39}
+INFO:     127.0.0.1:41392 - "GET /api/analytics/budget-state HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:05.029238+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "15f19d5e-584e-4b96-b4bd-a9e218df6eb2", "path": "/api/analytics/", "method": "GET", "status_code": 200, "duration_ms": 9.09}
+INFO:     127.0.0.1:41406 - "GET /api/analytics/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:05.034614+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "da5ed384-70f6-4b83-9123-fb93878e099f", "path": "/api/analytics/budget-state", "method": "GET", "status_code": 200, "duration_ms": 16.45}
+INFO:     127.0.0.1:41392 - "GET /api/analytics/budget-state HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:05.036710+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "52e795ce-77b7-4c47-95de-8f7e8f922908", "path": "/api/analytics/forecast", "method": "GET", "status_code": 200, "duration_ms": 10.98}
+INFO:     127.0.0.1:41430 - "GET /api/analytics/forecast HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:05.037371+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "f0472e9b-4cd8-407a-8e79-3a4620ffb553", "path": "/api/goals/", "method": "GET", "status_code": 200, "duration_ms": 17.15}
+INFO:     127.0.0.1:41418 - "GET /api/goals/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:05.037770+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "7703912e-86b4-4eeb-9f38-7ed06c5b3582", "path": "/api/realtime/notifications", "method": "GET", "status_code": 200, "duration_ms": 11.81}
+INFO:     127.0.0.1:41404 - "GET /api/realtime/notifications HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:05.456326+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "579fa908-d94f-4e03-a4b7-75be4d0a8409", "path": "/api/analytics/", "method": "GET", "status_code": 200, "duration_ms": 11.46}
+INFO:     127.0.0.1:41418 - "GET /api/analytics/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:05.457835+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "57816f7c-cc72-4db3-8d42-f3237fcdd249", "path": "/api/goals/", "method": "GET", "status_code": 200, "duration_ms": 7.72}
+INFO:     127.0.0.1:41430 - "GET /api/goals/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:05.459200+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "332da460-0c75-4fa6-9c2b-3ce9b8796504", "path": "/api/analytics/forecast", "method": "GET", "status_code": 200, "duration_ms": 8.92}
+INFO:     127.0.0.1:41392 - "GET /api/analytics/forecast HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:05.459842+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "3268b89b-5f9d-4f0a-859a-ab19046fd655", "path": "/api/analytics/budget-state", "method": "GET", "status_code": 200, "duration_ms": 15.85}
+INFO:     127.0.0.1:41404 - "GET /api/analytics/budget-state HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:06.025011+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "df605601-f80f-447a-a305-5800db237b38", "path": "/api/privacy/consents", "method": "GET", "status_code": 200, "duration_ms": 3.08}
+INFO:     127.0.0.1:41404 - "GET /api/privacy/consents HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:06.033238+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "97dc2f5a-842d-4a81-a3e9-858220486f7e", "path": "/api/profile/", "method": "GET", "status_code": 200, "duration_ms": 2.91}
+INFO:     127.0.0.1:41404 - "GET /api/profile/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:06.317320+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "3fcc5121-10a1-4e1e-8442-c9f16bc632a1", "path": "/api/privacy/consents", "method": "GET", "status_code": 200, "duration_ms": 3.05}
+INFO:     127.0.0.1:41404 - "GET /api/privacy/consents HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:06.326095+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "9511d57e-a010-484c-bb51-3fcc6281ece6", "path": "/api/transactions/", "method": "GET", "status_code": 200, "duration_ms": 2.74}
+INFO:     127.0.0.1:41404 - "GET /api/transactions/?limit=50 HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:08.654210+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "0e2e713c-d0cc-444f-867d-48f99b829e84", "path": "/api/analytics/", "method": "GET", "status_code": 200, "duration_ms": 13.93}
+INFO:     127.0.0.1:41392 - "GET /api/analytics/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:08.656340+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "5c9547b9-6c0a-4cc4-a5ac-85a3243b10f3", "path": "/api/analytics/budget-state", "method": "GET", "status_code": 200, "duration_ms": 18.12}
+INFO:     127.0.0.1:41404 - "GET /api/analytics/budget-state HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:08.656781+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "692795ae-28fe-4b5e-9913-674162781c71", "path": "/api/analytics/forecast", "method": "GET", "status_code": 200, "duration_ms": 12.0}
+INFO:     127.0.0.1:41418 - "GET /api/analytics/forecast HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:08.657996+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "6e5ad101-43e7-4faf-87b7-cbe79082e521", "path": "/api/realtime/notifications", "method": "GET", "status_code": 200, "duration_ms": 12.99}
+INFO:     127.0.0.1:41406 - "GET /api/realtime/notifications HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:43:08.659673+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "1d946a56-85d1-47ea-ac07-a51f9a0b3995", "path": "/api/goals/", "method": "GET", "status_code": 200, "duration_ms": 15.01}
+INFO:     127.0.0.1:41430 - "GET /api/goals/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:44:54.430382+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "db8a8c4a-4f7f-4101-ab4b-606c86a91935", "path": "/api/health", "method": "GET", "status_code": 404, "duration_ms": 4.02}
+INFO:     127.0.0.1:49256 - "GET /api/health HTTP/1.1" 404 Not Found
+{"ts": "2026-09-09T10:12:06.649849+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "05f2b67b-aa78-41d0-a841-a9e2e5128a15", "path": "/api/health", "method": "GET", "status_code": 404, "duration_ms": 0.69}
+INFO:     127.0.0.1:53206 - "GET /api/health HTTP/1.1" 404 Not Found
+{"ts": "2026-09-09T10:13:01.461274+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "978ceccf-e0d0-4a76-9bf7-7dbb65273ae1", "path": "/", "method": "GET", "status_code": 200, "duration_ms": 1.08}
+INFO:     127.0.0.1:42902 - "GET / HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+{"ts": "2026-09-09T10:13:28.517333+00:00", "level": "INFO", "logger": "apscheduler.scheduler", "message": "Scheduler has been shut down"}
+INFO:     Application shutdown complete.
+INFO:     Finished server process [75207]

@@ -1,0 +1,103 @@
+nohup: ignoring input
+INFO:     Started server process [10030]
+INFO:     Waiting for application startup.
+{"ts": "2026-09-09T07:25:19.793657+00:00", "level": "INFO", "logger": "apscheduler.scheduler", "message": "Adding job tentatively -- it will be properly scheduled when the scheduler starts"}
+{"ts": "2026-09-09T07:25:19.795629+00:00", "level": "INFO", "logger": "apscheduler.scheduler", "message": "Adding job tentatively -- it will be properly scheduled when the scheduler starts"}
+{"ts": "2026-09-09T07:25:19.796099+00:00", "level": "INFO", "logger": "apscheduler.scheduler", "message": "Adding job tentatively -- it will be properly scheduled when the scheduler starts"}
+{"ts": "2026-09-09T07:25:19.796238+00:00", "level": "INFO", "logger": "apscheduler.scheduler", "message": "Adding job tentatively -- it will be properly scheduled when the scheduler starts"}
+{"ts": "2026-09-09T07:25:19.796331+00:00", "level": "INFO", "logger": "apscheduler.scheduler", "message": "Adding job tentatively -- it will be properly scheduled when the scheduler starts"}
+{"ts": "2026-09-09T07:25:19.796410+00:00", "level": "INFO", "logger": "apscheduler.scheduler", "message": "Adding job tentatively -- it will be properly scheduled when the scheduler starts"}
+{"ts": "2026-09-09T07:25:19.796555+00:00", "level": "INFO", "logger": "apscheduler.scheduler", "message": "Added job \"send_daily_pending_classification_reminders\" to job store \"default\""}
+{"ts": "2026-09-09T07:25:19.796672+00:00", "level": "INFO", "logger": "apscheduler.scheduler", "message": "Added job \"start_scheduler.<locals>.wrapped_lifecycle_cleanup\" to job store \"default\""}
+{"ts": "2026-09-09T07:25:19.796754+00:00", "level": "INFO", "logger": "apscheduler.scheduler", "message": "Added job \"start_scheduler.<locals>.wrapped_proactive_nudge_scan\" to job store \"default\""}
+{"ts": "2026-09-09T07:25:19.796819+00:00", "level": "INFO", "logger": "apscheduler.scheduler", "message": "Added job \"send_monthly_reports\" to job store \"default\""}
+{"ts": "2026-09-09T07:25:19.796915+00:00", "level": "INFO", "logger": "apscheduler.scheduler", "message": "Added job \"start_scheduler.<locals>.wrapped_persona_update\" to job store \"default\""}
+{"ts": "2026-09-09T07:25:19.796987+00:00", "level": "INFO", "logger": "apscheduler.scheduler", "message": "Added job \"start_scheduler.<locals>.wrapped_aggregation\" to job store \"default\""}
+{"ts": "2026-09-09T07:25:19.797007+00:00", "level": "INFO", "logger": "apscheduler.scheduler", "message": "Scheduler started"}
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+{"ts": "2026-09-09T07:25:27.216897+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "fffd5898-c451-4453-8b66-7c1a4d04d952", "path": "/health", "method": "GET", "status_code": 200, "duration_ms": 35.32}
+Initializing RAG Knowledge Base...
+Loaded 28 tax rules into RAG.
+Loaded 55 FAQs into RAG.
+INFO:     127.0.0.1:59502 - "GET /health HTTP/1.1" 200 OK
+{"ts": "2026-09-09T07:26:16.259250+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "1b383809-0082-44de-af81-74be5c870fd6", "path": "/health", "method": "GET", "status_code": 200, "duration_ms": 1.42}
+INFO:     127.0.0.1:39228 - "GET /health HTTP/1.1" 200 OK
+{"ts": "2026-09-09T07:26:16.268440+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "e5a24e9c-bc1a-4852-9fb2-982edf22937a", "path": "/docs", "method": "GET", "status_code": 200, "duration_ms": 0.32}
+INFO:     127.0.0.1:39236 - "GET /docs HTTP/1.1" 200 OK
+{"ts": "2026-09-09T08:21:02.776956+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "2cd7aff1-f0d3-45c3-bef6-a463dc77210b", "path": "/health", "method": "GET", "status_code": 200, "duration_ms": 1.01}
+INFO:     127.0.0.1:46368 - "GET /health HTTP/1.1" 200 OK
+{"ts": "2026-09-09T08:25:19.794204+00:00", "level": "INFO", "logger": "apscheduler.executors.default", "message": "Running job \"send_daily_pending_classification_reminders (trigger: interval[1:00:00], next run at: 2026-09-09 08:25:19 UTC)\" (scheduled at 2026-09-09 08:25:19.793532+00:00)"}
+{"ts": "2026-09-09T08:25:19.828232+00:00", "level": "INFO", "logger": "apscheduler.executors.default", "message": "Job \"send_daily_pending_classification_reminders (trigger: interval[1:00:00], next run at: 2026-09-09 09:25:19 UTC)\" executed successfully"}
+{"ts": "2026-09-09T08:45:19.990291+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "c9f37d77-4020-428c-8cb1-403669e682e1", "path": "/health", "method": "GET", "status_code": 200, "duration_ms": 0.7}
+INFO:     127.0.0.1:56474 - "GET /health HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:20:45.046519+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "65a3aa4b-f385-4dc3-8b71-36be30419645", "path": "/health", "method": "GET", "status_code": 200, "duration_ms": 0.9}
+INFO:     127.0.0.1:60418 - "GET /health HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:23:36.122098+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "ff7a87e1-7a68-48f7-998f-f64b96a64b8a", "path": "/api/analytics/budget-state", "method": "OPTIONS", "status_code": 200, "duration_ms": 0.69}
+INFO:     127.0.0.1:42690 - "OPTIONS /api/analytics/budget-state HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:23:36.126058+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "97102d54-ca5f-483b-b39d-2733f4890eab", "path": "/api/analytics/", "method": "OPTIONS", "status_code": 200, "duration_ms": 1.96}
+INFO:     127.0.0.1:42706 - "OPTIONS /api/analytics/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:23:36.126609+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "c6b11f48-e086-445e-ad54-42e1f2da9a17", "path": "/api/goals/", "method": "OPTIONS", "status_code": 200, "duration_ms": 2.27}
+INFO:     127.0.0.1:42716 - "OPTIONS /api/goals/ HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:23:36.127013+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "04f99e25-46e3-4452-9976-42af5b9f59cd", "path": "/api/analytics/forecast", "method": "OPTIONS", "status_code": 200, "duration_ms": 2.47}
+INFO:     127.0.0.1:42726 - "OPTIONS /api/analytics/forecast HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:23:36.127893+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "13c6c0aa-b649-4d0e-b2e4-5416caad238b", "path": "/api/realtime/notifications", "method": "OPTIONS", "status_code": 200, "duration_ms": 2.44}
+INFO:     127.0.0.1:42734 - "OPTIONS /api/realtime/notifications HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:23:36.130289+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "497a84a6-0b86-4b68-8ed9-82684af2c573", "path": "/api/analytics/budget-state", "method": "GET", "status_code": 404, "duration_ms": 1.31}
+INFO:     127.0.0.1:42746 - "GET /api/analytics/budget-state HTTP/1.1" 404 Not Found
+{"ts": "2026-09-09T09:23:36.146173+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "85c65a7b-bc5e-4241-8a59-49ccaba8a07a", "path": "/api/realtime/notifications", "method": "GET", "status_code": 401, "duration_ms": 5.18}
+INFO:     127.0.0.1:42746 - "GET /api/realtime/notifications HTTP/1.1" 401 Unauthorized
+{"ts": "2026-09-09T09:23:36.146703+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "99055613-81a7-46ae-9436-1a8aa4c4e936", "path": "/api/analytics/forecast", "method": "GET", "status_code": 401, "duration_ms": 5.84}
+INFO:     127.0.0.1:42716 - "GET /api/analytics/forecast HTTP/1.1" 401 Unauthorized
+{"ts": "2026-09-09T09:23:36.146993+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "8c255b95-b07f-4f7b-8319-0ffdb1a9d96d", "path": "/api/goals/", "method": "GET", "status_code": 401, "duration_ms": 6.5}
+INFO:     127.0.0.1:42726 - "GET /api/goals/ HTTP/1.1" 401 Unauthorized
+{"ts": "2026-09-09T09:23:36.147197+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "32992cf5-30d6-4969-a999-43e0002573f8", "path": "/api/analytics/", "method": "GET", "status_code": 401, "duration_ms": 8.22}
+INFO:     127.0.0.1:42734 - "GET /api/analytics/ HTTP/1.1" 401 Unauthorized
+{"ts": "2026-09-09T09:25:19.794339+00:00", "level": "INFO", "logger": "apscheduler.executors.default", "message": "Running job \"send_daily_pending_classification_reminders (trigger: interval[1:00:00], next run at: 2026-09-09 10:25:19 UTC)\" (scheduled at 2026-09-09 09:25:19.793532+00:00)"}
+{"ts": "2026-09-09T09:25:19.796940+00:00", "level": "INFO", "logger": "apscheduler.executors.default", "message": "Job \"send_daily_pending_classification_reminders (trigger: interval[1:00:00], next run at: 2026-09-09 10:25:19 UTC)\" executed successfully"}
+{"ts": "2026-09-09T09:26:27.022345+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "1a73b58a-52e4-45e2-a5b3-ba5b5dcb80e1", "path": "/api/auth/signup", "method": "OPTIONS", "status_code": 200, "duration_ms": 0.44}
+INFO:     127.0.0.1:56180 - "OPTIONS /api/auth/signup HTTP/1.1" 200 OK
+{"ts": "2026-09-09T09:26:27.032925+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "bbdf1a68-af17-466f-8e26-c92003d3b07c", "path": "/api/auth/signup", "method": "POST", "status_code": 422, "duration_ms": 5.12}
+INFO:     127.0.0.1:56180 - "POST /api/auth/signup HTTP/1.1" 422 Unprocessable Content
+{"ts": "2026-09-09T09:26:34.922648+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "bbc2eebf-9ac8-44ef-b6f2-9c706bfe6cef", "path": "/api/auth/signup", "method": "POST", "status_code": 422, "duration_ms": 3.3}
+INFO:     127.0.0.1:56182 - "POST /api/auth/signup HTTP/1.1" 422 Unprocessable Content
+{"ts": "2026-09-09T09:26:35.982523+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "a54d513b-de28-4ff0-9716-544790af44e1", "path": "/api/auth/signup", "method": "POST", "status_code": 422, "duration_ms": 4.08}
+INFO:     127.0.0.1:56182 - "POST /api/auth/signup HTTP/1.1" 422 Unprocessable Content
+{"ts": "2026-09-09T09:26:37.312144+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "c10a5e24-c186-4f8e-85a9-6386312779af", "path": "/api/auth/signup", "method": "POST", "status_code": 422, "duration_ms": 3.26}
+INFO:     127.0.0.1:56182 - "POST /api/auth/signup HTTP/1.1" 422 Unprocessable Content
+{"ts": "2026-09-09T09:26:37.467312+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "a5e946c2-6ffc-446b-ad20-9731498e4722", "path": "/api/auth/signup", "method": "POST", "status_code": 422, "duration_ms": 3.12}
+INFO:     127.0.0.1:56182 - "POST /api/auth/signup HTTP/1.1" 422 Unprocessable Content
+{"ts": "2026-09-09T09:26:39.001529+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "f10f759b-99f9-40b9-b896-3f8193e09d57", "path": "/api/auth/signup", "method": "POST", "status_code": 422, "duration_ms": 2.83}
+INFO:     127.0.0.1:56182 - "POST /api/auth/signup HTTP/1.1" 422 Unprocessable Content
+{"ts": "2026-09-09T09:26:39.182136+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "5ab29124-d898-4c7e-a089-fd86fa2e79dd", "path": "/api/auth/signup", "method": "POST", "status_code": 422, "duration_ms": 3.43}
+INFO:     127.0.0.1:56182 - "POST /api/auth/signup HTTP/1.1" 422 Unprocessable Content
+{"ts": "2026-09-09T09:26:40.978889+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "9b1a5d77-c7ed-4bbe-ab76-cf0660b1ad0c", "path": "/api/auth/signup", "method": "POST", "status_code": 422, "duration_ms": 3.38}
+INFO:     127.0.0.1:56182 - "POST /api/auth/signup HTTP/1.1" 422 Unprocessable Content
+{"ts": "2026-09-09T09:26:43.392431+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "f7e585ed-b856-473d-9ec8-d50b7299846f", "path": "/api/auth/signup", "method": "POST", "status_code": 422, "duration_ms": 4.77}
+INFO:     127.0.0.1:56182 - "POST /api/auth/signup HTTP/1.1" 422 Unprocessable Content
+{"ts": "2026-09-09T09:26:44.225578+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "16be326c-7701-4630-bfa3-e781a03be30f", "path": "/api/auth/signup", "method": "POST", "status_code": 422, "duration_ms": 2.86}
+INFO:     127.0.0.1:56182 - "POST /api/auth/signup HTTP/1.1" 422 Unprocessable Content
+{"ts": "2026-09-09T09:26:44.662440+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "85b58544-0809-4687-976c-83f7e3ff9734", "path": "/api/auth/signup", "method": "POST", "status_code": 422, "duration_ms": 3.4}
+INFO:     127.0.0.1:56182 - "POST /api/auth/signup HTTP/1.1" 422 Unprocessable Content
+{"ts": "2026-09-09T09:26:45.060850+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "14aca887-12f3-44b7-86f4-a13d92775a42", "path": "/api/auth/signup", "method": "POST", "status_code": 422, "duration_ms": 2.78}
+INFO:     127.0.0.1:56182 - "POST /api/auth/signup HTTP/1.1" 422 Unprocessable Content
+{"ts": "2026-09-09T09:26:48.456049+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "a311eecd-fbcc-405f-979b-99d510f3e71f", "path": "/api/auth/signup", "method": "POST", "status_code": 422, "duration_ms": 2.59}
+INFO:     127.0.0.1:56182 - "POST /api/auth/signup HTTP/1.1" 422 Unprocessable Content
+{"ts": "2026-09-09T09:26:50.880365+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "b203bc02-a4ae-4590-a782-e93a0455471f", "path": "/api/auth/signup", "method": "POST", "status_code": 422, "duration_ms": 3.25}
+INFO:     127.0.0.1:56182 - "POST /api/auth/signup HTTP/1.1" 422 Unprocessable Content
+{"ts": "2026-09-09T09:27:35.609173+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "41274e9e-9189-43c0-a811-e46dc23de324", "path": "/api/auth/signup", "method": "POST", "status_code": 422, "duration_ms": 3.8}
+INFO:     127.0.0.1:37578 - "POST /api/auth/signup HTTP/1.1" 422 Unprocessable Content
+{"ts": "2026-09-09T09:27:35.753018+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "b316e15e-03de-4ddb-8790-cd1ab7d5298d", "path": "/api/auth/signup", "method": "POST", "status_code": 422, "duration_ms": 2.96}
+INFO:     127.0.0.1:37578 - "POST /api/auth/signup HTTP/1.1" 422 Unprocessable Content
+{"ts": "2026-09-09T09:27:35.904183+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "4986f5a1-2dde-4f3c-9dd7-575e7f39d596", "path": "/api/auth/signup", "method": "POST", "status_code": 422, "duration_ms": 2.99}
+INFO:     127.0.0.1:37578 - "POST /api/auth/signup HTTP/1.1" 422 Unprocessable Content
+{"ts": "2026-09-09T09:27:36.023430+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "765cfa8a-5e9e-4f76-bcd6-ffedb1bc8922", "path": "/api/auth/signup", "method": "POST", "status_code": 422, "duration_ms": 2.78}
+INFO:     127.0.0.1:37578 - "POST /api/auth/signup HTTP/1.1" 422 Unprocessable Content
+{"ts": "2026-09-09T09:27:36.272580+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "9c01dd8d-ed98-45c8-9776-b7b013ba8e5c", "path": "/api/auth/signup", "method": "POST", "status_code": 422, "duration_ms": 3.61}
+INFO:     127.0.0.1:37578 - "POST /api/auth/signup HTTP/1.1" 422 Unprocessable Content
+{"ts": "2026-09-09T09:27:36.474398+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "e2f735fb-b1f1-4579-89fa-9cb4454a2d18", "path": "/api/auth/signup", "method": "POST", "status_code": 422, "duration_ms": 3.81}
+INFO:     127.0.0.1:37578 - "POST /api/auth/signup HTTP/1.1" 422 Unprocessable Content
+{"ts": "2026-09-09T09:31:22.925542+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "7f19ac2c-ed05-4b02-96b1-19defffe494a", "path": "/api/auth/signup", "method": "POST", "status_code": 422, "duration_ms": 7.48}
+INFO:     127.0.0.1:46992 - "POST /api/auth/signup HTTP/1.1" 422 Unprocessable Content
+{"ts": "2026-09-09T09:37:46.851568+00:00", "level": "INFO", "logger": "finassist.api", "message": "Request completed", "request_id": "9a968347-2b8b-4c39-a84a-1551866fd478", "path": "/docs", "method": "GET", "status_code": 200, "duration_ms": 0.34}
+INFO:     127.0.0.1:39296 - "GET /docs HTTP/1.1" 200 OK

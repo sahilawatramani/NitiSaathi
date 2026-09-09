@@ -1,0 +1,302 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Fraud Check - Nitisaathi</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed-dim": "#ffb3b1",
+                        "primary": "#82001b",
+                        "surface-dim": "#dcd9d9",
+                        "on-tertiary-fixed": "#00210d",
+                        "on-secondary-container": "#fffbff",
+                        "surface-container-highest": "#e5e2e1",
+                        "secondary-container": "#db313f",
+                        "tertiary-container": "#006332",
+                        "outline-variant": "#e1bebd",
+                        "on-secondary-fixed": "#410007",
+                        "on-surface": "#1c1b1b",
+                        "outline": "#8d706f",
+                        "caution-tint": "#F8D7DC",
+                        "surface-container": "#f0eded",
+                        "secondary": "#b7102a",
+                        "tertiary-fixed": "#8df9ac",
+                        "inverse-on-surface": "#f3f0ef",
+                        "on-tertiary": "#ffffff",
+                        "primary-fixed": "#ffdad9",
+                        "on-surface-variant": "#594140",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed-dim": "#71dc92",
+                        "on-primary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "inverse-primary": "#ffb3b2",
+                        "background": "#fcf9f8",
+                        "background-off-white": "#F7F5F2",
+                        "surface-bright": "#fcf9f8",
+                        "on-primary-fixed-variant": "#910621",
+                        "primary-container": "#a61c2e",
+                        "surface-container-low": "#f6f3f2",
+                        "on-primary-fixed": "#410009",
+                        "inverse-surface": "#313030",
+                        "tertiary": "#004923",
+                        "on-primary-container": "#ffb9b8",
+                        "surface": "#fcf9f8",
+                        "surface-tint": "#b32736",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-high": "#eae7e7",
+                        "on-tertiary-fixed-variant": "#005229",
+                        "text-warm-gray": "#6B6560",
+                        "on-tertiary-container": "#75e096",
+                        "error": "#ba1a1a",
+                        "secondary-fixed": "#ffdad8",
+                        "primary-fixed-dim": "#ffb3b2",
+                        "surface-variant": "#e5e2e1",
+                        "on-background": "#1c1b1b",
+                        "on-secondary-fixed-variant": "#92001c"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-sm": "8px",
+                        "gutter": "24px",
+                        "margin-page": "48px",
+                        "container-max": "1200px",
+                        "stack-lg": "32px",
+                        "stack-md": "16px",
+                        "sidebar-width": "260px"
+                    },
+                    "fontFamily": {
+                        "headline-sm": ["Noto Sans"],
+                        "headline-lg": ["Noto Sans"],
+                        "display-lg": ["Noto Sans"],
+                        "headline-md": ["Noto Sans"],
+                        "label-lg": ["Noto Sans"],
+                        "body-md": ["Noto Sans"],
+                        "label-sm": ["Noto Sans"],
+                        "body-lg": ["Noto Sans"]
+                    },
+                    "fontSize": {
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Noto Sans', sans-serif; background-color: #fcf9f8; }
+        
+        /* Custom scrollbar for textareas */
+        textarea::-webkit-scrollbar { width: 8px; }
+        textarea::-webkit-scrollbar-track { background: #f0eded; border-radius: 4px; }
+        textarea::-webkit-scrollbar-thumb { background: #dcd9d9; border-radius: 4px; }
+        textarea::-webkit-scrollbar-thumb:hover { background: #a61c2e; }
+
+        /* Focus ring utility */
+        .focus-ring:focus-within { outline: 2px solid #E63946; outline-offset: 2px; }
+        
+        /* Card hover depth */
+        .card-depth-hover { transition: all 0.2s ease-in-out; }
+        .card-depth-hover:hover {
+            box-shadow: 0px 8px 30px rgba(26, 26, 26, 0.08);
+            border: 1px solid rgba(166, 28, 46, 0.1);
+        }
+    </style>
+</head>
+<body class="text-on-surface flex min-h-screen">
+<!-- Persistent Side Navigation (JSON Anchored Component) -->
+<nav class="fixed left-0 top-0 h-screen w-[260px] bg-background-off-white dark:bg-surface-container-low flex flex-col py-stack-lg z-50">
+<div class="px-gutter mb-stack-lg">
+<h1 class="font-headline-md text-headline-md font-black text-primary dark:text-primary-fixed-dim">Nitisaathi</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Financial Guardian</p>
+</div>
+<div class="flex flex-col flex-grow">
+<!-- Nav Items -->
+<a class="flex items-center gap-4 px-gutter py-3 text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-container-highest dark:hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-body-md text-body-md">Home</span>
+</a>
+<a class="flex items-center gap-4 px-gutter py-3 text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-container-highest dark:hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-body-md text-body-md">Budget</span>
+</a>
+<a class="flex items-center gap-4 px-gutter py-3 text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-container-highest dark:hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="smart_toy">smart_toy</span>
+<span class="font-body-md text-body-md">Assistant</span>
+</a>
+<a class="flex items-center gap-4 px-gutter py-3 text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-container-highest dark:hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance">account_balance</span>
+<span class="font-body-md text-body-md">Schemes</span>
+</a>
+<!-- Active Item: Fraud Check -->
+<a class="flex items-center gap-4 px-gutter py-3 text-primary dark:text-primary-fixed-dim font-bold border-l-4 border-primary dark:border-primary-fixed-dim bg-surface-container dark:bg-surface-container-high opacity-90 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="shield_person" style="font-variation-settings: 'FILL' 1;">shield_person</span>
+<span class="font-body-md text-body-md">Fraud Check</span>
+</a>
+<a class="flex items-center gap-4 px-gutter py-3 text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-container-highest dark:hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="notification_important">notification_important</span>
+<span class="font-body-md text-body-md">Nudges</span>
+</a>
+<a class="flex items-center gap-4 px-gutter py-3 text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim hover:bg-surface-container-highest dark:hover:bg-surface-container-high transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="assessment">assessment</span>
+<span class="font-body-md text-body-md">Reports</span>
+</a>
+
+</div>
+<div class="mt-auto">
+  <div class="border-t border-surface-variant mx-gutter my-2"></div>
+  <a class="flex items-center gap-4 px-gutter py-3 text-on-surface-variant hover:text-primary hover:bg-surface-container-highest transition-colors duration-200" href="#">
+    <span class="material-symbols-outlined" data-icon="settings">settings</span>
+    <span class="font-body-md text-body-md">सेटिंग्स / Settings</span>
+  </a>
+  <div class="px-gutter pt-4 pb-2">
+    <div class="flex items-center gap-3 p-2 rounded-lg bg-surface-container-low">
+      <div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold">
+        र
+      </div>
+      <div class="flex flex-col">
+        <span class="font-label-lg text-label-lg text-on-surface">राजेश</span>
+        <span class="font-label-sm text-label-sm text-on-surface-variant">Profile</span>
+      </div>
+    </div>
+  </div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 ml-[260px] flex flex-col items-center">
+<!-- Top App Bar (JSON Anchored Component) -->
+<header class="w-full flex justify-between items-center h-16 px-margin-page bg-surface border-b border-surface-variant sticky top-0 z-40">
+  <div class="flex items-center">
+    <h1 class="font-headline-md text-headline-md font-semibold text-[#1A1A1A]">धोखाधड़ी जांच / Fraud Check</h1>
+  </div>
+  <div class="flex items-center">
+    <button class="p-2 text-on-surface-variant hover:text-primary transition-colors rounded-full hover:bg-surface-container-highest">
+      <span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+    </button>
+  </div>
+</header>
+<!-- Canvas -->
+<div class="w-full max-w-container-max px-margin-page py-stack-lg flex flex-col gap-stack-lg flex-1">
+<!-- Page Header & Critical Notice -->
+<div class="flex flex-col gap-stack-md w-full">
+<h1 class="font-display-lg text-display-lg text-on-surface">धोखाधड़ी जांच / Fraud Check</h1>
+<!-- Fixed Notice -->
+<div class="w-full bg-[#1A1A1A] text-on-tertiary flex items-center gap-4 p-4 rounded-r-lg border-l-4 border-[#E63946] shadow-sm" role="alert">
+<span class="material-symbols-outlined text-[#E63946]" data-icon="shield" style="font-variation-settings: 'FILL' 1;">shield</span>
+<p class="font-body-lg text-body-lg font-bold tracking-wide">
+                        nitisaathi कभी भी आपका UPI PIN या OTP नहीं मांगेगा / nitisaathi will never ask for your UPI PIN or OTP
+                    </p>
+</div>
+</div>
+<!-- Two Column Layout Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-[2fr_1.5fr] gap-gutter w-full pb-stack-lg">
+<!-- Left Column: Input -->
+<section class="flex flex-col gap-stack-md bg-surface-container-lowest p-stack-lg rounded-xl shadow-[0px_4px_20px_rgba(26,26,26,0.05)] border border-surface-container card-depth-hover h-fit">
+<div class="flex items-center gap-3 border-b border-surface-container pb-4">
+<span class="material-symbols-outlined text-primary-container text-[28px]" data-icon="plagiarism">plagiarism</span>
+<h2 class="font-headline-md text-headline-md text-on-surface">एक संदिग्ध मैसेज चेक करें / Check a suspicious message</h2>
+</div>
+<div class="flex flex-col gap-4 mt-2">
+<label class="sr-only" for="fraud-input">Paste the message here</label>
+<div class="relative focus-ring rounded-lg">
+<textarea class="w-full bg-background-off-white border border-transparent rounded-lg p-4 font-body-md text-body-md text-on-surface resize-none focus:bg-surface-container-lowest focus:border-primary-container transition-colors" id="fraud-input" placeholder="यहां मैसेज पेस्ट करें... / Paste the message here..." rows="6"></textarea>
+</div>
+<div class="flex justify-between items-center mt-2">
+<button class="font-label-lg text-label-lg text-text-warm-gray hover:text-primary-container underline decoration-1 underline-offset-4 transition-colors" type="button">
+                                या हाल की लेनदेन चुनें / or select a recent transaction
+                            </button>
+<button class="bg-[#E63946] hover:bg-[#b7102a] text-on-primary font-label-lg text-label-lg px-8 py-3 rounded-full flex items-center gap-2 transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#E63946]">
+<span class="material-symbols-outlined" data-icon="search_check">search_check</span>
+                                जांचें / Check
+                            </button>
+</div>
+</div>
+</section>
+<!-- Right Column: Automatically Flagged -->
+<section class="flex flex-col gap-stack-md">
+<div class="flex items-center justify-between px-2">
+<h2 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container" data-icon="flag">flag</span>
+                            स्वतः पहचाने गए लेनदेन
+                            <span class="block text-sm font-normal text-text-warm-gray mt-1">Automatically flagged</span>
+</h2>
+<span class="bg-error-container text-on-error-container font-label-sm text-label-sm px-2.5 py-1 rounded-full font-bold">
+                            2 Flagged
+                        </span>
+</div>
+<div class="flex flex-col gap-4">
+<!-- Flagged Card 1 -->
+<div class="bg-surface-container-lowest p-5 rounded-xl shadow-[0px_4px_20px_rgba(26,26,26,0.05)] border border-surface-container border-l-4 border-l-primary flex flex-col gap-4 card-depth-hover">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">₹ 15,000.00</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Unknown Merchant (Delhi)</p>
+<p class="font-label-sm text-label-sm text-text-warm-gray mt-1">Today, 10:42 AM</p>
+</div>
+<div class="bg-caution-tint text-[#93000a] px-3 py-1 rounded-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="location_off">location_off</span>
+<span class="font-label-sm text-label-sm font-bold">असामान्य स्थान / Unusual location</span>
+</div>
+</div>
+<div class="flex gap-3 mt-2 border-t border-surface-container pt-4">
+<button class="flex-1 border border-outline text-on-surface-variant font-label-lg text-label-lg py-2 rounded-full hover:bg-surface-container-highest transition-colors flex justify-center items-center gap-1">
+<span class="material-symbols-outlined text-[18px]" data-icon="check_circle">check_circle</span>
+                                    सही है
+                                </button>
+<button class="flex-1 border-2 border-error text-error font-label-lg text-label-lg py-2 rounded-full hover:bg-error-container transition-colors flex justify-center items-center gap-1 font-bold">
+<span class="material-symbols-outlined text-[18px]" data-icon="gavel">gavel</span>
+                                    धोखाधड़ी है
+                                </button>
+</div>
+</div>
+<!-- Flagged Card 2 -->
+<div class="bg-surface-container-lowest p-5 rounded-xl shadow-[0px_4px_20px_rgba(26,26,26,0.05)] border border-surface-container border-l-4 border-l-primary flex flex-col gap-4 card-depth-hover">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">₹ 4,999.00</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">GameCredits.net</p>
+<p class="font-label-sm text-label-sm text-text-warm-gray mt-1">Yesterday, 11:20 PM</p>
+</div>
+<div class="bg-caution-tint text-[#93000a] px-3 py-1 rounded-md flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="schedule">schedule</span>
+<span class="font-label-sm text-label-sm font-bold">असामान्य समय / Odd hours</span>
+</div>
+</div>
+<div class="flex gap-3 mt-2 border-t border-surface-container pt-4">
+<button class="flex-1 border border-outline text-on-surface-variant font-label-lg text-label-lg py-2 rounded-full hover:bg-surface-container-highest transition-colors flex justify-center items-center gap-1">
+<span class="material-symbols-outlined text-[18px]" data-icon="check_circle">check_circle</span>
+                                    सही है
+                                </button>
+<button class="flex-1 border-2 border-error text-error font-label-lg text-label-lg py-2 rounded-full hover:bg-error-container transition-colors flex justify-center items-center gap-1 font-bold">
+<span class="material-symbols-outlined text-[18px]" data-icon="gavel">gavel</span>
+                                    धोखाधड़ी है
+                                </button>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+
+
+</body></html>

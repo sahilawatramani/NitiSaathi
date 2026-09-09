@@ -1,0 +1,383 @@
+{
+  "last_updated": "2026-08-20",
+  "data_sources": [
+    "https://www.eshram.gov.in/social-security-welfare-schemes",
+    "https://economictimes.indiatimes.com/wealth/save/pradhan-mantri-shram-yogi-maandhan-pm-sym-pension-yojana",
+    "https://static.pib.gov.in/WriteReadData/specificdocs/documents/2025/may/doc202558551401.pdf"
+  ],
+  "schemes": {
+    "e_shram": {
+      "full_name": "e-Shram National Database of Unorganized Workers",
+      "last_verified": "2026-08-20",
+      "scheme_code": "ESHRAM_001",
+      "ministry": "Ministry of Labour and Employment",
+      "eligibility": {
+        "age_min": 16,
+        "age_max": 59,
+        "epfo_esic_registered": false,
+        "income_tax_payer": false,
+        "required_documents": ["aadhaar", "bank_account", "mobile_number"]
+      },
+      "benefits": [
+        "Accident cover up to ₹2 lakh via linkage",
+        "Gateway to other welfare schemes (PMSBY, PM-SYM)",
+        "Priority during government welfare distributions",
+        "Job notifications and skill development opportunities"
+      ],
+      "registration": {
+        "fee": 0,
+        "process": "Online at eshram.gov.in or via Common Service Centre",
+        "validity": "Lifetime",
+        "uan_issued": true
+      },
+      "target_group": "Unorganized workers including gig workers, platform workers, construction workers, domestic workers, agricultural workers",
+      "current_enrollment": "31.82 crore workers as of August 2026",
+      "notes": "Mandatory prerequisite for accessing other gig worker welfare schemes"
+    },
+    "pm_sym": {
+      "full_name": "Pradhan Mantri Shram Yogi Maan-Dhan",
+      "last_verified": "2026-08-20",
+      "scheme_code": "PMSYM_001",
+      "ministry": "Ministry of Labour and Employment",
+      "eligibility": {
+        "age_min": 18,
+        "age_max": 40,
+        "monthly_income_max": 15000,
+        "epfo_esic_registered": false,
+        "nps_enrolled": false,
+        "income_tax_payer": false,
+        "e_shram_registered": true
+      },
+      "benefits": [
+        "Guaranteed minimum pension of ₹3,000/month after age 60",
+        "Government matching contribution (1:1)",
+        "Family pension (50% to spouse in case of death)",
+        "Voluntary exit with interest on contribution"
+      ],
+      "contribution_matrix": {
+        "18": 55,
+        "19": 58,
+        "20": 61,
+        "21": 64,
+        "22": 68,
+        "23": 72,
+        "24": 76,
+        "25": 80,
+        "26": 85,
+        "27": 90,
+        "28": 95,
+        "29": 100,
+        "30": 105,
+        "31": 110,
+        "32": 120,
+        "33": 130,
+        "34": 140,
+        "35": 150,
+        "36": 160,
+        "37": 170,
+        "38": 180,
+        "39": 190,
+        "40": 200
+      },
+      "registration": {
+        "fee": 0,
+        "process": "Online via Jan Suraksha Portal or Common Service Centre",
+        "auto_debit_required": true,
+        "enrollment_deadline": "Before age 40"
+      },
+      "target_group": "Unorganized workers with monthly income below ₹15,000",
+      "risk_factors": [
+        "Auto-debit failure leads to contribution lapse",
+        "Cannot enroll after age 40",
+        "Requires sustained monthly contribution for full benefit"
+      ],
+      "notes": "Joint reasoning with Budget Agent required: Check if user's savings_rate_recommendation can sustain monthly contribution for minimum 4 stable weeks"
+    },
+    "pmsby": {
+      "full_name": "Pradhan Mantri Suraksha Bima Yojana",
+      "last_verified": "2026-08-20",
+      "scheme_code": "PMSBY_001",
+      "ministry": "Department of Financial Services, Ministry of Finance",
+      "eligibility": {
+        "age_min": 18,
+        "age_max": 70,
+        "savings_bank_account": true,
+        "e_shram_registered": true,
+        "auto_debit_consent": true
+      },
+      "benefits": [
+        "Accidental death cover: ₹2 lakh",
+        "Total and permanent disability: ₹2 lakh",
+        "Partial permanent disability: ₹1 lakh"
+      ],
+      "premium": {
+        "annual_amount": 20,
+        "debit_frequency": "Annually on registration anniversary",
+        "auto_debit_required": true
+      },
+      "critical_alerts": [
+        "Coverage lapses for FULL YEAR if balance insufficient on debit date",
+        "Re-enrollment possible but requires fresh consent",
+        "No refund for partial year coverage"
+      ],
+      "nudge_trigger": {
+        "days_before_debit": 14,
+        "minimum_balance_required": 20,
+        "recommended_buffer": 50
+      },
+      "registration": {
+        "fee": 0,
+        "process": "Through bank or via e-Shram linkage",
+        "renewal": "Auto-renewal if balance sufficient"
+      },
+      "target_group": "Bank account holders aged 18-70",
+      "claim_process": "Through nominated bank with death/disability certificate",
+      "notes": "HIGH PRIORITY for gig workers due to occupation risk. Proactive nudge 14 days before debit is CRITICAL."
+    },
+    "pmjjby": {
+      "full_name": "Pradhan Mantri Jeevan Jyoti Bima Yojana",
+      "last_verified": "2026-08-20",
+      "scheme_code": "PMJJBY_001",
+      "ministry": "Department of Financial Services, Ministry of Finance",
+      "eligibility": {
+        "age_min": 18,
+        "age_max": 50,
+        "savings_bank_account": true,
+        "auto_debit_consent": true
+      },
+      "benefits": [
+        "Life insurance cover: ₹2 lakh",
+        "Nominee receives sum on death from any cause",
+        "Renewable annually till age 55"
+      ],
+      "premium": {
+        "annual_amount": 436,
+        "debit_date": "June 1st every year",
+        "auto_debit_required": true
+      },
+      "critical_alerts": [
+        "Coverage lapses if balance insufficient on June 1st",
+        "Higher premium compared to PMSBY (₹436 vs ₹20)",
+        "Cannot enroll after age 50 (but can continue till 55 if already enrolled)"
+      ],
+      "registration": {
+        "fee": 0,
+        "process": "Through bank branch or online banking",
+        "renewal": "Auto-renewal if balance sufficient on June 1st"
+      },
+      "target_group": "Bank account holders aged 18-50",
+      "notes": "Consider PMSBY first for gig workers due to lower premium and higher occupation risk. PMJJBY provides all-cause death cover."
+    },
+    "apy": {
+      "full_name": "Atal Pension Yojana",
+      "last_verified": "2026-08-20",
+      "scheme_code": "APY_001",
+      "ministry": "Department of Financial Services, Ministry of Finance",
+      "eligibility": {
+        "age_min": 18,
+        "age_max": 40,
+        "savings_bank_account": true,
+        "income_tax_payer": false,
+        "aadhaar_required": true
+      },
+      "benefits": [
+        "Guaranteed minimum pension: ₹1,000 to ₹5,000/month (subscriber choice)",
+        "Spouse receives same pension amount after subscriber's death",
+        "Nominee receives corpus if both die",
+        "Government co-contribution: 50% of contribution or ₹1,000/year (whichever is lower) for 5 years"
+      ],
+      "pension_tiers": [
+        {"pension_amount": 1000, "description": "Minimum pension tier"},
+        {"pension_amount": 2000, "description": "Low pension tier"},
+        {"pension_amount": 3000, "description": "Medium pension tier (matches PM-SYM)"},
+        {"pension_amount": 4000, "description": "High pension tier"},
+        {"pension_amount": 5000, "description": "Maximum pension tier"}
+      ],
+      "contribution": {
+        "note": "Age-dependent and pension-tier-dependent",
+        "example_age_18_pension_1000": "42/month",
+        "example_age_18_pension_5000": "210/month",
+        "example_age_40_pension_5000": "902/month",
+        "frequency": "Monthly auto-debit"
+      },
+      "registration": {
+        "fee": 0,
+        "process": "Through bank or post office",
+        "enrollment_deadline": "Before age 40"
+      },
+      "government_co_contribution": {
+        "eligibility": "Non-income-tax payers only",
+        "amount": "50% of contribution OR ₹1,000/year, whichever is lower",
+        "duration": "5 years from enrollment",
+        "discontinued_after": "FY 2021-22 for new enrollments (verify current status)"
+      },
+      "target_group": "Young workers aged 18-40 who are not income tax payers",
+      "comparison_with_pm_sym": "APY offers flexible pension amounts (₹1,000-₹5,000) vs PM-SYM fixed ₹3,000; APY may have higher contribution",
+      "notes": "Better suited for younger gig workers with stable income. Joint reasoning with Budget Agent: Check if volatility allows sustained monthly commitment."
+    },
+    "state_welfare_boards": {
+      "full_name": "State-Level Gig Worker Welfare Boards",
+      "last_verified": "2026-08-20",
+      "scheme_code": "STATE_WELFARE_BOARDS",
+      "states_with_active_boards": {
+        "rajasthan": {
+          "status": "Active since 2023",
+          "welfare_cess": "Platform-level cess on aggregator transactions",
+          "registration": "State labour portal",
+          "benefits": [
+            "Healthcare support",
+            "Education assistance for children",
+            "Emergency financial aid",
+            "Maternity benefits"
+          ]
+        },
+        "karnataka": {
+          "status": "Active since August 2025",
+          "welfare_cess": "1-2% cess on platform transactions",
+          "registration": "Karnataka Gig Workers Welfare Board portal",
+          "benefits": [
+            "Accident insurance",
+            "Healthcare benefits",
+            "Skill development programs",
+            "Social security schemes"
+          ]
+        },
+        "bihar": {
+          "status": "Active since August 2025",
+          "registration": "State labor portal",
+          "benefits": [
+            "Registration as gig worker",
+            "Access to state welfare schemes"
+          ]
+        },
+        "jharkhand": {
+          "status": "Active since August 2025",
+          "registration": "State welfare portal",
+          "benefits": [
+            "State-level welfare schemes",
+            "Social security benefits"
+          ]
+        },
+        "telangana": {
+          "status": "Active since 2026",
+          "registration": "State labour department portal",
+          "benefits": [
+            "Welfare fund access",
+            "Healthcare schemes"
+          ]
+        }
+      },
+      "eligibility": {
+        "gig_worker_status": true,
+        "state_residence_proof": true,
+        "platform_registration_proof": true
+      },
+      "notes": "State-specific schemes vary. User must be queried for current state of residence. Cess is typically deducted at platform level (user may not notice)."
+    },
+    "code_on_social_security_2020": {
+      "full_name": "Code on Social Security, 2020 - Gig Worker Classification",
+      "last_verified": "2026-08-20",
+      "effective_date": "2025-11-01",
+      "classification_criteria": {
+        "gig_worker_definition": "Person performing work or services outside traditional employer-employee relationship",
+        "eligibility_threshold_option_1": {
+          "days_active_single_platform": 90,
+          "description": "90 days active with ONE aggregator platform"
+        },
+        "eligibility_threshold_option_2": {
+          "days_active_multi_platform": 120,
+          "description": "120 days cumulative across MULTIPLE platforms"
+        }
+      },
+      "benefits_unlocked": [
+        "Access to state welfare boards",
+        "Social security scheme eligibility",
+        "Formal gig worker status",
+        "Legal protection as gig worker"
+      ],
+      "verification": {
+        "required_proof": "Platform registration certificate or payout statements",
+        "aggregators_covered": "Swiggy, Zomato, Uber, Ola, Urban Company, Dunzo, others"
+      },
+      "boundary_test_cases": {
+        "89_days_single": "NOT eligible (just below threshold)",
+        "90_days_single": "ELIGIBLE (meets threshold)",
+        "119_days_multi": "NOT eligible (just below threshold)",
+        "120_days_multi": "ELIGIBLE (meets threshold)"
+      },
+      "notes": "CRITICAL for scheme eligibility. Synthetic data includes boundary test users (user_0001 to user_0012) specifically for this criteria."
+    }
+  },
+  "eligibility_decision_tree": {
+    "description": "Sequential eligibility check flow for Scheme Agent",
+    "steps": [
+      {
+        "step": 1,
+        "check": "Is user aged 16-59?",
+        "if_no": "Not eligible for e-Shram (foundational scheme)",
+        "if_yes": "Proceed to step 2"
+      },
+      {
+        "step": 2,
+        "check": "Is user EPFO/ESIC registered?",
+        "if_yes": "Not eligible for most gig worker schemes",
+        "if_no": "Proceed to step 3"
+      },
+      {
+        "step": 3,
+        "check": "Is user an income tax payer?",
+        "if_yes": "Not eligible for most gig worker schemes",
+        "if_no": "Proceed to step 4"
+      },
+      {
+        "step": 4,
+        "check": "Has user completed 90 days (single platform) OR 120 days (multi-platform)?",
+        "if_no": "Not classified as gig worker under Code 2020; wait until threshold met",
+        "if_yes": "User is eligible gig worker. Proceed to scheme-specific checks."
+      },
+      {
+        "step": 5,
+        "check": "Is user e-Shram registered?",
+        "if_no": "RECOMMEND e-Shram registration first (gateway to other schemes)",
+        "if_yes": "User can access PM-SYM, PMSBY, state boards"
+      },
+      {
+        "step": 6,
+        "check": "Check age-specific eligibility for each scheme",
+        "pm_sym": "Age 18-40, income <₹15k/month",
+        "pmsby": "Age 18-70, bank account with auto-debit",
+        "pmjjby": "Age 18-50, bank account with auto-debit",
+        "apy": "Age 18-40, non-tax-payer"
+      }
+    ]
+  },
+  "affordability_joint_reasoning_logic": {
+    "description": "How Scheme Agent collaborates with Budget Agent to determine affordability",
+    "inputs_from_budget_agent": [
+      "income_wma_4w",
+      "income_volatility_pct",
+      "savings_rate_recommendation",
+      "closing_balance",
+      "financial_persona"
+    ],
+    "calculation": {
+      "monthly_income_estimate": "income_wma_4w * 4.33",
+      "available_savings_per_month": "monthly_income * savings_rate_recommendation",
+      "scheme_contribution_required": "From contribution_matrix based on age",
+      "affordability_check": "scheme_contribution < available_savings",
+      "stability_requirement": "Income should be stable (volatility < 30%) for at least 4 weeks before auto-debit enrollment"
+    },
+    "example": {
+      "user_age": 28,
+      "income_wma_4w": 2800,
+      "income_volatility_pct": 0.22,
+      "savings_rate_recommendation": 0.10,
+      "pm_sym_contribution_required": 95,
+      "monthly_income_estimate": "2800 * 4.33 = 12,124",
+      "available_savings": "12,124 * 0.10 = 1,212",
+      "affordability": "95 < 1,212 → AFFORDABLE",
+      "stability_check": "volatility 22% (moderate) → RECOMMEND waiting for 4 stable weeks before enrollment",
+      "final_recommendation": "Eligible and affordable, but defer enrollment until income stabilizes"
+    }
+  }
+}

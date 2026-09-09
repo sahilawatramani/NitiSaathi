@@ -24,6 +24,7 @@ async def rewrite_text(request: RewriteRequest) -> RewriteResponse:
     result = rewrite_output(
         raw_text=request.text,
         literacy_level=request.literacy_level,
+        language_pref=request.language_pref,
         has_financial_content=request.has_financial_content,
         has_scheme_content=request.has_scheme_content,
     )
@@ -32,6 +33,7 @@ async def rewrite_text(request: RewriteRequest) -> RewriteResponse:
         original_text=result["original_text"],
         rewritten_text=result["rewritten_text"],
         literacy_level=result["literacy_level"],
+        language_pref=result["language_pref"],
         disclaimer_added=result["disclaimer_added"],
     )
 

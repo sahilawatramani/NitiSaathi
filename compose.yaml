@@ -1,0 +1,34 @@
+services:
+  budget-api:
+    build: .
+    working_dir: /app/agents/budget_agent/backend
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    environment:
+      SCHEME_AGENT_URL: http://scheme-agent:8001
+      FRAUD_GUARD_URL: http://fraud-guard:8002
+      NUDGE_AGENT_URL: http://nudge-agent:8004
+      LITERACY_AGENT_URL: http://literacy-agent:8100
+      DATABASE_URL: sqlite:////app/agents/budget_agent/backend/data/finassist.db
+    ports: ["8000:8000"]
+    depends_on: [scheme-agent, fraud-guard, nudge-agent, literacy-agent]
+
+  scheme-agent:
+    build: .
+    command: uvicorn agents.scheme_agent.main:app --host 0.0.0.0 --port 8001
+    ports: ["8001:8001"]
+
+  fraud-guard:
+    build: .
+    command: uvicorn agents.fraud_guard.main:app --host 0.0.0.0 --port 8002
+    ports: ["8002:8002"]
+
+  nudge-agent:
+    build: .
+    command: uvicorn agents.nudge_agent.main:app --host 0.0.0.0 --port 8004
+    ports: ["8004:8004"]
+
+  literacy-agent:
+    build: .
+    working_dir: /app/agents/literacy_agent
+    command: uvicorn main:app --host 0.0.0.0 --port 8100
+    ports: ["8100:8100"]

@@ -1,7 +1,7 @@
 """schemas.py — Pydantic models for Literacy Agent request/response."""
 
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Literal, Optional
 
 
 class RewriteRequest(BaseModel):
@@ -16,6 +16,9 @@ class RewriteRequest(BaseModel):
         default="medium",
         description="Target literacy level: low | medium | high.",
         pattern="^(low|medium|high)$",
+    )
+    language_pref: Literal["hi", "en", "mr"] = Field(
+        default="en", description="Output language: hi | en | mr."
     )
     has_financial_content: bool = Field(
         default=False,
@@ -41,6 +44,7 @@ class RewriteResponse(BaseModel):
     literacy_level: str = Field(
         ..., description="The literacy level that was applied."
     )
+    language_pref: str = Field(..., description="Language used for the output.")
     disclaimer_added: bool = Field(
         ..., description="Whether the advisory disclaimer was appended."
     )

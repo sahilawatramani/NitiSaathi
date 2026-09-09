@@ -1,0 +1,8 @@
+.git
+.vscode
+**/__pycache__
+**/*.pyc
+**/.env
+**/node_modules
+agents/budget_agent/backend/data/*.db
+agents/budget_agent/backend/data/*.sqlite

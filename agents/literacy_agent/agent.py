@@ -24,11 +24,28 @@ DISCLAIMER_EN = (
     "⚠️ **Disclaimer:** This information is for general guidance only. "
     "Verify on the official website before enrolling in any government scheme."
 )
+DISCLAIMER_HI = "\n\n---\n⚠️ यह जानकारी सामान्य मार्गदर्शन के लिए है। किसी सरकारी योजना में शामिल होने से पहले आधिकारिक वेबसाइट पर जाँचें।"
+DISCLAIMER_MR = "\n\n---\n⚠️ ही माहिती सामान्य मार्गदर्शनासाठी आहे. कोणत्याही सरकारी योजनेत नोंदणी करण्यापूर्वी अधिकृत संकेतस्थळावर तपासा।"
+
+
+def _offline_language_fallback(text: str, language_pref: str) -> str:
+    """Give an honest, readable local fallback when translation is offline.
+
+    The configured LLM/Bhashini-compatible service performs the complete
+    translation. This fallback still signals the selected language and never
+    fabricates financial facts when a provider is unavailable.
+    """
+    prefixes = {
+        "hi": "सरल वित्तीय सलाह: ",
+        "mr": "सोपे आर्थिक मार्गदर्शन: ",
+    }
+    return prefixes.get(language_pref, "") + text
 
 
 def rewrite_output(
     raw_text: str,
     literacy_level: str = "medium",
+    language_pref: str = "en",
     has_financial_content: bool = False,
     has_scheme_content: bool = False,
 ) -> dict:
@@ -43,14 +60,14 @@ def rewrite_output(
             "original_text": raw_text,
             "rewritten_text": raw_text,
             "literacy_level": literacy_level,
-            "disclaimer_added": False,
+            "disclaimer_added": False, "language_pref": language_pref,
         }
 
     # ── Step 1: Deterministic jargon cleanup ──────────────────────────────
     cleaned_text = replace_jargon(raw_text)
 
     # ── Step 2: LLM rewrite ───────────────────────────────────────────────
-    system_prompt = get_system_prompt(literacy_level)
+    system_prompt = get_system_prompt(literacy_level, language_pref)
     user_prompt = (
         f"Rewrite the following text for the target audience. "
         f"Do not add new information. Keep all numbers exact.\n\n"
@@ -68,16 +85,18 @@ def rewrite_output(
         logger.warning(
             "LLM rewrite failed — falling back to jargon-cleaned text."
         )
-        rewritten = cleaned_text
+        rewritten = _offline_language_fallback(cleaned_text, language_pref)
 
     # ── Step 3: Disclaimer injection ──────────────────────────────────────
     needs_disclaimer = has_financial_content or has_scheme_content
     if needs_disclaimer:
-        rewritten = rewritten.rstrip() + DISCLAIMER_EN
+        disclaimer = {"hi": DISCLAIMER_HI, "mr": DISCLAIMER_MR}.get(language_pref, DISCLAIMER_EN)
+        rewritten = rewritten.rstrip() + disclaimer
 
     return {
         "original_text": raw_text,
         "rewritten_text": rewritten,
         "literacy_level": literacy_level,
+        "language_pref": language_pref,
         "disclaimer_added": needs_disclaimer,
     }

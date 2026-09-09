@@ -13,7 +13,7 @@ _PREAMBLE = (
     "Do NOT add new financial advice, change numbers, or invent facts. "
     "Keep all monetary amounts (₹) exactly as they are. "
     "Keep all dates exactly as they are. "
-    "Output in English only."
+    "Output in the requested language only."
 )
 
 # ── Per-level system prompts ───────────────────────────────────────────────
@@ -71,9 +71,10 @@ SYSTEM_PROMPTS = {
 }
 
 
-def get_system_prompt(literacy_level: str) -> str:
+def get_system_prompt(literacy_level: str, language_pref: str = "en") -> str:
     """Return the system prompt for the given literacy level.
 
     Falls back to 'medium' if the level is unrecognised.
     """
-    return SYSTEM_PROMPTS.get(literacy_level.lower(), SYSTEM_PROMPTS["medium"])
+    language = {"hi": "Hindi in Devanagari script", "mr": "Marathi in Devanagari script", "en": "English"}.get(language_pref, "English")
+    return SYSTEM_PROMPTS.get(literacy_level.lower(), SYSTEM_PROMPTS["medium"]) + f"\n\nOUTPUT LANGUAGE: {language}."

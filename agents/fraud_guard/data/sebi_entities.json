@@ -1,0 +1,15 @@
+{
+  "registered_brokers": [
+    "Zerodha", "HDFC Securities", "ICICI Direct", "Kotak Securities", "Axis Direct",
+    "Angel One", "Motilal Oswal", "Sharekhan", "SBICAP Securities", "Nirmal Bang",
+    "5paisa", "Upstox", "Groww", "Paytm Money", "INDmoney"
+  ],
+  "registered_mutual_funds": [
+    "SBI Mutual Fund", "HDFC Mutual Fund", "ICICI Prudential", "Axis Mutual Fund",
+    "Kotak Mutual Fund", "Mirae Asset", "Nippon India Mutual Fund", "Franklin Templeton",
+    "DSP Mutual Fund", "Tata Mutual Fund", "UTI Mutual Fund", "Invesco India"
+  ],
+  "registered_advisers": [
+    "SEBI RIA Verified Adviser", "NSE Listed Broker", "BSE Member"
+  ]
+}

@@ -1,0 +1,285 @@
+<!DOCTYPE html><html class="h-full" lang="en" style="width: 1280px; height: 888px; overflow: hidden; position: relative;"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Assistant - Empty State | Nitisaathi</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;900&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-dim": "#dcd9d9",
+                      "on-tertiary-fixed-variant": "#005229",
+                      "caution-tint": "#F8D7DC",
+                      "on-error-container": "#93000a",
+                      "surface-container-lowest": "#ffffff",
+                      "on-surface": "#1c1b1b",
+                      "outline-variant": "#e1bebd",
+                      "primary-container": "#a61c2e",
+                      "on-secondary-fixed": "#410007",
+                      "primary-fixed-dim": "#ffb3b2",
+                      "text-warm-gray": "#6B6560",
+                      "on-primary-container": "#ffb9b8",
+                      "on-surface-variant": "#594140",
+                      "tertiary": "#004923",
+                      "on-background": "#1c1b1b",
+                      "on-secondary": "#ffffff",
+                      "inverse-on-surface": "#f3f0ef",
+                      "primary-fixed": "#ffdad9",
+                      "primary": "#82001b",
+                      "tertiary-fixed-dim": "#71dc92",
+                      "surface-container-low": "#f6f3f2",
+                      "inverse-surface": "#313030",
+                      "surface-tint": "#b32736",
+                      "tertiary-container": "#006332",
+                      "on-error": "#ffffff",
+                      "outline": "#8d706f",
+                      "secondary-fixed-dim": "#ffb3b1",
+                      "surface-container": "#f0eded",
+                      "surface-variant": "#e5e2e1",
+                      "on-primary": "#ffffff",
+                      "secondary-container": "#db313f",
+                      "background": "#fcf9f8",
+                      "on-secondary-fixed-variant": "#92001c",
+                      "background-off-white": "#F7F5F2",
+                      "secondary-fixed": "#ffdad8",
+                      "on-tertiary-container": "#75e096",
+                      "on-primary-fixed-variant": "#910621",
+                      "error-container": "#ffdad6",
+                      "secondary": "#b7102a",
+                      "surface-bright": "#fcf9f8",
+                      "on-secondary-container": "#fffbff",
+                      "on-tertiary": "#ffffff",
+                      "surface-container-highest": "#e5e2e1",
+                      "on-tertiary-fixed": "#00210d",
+                      "surface": "#fcf9f8",
+                      "error": "#ba1a1a",
+                      "inverse-primary": "#ffb3b2",
+                      "surface-container-high": "#eae7e7",
+                      "tertiary-fixed": "#8df9ac",
+                      "on-primary-fixed": "#410009"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "margin-page": "48px",
+                      "gutter": "24px",
+                      "stack-lg": "32px",
+                      "container-max": "1200px",
+                      "stack-md": "16px",
+                      "sidebar-width": "260px",
+                      "stack-sm": "8px"
+              },
+              "fontFamily": {
+                      "headline-sm": ["Noto Sans"],
+                      "display-lg": ["Noto Sans"],
+                      "body-md": ["Noto Sans"],
+                      "label-sm": ["Noto Sans"],
+                      "label-lg": ["Noto Sans"],
+                      "body-lg": ["Noto Sans"],
+                      "headline-lg": ["Noto Sans"],
+                      "headline-md": ["Noto Sans"]
+              },
+              "fontSize": {
+                      "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                      "label-lg": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        body { font-family: 'Noto Sans', sans-serif; }
+        .ambient-shadow { box-shadow: 0px 4px 20px rgba(26, 26, 26, 0.05); }
+        .hover-card-depth:hover {
+            box-shadow: 0px 8px 30px rgba(26, 26, 26, 0.08);
+            border-color: rgba(166, 28, 46, 0.1);
+            transform: translateY(-2px);
+        }
+        .focus-ring:focus-within {
+            outline: 2px solid #E63946;
+            outline-offset: 2px;
+        }
+        
+        /* Custom Scrollbar for Chat Area */
+        .chat-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .chat-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .chat-scroll::-webkit-scrollbar-thumb {
+            background-color: #e5e2e1;
+            border-radius: 20px;
+        }
+    </style>
+</head>
+<body class="bg-surface text-on-surface h-full overflow-hidden flex">
+<!-- TopAppBar (Docked Top, Responsive) -->
+<header class="hidden md:flex justify-between items-center h-16 ml-[240px] px-margin-page max-w-container-max mx-auto bg-surface fixed top-0 w-[calc(100%-240px)] z-50">
+<div>
+<!-- Brand is hidden on TopAppBar per JSON -->
+<span class="hidden font-headline-sm text-headline-sm text-primary dark:text-primary-fixed-dim">Nitisaathi</span>
+</div>
+<!-- Search Bar (Left/Center area) -->
+<div class="flex-1 max-w-md mx-4">
+<div class="relative flex items-center w-full h-12 bg-background-off-white rounded-lg focus-ring focus-within:bg-white transition-colors border border-transparent">
+<span class="material-symbols-outlined ml-4 text-on-surface-variant">search</span>
+<input class="w-full bg-transparent border-none focus:ring-0 text-body-md text-on-surface h-full px-4 rounded-lg placeholder:text-text-warm-gray" placeholder="Search..." type="text">
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container-highest">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 rounded-full text-on-surface-variant hover:text-primary transition-colors hover:bg-surface-container-highest">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+</div>
+</header>
+<!-- SideNavBar (Persistent Left) -->
+<nav class="fixed left-0 top-0 h-screen w-[240px] bg-background-off-white flex flex-col py-stack-lg border-r border-surface-variant z-40"><div class="px-6 mb-8">
+    <h1 class="font-display-lg text-[32px] font-semibold tracking-tight text-[#1A1A1A]">nitisaathi</h1>
+  </div>
+  
+  <div class="flex-1 overflow-y-auto flex flex-col gap-1">
+    <!-- Home -->
+    <a href="#" class="flex items-center gap-4 py-3 px-6 text-[#1A1A1A] hover:bg-surface-container transition-colors">
+      <span class="material-symbols-outlined">house</span>
+      <span class="font-label-lg">गृह / Home</span>
+    </a>
+    
+    <!-- Budget -->
+    <a href="#" class="flex items-center gap-4 py-3 px-6 text-[#1A1A1A] hover:bg-surface-container transition-colors">
+      <span class="material-symbols-outlined">payments</span>
+      <span class="font-label-lg">बजट / Budget</span>
+    </a>
+    
+    <!-- Assistant (Active) -->
+    <a href="#" class="flex items-center gap-4 py-3 px-6 bg-[#A61C2E]/5 border-l-4 border-[#A61C2E] text-[#A61C2E] font-semibold">
+      <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">forum</span>
+      <span class="font-label-lg font-bold">साथी / Assistant</span>
+    </a>
+    
+    <!-- Schemes -->
+    <a href="#" class="flex items-center gap-4 py-3 px-6 text-[#1A1A1A] hover:bg-surface-container transition-colors">
+      <span class="material-symbols-outlined">description</span>
+      <span class="font-label-lg">योजनाएं / Schemes</span>
+    </a>
+    
+    <!-- Fraud Check -->
+    <a href="#" class="flex items-center gap-4 py-3 px-6 text-[#1A1A1A] hover:bg-surface-container transition-colors">
+      <span class="material-symbols-outlined">gpp_maybe</span>
+      <span class="font-label-lg">धोखाधड़ी जांच / Fraud Check</span>
+    </a>
+    
+    <!-- Nudges -->
+    <a href="#" class="flex items-center gap-4 py-3 px-6 text-[#1A1A1A] hover:bg-surface-container transition-colors">
+      <span class="material-symbols-outlined">notifications</span>
+      <span class="font-label-lg">सूचनाएं / Nudges</span>
+    </a>
+    
+    <!-- Reports -->
+    <a href="#" class="flex items-center gap-4 py-3 px-6 text-[#1A1A1A] hover:bg-surface-container transition-colors">
+      <span class="material-symbols-outlined">assessment</span>
+      <span class="font-label-lg">रिपोर्ट / Reports</span>
+    </a>
+  </div>
+
+  <div class="mt-auto">
+    <div class="mx-6 border-t border-outline-variant/30 mb-2"></div>
+    <a href="#" class="flex items-center gap-4 py-3 px-6 text-[#1A1A1A] hover:bg-surface-container transition-colors">
+      <span class="material-symbols-outlined">settings</span>
+      <span class="font-label-lg">सेटिंग्स / Settings</span>
+    </a>
+    
+    <div class="flex items-center gap-3 px-6 pt-4 mt-2 border-t border-outline-variant/30">
+      <img alt="User profile" class="w-10 h-10 rounded-full object-cover border border-outline-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuChE6ZjgmIsElm75eDkeBd-oolXBf8hqfyD_UMaC1DI9QAhnUfGZTjPpY9Vk1SYiT9NGAVbBwfyRR8KVs94QU7SR1X_3WIido9pbvP0Svr_zcz69sg-R9cZrorbq0uwVMbyTOnP0u7jJ_KLjJf-TLvHo0Bwnv7WgIHmb2fR-dERz9A1ZjxhvpJ3Icq12lG2tpxir80ow24qBMo3QI4oI2n5ZhQ8Q5L9NJ0c7UF9JylGIm10Sx1DFvfX6A">
+      <div class="overflow-hidden">
+        <p class="font-label-lg text-[#1A1A1A] truncate">राजेश</p>
+        <p class="font-label-sm text-text-warm-gray truncate">Delivery Partner</p>
+      </div>
+    </div>
+  </div></nav>
+<!-- Main Canvas (Shifted for SideNav, Padding for TopAppBar) -->
+<main class="ml-[240px] pt-16 flex-1 h-full bg-surface-container-lowest flex flex-col items-center">
+<!-- Centered Conversation Column -->
+<div class="w-full max-w-[700px] h-full flex flex-col relative px-4 md:px-0">
+<!-- Page Header -->
+<div class="py-stack-lg shrink-0 border-b border-surface-variant/50 w-full mb-8">
+<h2 class="font-headline-lg text-headline-lg text-on-surface">साथी से पूछें / Ask nitisaathi</h2>
+<p class="font-body-md text-body-md text-text-warm-gray mt-2">Your 24/7 Financial Guardian Assistant</p>
+</div>
+<!-- Empty State Scrollable Area -->
+<div class="flex-1 overflow-y-auto chat-scroll flex flex-col items-center justify-center pb-32">
+<!-- Illustration & Heading -->
+<div class="text-center mb-12 flex flex-col items-center">
+<div class="w-24 h-24 bg-primary-fixed rounded-full flex items-center justify-center mb-6 shadow-sm">
+<span class="material-symbols-outlined text-[48px] text-primary" data-weight="fill" style="font-variation-settings: 'FILL' 1;">forum</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">आप क्या जानना चाहते हैं?</h3>
+<p class="font-body-lg text-body-lg text-text-warm-gray">What would you like to know?</p>
+</div>
+<!-- Suggested Questions Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-[600px]">
+<!-- Card 1 -->
+<button class="bg-surface rounded-xl p-6 border border-surface-variant text-left flex flex-col gap-3 ambient-shadow hover-card-depth transition-all duration-300 group">
+<span class="material-symbols-outlined text-primary-container group-hover:text-primary transition-colors">savings</span>
+<span class="font-body-md text-body-md text-on-surface font-medium leading-relaxed group-hover:text-primary transition-colors">इस हफ्ते कितना बचा सकता हूं?<br><span class="text-text-warm-gray text-sm font-normal">How much can I save this week?</span></span>
+</button>
+<!-- Card 2 -->
+<button class="bg-surface rounded-xl p-6 border border-surface-variant text-left flex flex-col gap-3 ambient-shadow hover-card-depth transition-all duration-300 group">
+<span class="material-symbols-outlined text-primary-container group-hover:text-primary transition-colors">verified</span>
+<span class="font-body-md text-body-md text-on-surface font-medium leading-relaxed group-hover:text-primary transition-colors">क्या मैं PM-SYM के लिए योग्य हूं?<br><span class="text-text-warm-gray text-sm font-normal">Am I eligible for PM-SYM?</span></span>
+</button>
+<!-- Card 3 -->
+<button class="bg-surface rounded-xl p-6 border border-surface-variant text-left flex flex-col gap-3 ambient-shadow hover-card-depth transition-all duration-300 group">
+<span class="material-symbols-outlined text-primary-container group-hover:text-primary transition-colors">security</span>
+<span class="font-body-md text-body-md text-on-surface font-medium leading-relaxed group-hover:text-primary transition-colors">यह मैसेज सुरक्षित है या नहीं?<br><span class="text-text-warm-gray text-sm font-normal">Is this message safe?</span></span>
+</button>
+<!-- Card 4 -->
+<button class="bg-surface rounded-xl p-6 border border-surface-variant text-left flex flex-col gap-3 ambient-shadow hover-card-depth transition-all duration-300 group">
+<span class="material-symbols-outlined text-primary-container group-hover:text-primary transition-colors">real_estate_agent</span>
+<span class="font-body-md text-body-md text-on-surface font-medium leading-relaxed group-hover:text-primary transition-colors">मेरा किराया इस महीने कैसे मैनेज करूं?<br><span class="text-text-warm-gray text-sm font-normal">How do I manage rent this month?</span></span>
+</button>
+</div>
+</div>
+<!-- Chat Input (Pinned Bottom) -->
+<div class="absolute bottom-0 left-0 w-full pb-8 pt-4 bg-gradient-to-t from-surface-container-lowest via-surface-container-lowest to-transparent">
+<div class="relative flex items-center bg-background-off-white rounded-full h-16 px-4 shadow-[0_4px_20px_rgba(26,26,26,0.08)] border border-surface-variant focus-ring focus-within:bg-white transition-all w-full">
+<!-- Mic Icon -->
+<button class="p-3 text-text-warm-gray hover:text-primary transition-colors rounded-full hover:bg-surface-variant">
+<span class="material-symbols-outlined">mic</span>
+</button>
+<!-- Input -->
+<input class="flex-1 bg-transparent border-none focus:ring-0 font-body-md text-body-md text-on-surface px-4 placeholder:text-text-warm-gray h-full" placeholder="अपना सवाल लिखें... / Type your question..." type="text">
+<!-- Send Button -->
+<button class="w-12 h-12 bg-primary-container hover:bg-[#8e1525] text-white rounded-full flex items-center justify-center shadow-md transition-colors transform hover:scale-105 active:scale-95 ml-2">
+<span class="material-symbols-outlined text-[20px]" data-weight="fill" style="font-variation-settings: 'FILL' 1;">arrow_upward</span>
+</button>
+</div>
+<div class="text-center mt-3">
+<span class="font-label-sm text-label-sm text-text-warm-gray">Nitisaathi can make mistakes. Consider verifying important financial decisions.</span>
+</div>
+</div>
+</div>
+</main>
+
+
+
+
+</body></html>

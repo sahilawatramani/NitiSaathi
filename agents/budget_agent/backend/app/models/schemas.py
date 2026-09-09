@@ -19,6 +19,9 @@ class User(Base):
     weekly_features = relationship("UserWeeklyFeatures", back_populates="owner")
     temporal_events = relationship("TemporalMemoryEvent", back_populates="owner")
     recurring_debits = relationship("RecurringDebit", back_populates="owner")
+    nudge_logs = relationship("NudgeLog", back_populates="owner")
+    consents = relationship("UserConsent", back_populates="owner")
+    orchestration_checkpoints = relationship("OrchestrationCheckpoint", back_populates="owner")
 
 class UserProfile(Base):
     __tablename__ = "user_profiles"
@@ -44,6 +47,19 @@ class UserProfile(Base):
     financial_persona = Column(String, nullable=False, default="moderate")  # conservative, moderate, growth
     current_savings_streak = Column(Integer, nullable=False, default=0)
     highest_savings_streak = Column(Integer, nullable=False, default=0)
+
+    # Scheme and Literacy Agent consented profile fields. These are separate
+    # from raw transaction data so only their scoped projection is sent to
+    # the corresponding microservice.
+    epfo_esic_status = Column(Boolean, nullable=False, default=False)
+    income_tax_payer = Column(Boolean, nullable=False, default=False)
+    e_shram_registered = Column(Boolean, nullable=False, default=False)
+    days_active_with_aggregator = Column(Integer, nullable=True)
+    state = Column(String, nullable=True)
+    savings_bank_account = Column(Boolean, nullable=False, default=True)
+    aadhaar_linked = Column(Boolean, nullable=False, default=True)
+    language_pref = Column(String, nullable=False, default="en")
+    literacy_level = Column(String, nullable=False, default="medium")
 
     owner = relationship("User", back_populates="profile")
 
@@ -263,3 +279,71 @@ class RecurringDebit(Base):
     created_at = Column(DateTime, default=utcnow, nullable=False)
 
     owner = relationship("User", back_populates="recurring_debits")
+
+
+class NudgeLog(Base):
+    """Durable closed-loop record for one proactive nudge."""
+    __tablename__ = "nudge_logs"
+    __table_args__ = (UniqueConstraint("external_nudge_id", name="uq_nudge_external_id"),)
+
+    id = Column(Integer, primary_key=True)
+    external_nudge_id = Column(String, nullable=False, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    nudge_type = Column(String, nullable=False, index=True)
+    message = Column(Text, nullable=False)
+    state_before = Column(Text, nullable=False, default="{}")
+    feedback = Column(String, nullable=True)  # useful | not_useful | harmful
+    outcome_status = Column(String, nullable=False, default="pending", index=True)
+    outcome_details = Column(Text, nullable=True)
+    outcome_check_at = Column(DateTime, nullable=False, index=True)
+    created_at = Column(DateTime, default=utcnow, nullable=False)
+    checked_at = Column(DateTime, nullable=True)
+
+    owner = relationship("User", back_populates="nudge_logs")
+
+
+class UserConsent(Base):
+    """Versioned, revocable DPDP consent by processing purpose."""
+    __tablename__ = "user_consents"
+    __table_args__ = (UniqueConstraint("user_id", "purpose", name="uq_user_consent_purpose"),)
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    purpose = Column(String, nullable=False)
+    granted = Column(Boolean, nullable=False, default=False)
+    language = Column(String, nullable=False, default="en")
+    policy_version = Column(String, nullable=False, default="v1")
+    updated_at = Column(DateTime, default=utcnow, onupdate=utcnow, nullable=False)
+    owner = relationship("User", back_populates="consents")
+
+
+class OrchestrationCheckpoint(Base):
+    """JSON state snapshot for a resumable LangGraph conversation thread."""
+    __tablename__ = "orchestration_checkpoints"
+    __table_args__ = (UniqueConstraint("user_id", "thread_id", name="uq_orchestration_thread"),)
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False, index=True)
+    thread_id = Column(String, nullable=False, index=True)
+    state_json = Column(Text, nullable=False)
+    expires_at = Column(DateTime, nullable=False, index=True)
+    updated_at = Column(DateTime, default=utcnow, onupdate=utcnow, nullable=False)
+    owner = relationship("User", back_populates="orchestration_checkpoints")
+
+
+class ConsentAuditLog(Base):
+    __tablename__ = 'consent_audit_logs'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False, index=True)
+    purpose = Column(String, nullable=False)
+    action = Column(String, nullable=False)  # 'granted' | 'withdrawn'
+    policy_version = Column(String, nullable=False, default='v1')
+    created_at = Column(DateTime, default=utcnow, nullable=False)
+
+
+class NudgeSuppression(Base):
+    __tablename__ = 'nudge_suppressions'
+    id = Column(Integer, primary_key=True)
+    nudge_type = Column(String, nullable=False, unique=True, index=True)
+    suppressed_at = Column(DateTime, default=utcnow, nullable=False)
+    reason = Column(String, nullable=True)

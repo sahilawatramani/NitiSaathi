@@ -25,13 +25,24 @@ nitisaathi/
 
 | Agent | Status | Location |
 |---|---|---|
-| Budget Agent | In progress | `agents/budget_agent/` |
-| Scheme Agent | Planned | `agents/scheme_agent/` (TBD) |
-| Fraud Guard | Planned | `agents/fraud_guard/` (TBD) |
-| Literacy Agent | Planned | `agents/literacy_agent/` (TBD) |
-| Nudge Agent | Planned | `agents/nudge_agent/` (TBD) |
+| Budget Agent | Integrated gateway | `agents/budget_agent/` |
+| Scheme Agent | HTTP microservice | `agents/scheme_agent/` |
+| Fraud Guard | HTTP microservice | `agents/fraud_guard/` |
+| Literacy Agent | Final-pass microservice | `agents/literacy_agent/` |
+| Nudge Agent | Proactive microservice | `agents/nudge_agent/` |
 
 ## Quick Start
+
+### All backend microservices
+
+```bash
+docker compose up --build
+```
+
+The Budget API is the gateway at `:8000`; it calls Scheme (`:8001`), Fraud
+Guard (`:8002`), Nudge (`:8004`) and Literacy (`:8100`) over their own HTTP
+contracts. The frontend can use `POST /api/chat/` and does not need to know
+which specialist agents were invoked.
 
 ### Data Pipeline (run once to generate synthetic data)
 ```bash

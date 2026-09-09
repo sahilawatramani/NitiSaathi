@@ -8,6 +8,8 @@ ENV_FILE = os.path.join(BASE_DIR, ".env")
 load_dotenv(ENV_FILE)
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
+BHASHINI_API_KEY = os.getenv("BHASHINI_API_KEY", "")
+LIBRETRANSLATE_URL = os.getenv("LIBRETRANSLATE_URL", "")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 LLM_PROVIDER = os.getenv("LLM_PROVIDER", "openai").lower()
 OPENAI_CHAT_MODEL = os.getenv("OPENAI_CHAT_MODEL", "gpt-3.5-turbo")

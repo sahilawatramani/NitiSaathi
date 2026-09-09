@@ -35,6 +35,7 @@ def literacy_agent_node(state: Dict[str, Any]) -> Dict[str, Any]:
     has_scheme = synthesis.get("advisory_disclaimer", False)
 
     literacy_level = state.get("literacy_level", "medium")
+    language_pref = state.get("language_pref", "en")
 
     # Tradeoff statements from the synthesizer are appended to raw answer
     tradeoffs = synthesis.get("tradeoffs", [])
@@ -65,6 +66,7 @@ def literacy_agent_node(state: Dict[str, Any]) -> Dict[str, Any]:
     result = rewrite_output(
         raw_text=raw_answer,
         literacy_level=literacy_level,
+        language_pref=language_pref,
         has_financial_content=has_financial,
         has_scheme_content=has_scheme_content,
     )

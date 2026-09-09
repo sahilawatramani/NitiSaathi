@@ -1,54 +1,48 @@
 from fastapi import APIRouter, Depends
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from app.models.database import get_db
 from app.models.schemas import Transaction, User
 from app.services.auth_service import get_current_user
-from app.agents.interaction_agent import handle_user_query
-from app.agents.insight_agent import analyze_spending_trends
-from app.models.schemas import UserProfile
+from app.orchestration.graph import NitisaathiOrchestrator
+from app.services.nudge_lifecycle_service import record_and_deliver
 
 router = APIRouter()
 
 class ChatRequest(BaseModel):
     message: str
+    session_id: str | None = None
+    chat_history: list[dict[str, str]] = Field(default_factory=list)
 
 class ChatResponse(BaseModel):
     response: str
+    intent: str | None = None
+    active_agents: list[str] = Field(default_factory=list)
+    confidence: float | None = None
+    trust_metadata: dict = Field(default_factory=dict)
+    nudge_queue: list[dict] = Field(default_factory=list)
 
 @router.post("/", response_model=ChatResponse)
-def chat(request: ChatRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    """RAG-powered financial chatbot endpoint."""
-    
-    # Add Financial Profile (Hackathon update)
-    transactions = db.query(Transaction).filter(Transaction.user_id == current_user.id).all()
-    profile = db.query(UserProfile).filter(UserProfile.user_id == current_user.id).first()
-    profile_ctx = ""
-    if profile:
-        profile_ctx = f"""
---- USER FINANCIAL PROFILE ---
-Age: {profile.age} | Target Retirement: {profile.target_retirement_age}
-Monthly Income: ₹{profile.monthly_income} | Monthly Expenses: ₹{profile.monthly_expenses}
-Current Savings: ₹{profile.current_savings} | EMI: ₹{profile.monthly_emi}
-Has Health Insurance: {"Yes" if profile.has_health_insurance else "No"}
-Risk Tolerance: {profile.risk_tolerance}
-"""
+async def chat(request: ChatRequest, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    """Run the full relevance-gated, multi-agent LangGraph workflow."""
+    result = await NitisaathiOrchestrator(db).run(
+        user_id=current_user.id,
+        message=request.message,
+        chat_history=request.chat_history,
+        session_id=request.session_id,
+    )
 
-    if transactions:
-        txn_dicts = [
-            {"date": str(t.date), "amount": t.amount, "merchant": t.merchant, "category": t.category}
-            for t in transactions
-        ]
-        analytics = analyze_spending_trends(txn_dicts)
-        summary = analytics.get("summary", {})
-        context = f"""{profile_ctx}
---- SPENDING SUMMARY ---
-Total Spent: ₹{summary.get('total_spent', 0)}
-Transaction Count: {summary.get('transaction_count', 0)}
-Top Categories: {', '.join(list(analytics.get('category_breakdown', {}).keys())[:5])}"""
-    else:
-        context = f"{profile_ctx}\nNo transactions uploaded yet."
-    
-    response = handle_user_query(request.message, context)
-    return ChatResponse(response=response)
+    # The nudge service decides *what* to send; the gateway owns delivery to
+    # the existing in-app notification channel used by the frontend.
+    record_and_deliver(db, current_user.id, result.get("nudge_queue", []), result.get("finassist_data", {}))
+
+    synthesis = result.get("synthesis_result", {})
+    return ChatResponse(
+        response=result.get("final_user_response", "I could not process that request."),
+        intent=result.get("current_intent"),
+        active_agents=result.get("active_agents", []),
+        confidence=synthesis.get("overall_confidence"),
+        trust_metadata=synthesis.get("trust_metadata", {}),
+        nudge_queue=result.get("nudge_queue", []),
+    )

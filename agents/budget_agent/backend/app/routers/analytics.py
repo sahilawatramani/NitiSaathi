@@ -7,6 +7,7 @@ from app.services.auth_service import get_current_user
 from app.agents.insight_agent import analyze_spending_trends
 from app.services.forecast_service import forecast_spending, compare_periods, calculate_savings_potential
 from app.services.planner_service import calculate_health_score
+from app.services.state_bridge_service import get_finassist_data
 from app.models.schemas import UserProfile
 
 router = APIRouter()
@@ -90,3 +91,18 @@ def get_savings_potential(
     _, txn_dicts = _get_txn_dicts(db, current_user)
     return calculate_savings_potential(txn_dicts, monthly_income)
 
+
+
+@router.get("/budget-state")
+def get_budget_state(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    """
+    Return WMA-computed budget state from the state bridge service.
+
+    Unlike /analytics/ which recomputes from raw transactions, this endpoint
+    reads pre-computed weekly features (income_wma_4w, low_balance_flag,
+    savings_rate_recommendation, closing_balance) plus active goals and
+    the income forecast — matching the data the LangGraph orchestrator uses.
+
+    The budget dashboard should prefer this endpoint for its core metrics.
+    """
+    return get_finassist_data(current_user.id, db)

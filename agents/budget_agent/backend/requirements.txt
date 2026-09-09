@@ -21,3 +21,4 @@ alembic
 redis
 langgraph
 langgraph-checkpoint-sqlite
+httpx

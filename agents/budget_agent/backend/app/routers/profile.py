@@ -10,17 +10,26 @@ from app.services.auth_service import get_current_user
 router = APIRouter()
 
 class ProfileUpdateReq(BaseModel):
-    age: int
-    monthly_income: float
-    monthly_expenses: float
-    monthly_emi: float
-    current_savings: float
-    has_health_insurance: bool
-    target_retirement_age: int
-    risk_tolerance: str
+    age: int = 28
+    monthly_income: float = 0.0
+    monthly_expenses: float = 0.0
+    monthly_emi: float = 0.0
+    current_savings: float = 0.0
+    has_health_insurance: bool = False
+    target_retirement_age: int = 60
+    risk_tolerance: str = "moderate"
     is_couple: bool = False
     partner_age: Optional[int] = None
     partner_income: Optional[float] = None
+    epfo_esic_status: bool = False
+    income_tax_payer: bool = False
+    e_shram_registered: bool = False
+    days_active_with_aggregator: Optional[int] = None
+    state: Optional[str] = None
+    savings_bank_account: bool = True
+    aadhaar_linked: bool = True
+    language_pref: str = "hi"
+    literacy_level: str = "medium"
 
 class ProfileResponse(ProfileUpdateReq):
     id: int
@@ -58,6 +67,15 @@ def upsert_profile(
     profile.is_couple = req.is_couple
     profile.partner_age = req.partner_age
     profile.partner_income = req.partner_income
+    profile.epfo_esic_status = req.epfo_esic_status
+    profile.income_tax_payer = req.income_tax_payer
+    profile.e_shram_registered = req.e_shram_registered
+    profile.days_active_with_aggregator = req.days_active_with_aggregator
+    profile.state = req.state
+    profile.savings_bank_account = req.savings_bank_account
+    profile.aadhaar_linked = req.aadhaar_linked
+    profile.language_pref = req.language_pref
+    profile.literacy_level = req.literacy_level
     
     db.commit()
     db.refresh(profile)

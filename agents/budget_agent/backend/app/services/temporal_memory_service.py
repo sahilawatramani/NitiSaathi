@@ -127,7 +127,7 @@ def get_active_memories(
     return results
 
 
-def get_memory_summary(user_id: int, db: Session) -> dict:
+def get_memory_summary(user_id: int, db: Session, top_n: int = 5) -> dict:
     """Generate a summary of the user's financial memory landscape.
 
     Useful for injecting into LLM prompts or the causal chain reasoner.
@@ -151,5 +151,5 @@ def get_memory_summary(user_id: int, db: Session) -> dict:
         "total_active_memories": len(memories),
         "dominant_theme": dominant,
         "event_type_counts": type_counts,
-        "top_events": memories[:5],
+        "top_events": memories[:max(top_n, 0)],
     }
