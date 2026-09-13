@@ -193,9 +193,9 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
                   <Text style={styles.nudgeIcon}>🔔</Text>
                 </View>
                 <View style={styles.nudgeContent}>
-                  <Text style={styles.nudgeTitle}>{nudge.nudge_type.replace('_', ' ')}</Text>
+                  <Text style={styles.nudgeTitle}>{(nudge.nudge_type || nudge.trigger_id || 'Nudge').replace(/_/g, ' ')}</Text>
                   <Text style={styles.nudgeDesc} numberOfLines={2}>
-                    {nudge.message_hi || nudge.message_en}
+                    {nudge.message}
                   </Text>
                 </View>
               </TouchableOpacity>

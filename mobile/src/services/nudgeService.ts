@@ -4,14 +4,15 @@
 import api from './api';
 
 export interface NudgeLog {
-  id: number;
-  user_id: number;
-  external_nudge_id: string;
-  nudge_type: string;
-  message_en: string | null;
-  message_hi: string | null;
-  priority: string;
-  feedback: string | null;
+  id: number | string;
+  user_id: number | string;
+  external_nudge_id?: string;
+  trigger_id?: string;
+  nudge_type?: string;
+  message: string;
+  priority?: string;
+  feedback?: string | null;
+  status?: string;
   created_at: string;
 }
 

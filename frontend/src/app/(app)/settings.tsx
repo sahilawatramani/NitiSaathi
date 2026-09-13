@@ -2,15 +2,21 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, ScrollView, ActivityIndicator, Pressable, Image } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useRouter } from 'expo-router';
-import { getUserSettings, updateUserSettings } from '../../api/user';
+import { getUserSettings, updateUserSettings, getUserProfile, updateUserProfile } from '../../api/user';
 import { ToggleRow } from '../../components/shared/ToggleRow';
 import { AppLayout } from '../../components/shared/AppLayout';
 import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
+
+type SettingsTab = 'privacy' | 'language' | 'accessibility' | 'notifications';
 
 export default function SettingsScreen() {
   const { logout } = useAuth();
+  const { language, setLanguage } = useLanguage();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<SettingsTab>('privacy');
+  const [profileName, setProfileName] = useState('राजेश / Rajesh');
   const [consent, setConsent] = useState({
     transaction: false,
     eligibility: false,
@@ -22,8 +28,12 @@ export default function SettingsScreen() {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const data = await getUserSettings();
-        if (data && data.consents && Array.isArray(data.consents)) {
+        const [settingsData, userProfile] = await Promise.all([
+          getUserSettings().catch(() => null),
+          getUserProfile().catch(() => null),
+        ]);
+
+        if (settingsData && settingsData.consents && Array.isArray(settingsData.consents)) {
           const consentMap: any = {
             transaction: false,
             eligibility: false,
@@ -31,12 +41,16 @@ export default function SettingsScreen() {
             notifications: false,
             reports: false
           };
-          data.consents.forEach((c: any) => {
+          settingsData.consents.forEach((c: any) => {
             if (consentMap[c.purpose] !== undefined) {
               consentMap[c.purpose] = c.granted;
             }
           });
           setConsent(consentMap);
+        }
+
+        if (userProfile && userProfile.language_pref) {
+          setLanguage(userProfile.language_pref);
         }
       } catch (e) {
         console.error(e);
@@ -52,6 +66,15 @@ export default function SettingsScreen() {
     setConsent(newState);
     // Optimistically update backend
     updateUserSettings({ consents: { [key]: newState[key] } });
+  };
+
+  const handleLanguageChange = async (lang: 'hi' | 'en' | 'mr') => {
+    setLanguage(lang);
+    try {
+      await updateUserProfile({ language_pref: lang });
+    } catch (e) {
+      console.error('Failed to sync language preference:', e);
+    }
   };
 
   if (loading) {
@@ -80,7 +103,7 @@ export default function SettingsScreen() {
               />
             </View>
             <View>
-              <Text className="font-headline-sm text-headline-sm text-on-surface">राजेश</Text>
+              <Text className="font-headline-sm text-headline-sm text-on-surface">{profileName}</Text>
               <Text className="font-body-md text-body-md text-text-warm-gray mt-1">Gig Worker Profile</Text>
             </View>
           </View>
@@ -98,25 +121,36 @@ export default function SettingsScreen() {
           <View className="w-full md:w-[280px] shrink-0 flex-col gap-2">
             <View className="bg-surface rounded-xl shadow-sm border border-surface-container-high p-2 overflow-hidden flex-col gap-1">
               
-              <Pressable className="flex-row items-center gap-3 px-4 py-3 rounded-lg hover:bg-surface-container-low transition-colors">
-                <MaterialIcons name="language" size={24} color="#6B6560" />
-                <Text className="font-label-lg text-label-lg text-on-surface-variant">भाषा / Language</Text>
+              <Pressable 
+                onPress={() => setActiveTab('language')}
+                className={`flex-row items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeTab === 'language' ? 'bg-[#a61c2e]/10 border-l-4 border-primary' : 'hover:bg-surface-container-low'}`}
+              >
+                <MaterialIcons name="language" size={24} color={activeTab === 'language' ? '#82001b' : '#6B6560'} />
+                <Text className={`font-label-lg text-label-lg ${activeTab === 'language' ? 'font-bold text-primary' : 'text-on-surface-variant'}`}>भाषा / Language</Text>
               </Pressable>
               
-              <Pressable className="flex-row items-center gap-3 px-4 py-3 rounded-lg hover:bg-surface-container-low transition-colors">
-                <MaterialIcons name="accessibility-new" size={24} color="#6B6560" />
-                <Text className="font-label-lg text-label-lg text-on-surface-variant">पहुंच / Accessibility</Text>
+              <Pressable 
+                onPress={() => setActiveTab('accessibility')}
+                className={`flex-row items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeTab === 'accessibility' ? 'bg-[#a61c2e]/10 border-l-4 border-primary' : 'hover:bg-surface-container-low'}`}
+              >
+                <MaterialIcons name="accessibility-new" size={24} color={activeTab === 'accessibility' ? '#82001b' : '#6B6560'} />
+                <Text className={`font-label-lg text-label-lg ${activeTab === 'accessibility' ? 'font-bold text-primary' : 'text-on-surface-variant'}`}>पहुंच / Accessibility</Text>
               </Pressable>
               
-              {/* Active Tab */}
-              <Pressable className="flex-row items-center gap-3 px-4 py-3 rounded-lg bg-[#a61c2e]/10 border-l-4 border-primary transition-colors">
-                <MaterialIcons name="shield" size={24} color="#82001b" />
-                <Text className="font-label-lg text-label-lg font-bold text-primary">सहमति और गोपनीयता / Consent & Privacy</Text>
+              <Pressable 
+                onPress={() => setActiveTab('privacy')}
+                className={`flex-row items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeTab === 'privacy' ? 'bg-[#a61c2e]/10 border-l-4 border-primary' : 'hover:bg-surface-container-low'}`}
+              >
+                <MaterialIcons name="shield" size={24} color={activeTab === 'privacy' ? '#82001b' : '#6B6560'} />
+                <Text className={`font-label-lg text-label-lg ${activeTab === 'privacy' ? 'font-bold text-primary' : 'text-on-surface-variant'}`}>सहमति और गोपनीयता / Consent & Privacy</Text>
               </Pressable>
               
-              <Pressable className="flex-row items-center gap-3 px-4 py-3 rounded-lg hover:bg-surface-container-low transition-colors">
-                <MaterialIcons name="notifications" size={24} color="#6B6560" />
-                <Text className="font-label-lg text-label-lg text-on-surface-variant">सूचनाएं / Notifications</Text>
+              <Pressable 
+                onPress={() => setActiveTab('notifications')}
+                className={`flex-row items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeTab === 'notifications' ? 'bg-[#a61c2e]/10 border-l-4 border-primary' : 'hover:bg-surface-container-low'}`}
+              >
+                <MaterialIcons name="notifications" size={24} color={activeTab === 'notifications' ? '#82001b' : '#6B6560'} />
+                <Text className={`font-label-lg text-label-lg ${activeTab === 'notifications' ? 'font-bold text-primary' : 'text-on-surface-variant'}`}>सूचनाएं / Notifications</Text>
               </Pressable>
               
             </View>
@@ -125,17 +159,53 @@ export default function SettingsScreen() {
             </View>
           </View>
 
-          {/* Right Content Panel (Consent & Privacy) */}
-          <View className="flex-1 w-full bg-surface rounded-xl shadow-sm border border-surface-container-high overflow-hidden hover:border-primary/10 transition-colors">
-            
-            <View className="p-8 border-b border-surface-container-high bg-white">
-              <Text className="font-headline-sm text-headline-sm text-on-surface mb-2">
-                सहमति और गोपनीयता / Consent & Privacy
-              </Text>
-              <Text className="font-body-md text-body-md text-text-warm-gray">
-                Manage what data NitiSaathi can access to provide your services.
-              </Text>
+          {/* Right Content Panel */}
+          {activeTab === 'language' && (
+            <View className="flex-1 w-full bg-surface rounded-xl shadow-sm border border-surface-container-high overflow-hidden hover:border-primary/10 transition-colors">
+              <View className="p-8 border-b border-surface-container-high bg-white">
+                <Text className="font-headline-sm text-headline-sm text-on-surface mb-2">
+                  भाषा चयन / Select Language
+                </Text>
+                <Text className="font-body-md text-body-md text-text-warm-gray">
+                  Choose your preferred language for the interface and AI responses.
+                </Text>
+              </View>
+              <View className="p-6 flex-col gap-4">
+                {[
+                  { code: 'hi', name: 'हिंदी (Hindi)', desc: 'हिंदी में जानकारी और सहायता प्राप्त करें' },
+                  { code: 'en', name: 'English', desc: 'Get guidance and financial tools in English' },
+                  { code: 'mr', name: 'मराठी (Marathi)', desc: 'मराठी मध्ये माहिती आणि मदत मिळवा' },
+                ].map((item) => (
+                  <Pressable
+                    key={item.code}
+                    onPress={() => handleLanguageChange(item.code as 'hi' | 'en' | 'mr')}
+                    className={`p-4 rounded-xl border flex-row items-center justify-between transition-colors ${
+                      language === item.code ? 'border-primary bg-primary/5' : 'border-outline-variant bg-surface hover:bg-surface-container-low'
+                    }`}
+                  >
+                    <View>
+                      <Text className="font-headline-sm text-base text-on-surface font-semibold">{item.name}</Text>
+                      <Text className="font-body-md text-sm text-text-warm-gray mt-0.5">{item.desc}</Text>
+                    </View>
+                    {language === item.code && (
+                      <MaterialIcons name="check-circle" size={24} color="#82001b" />
+                    )}
+                  </Pressable>
+                ))}
+              </View>
             </View>
+          )}
+
+          {activeTab === 'privacy' && (
+            <View className="flex-1 w-full bg-surface rounded-xl shadow-sm border border-surface-container-high overflow-hidden hover:border-primary/10 transition-colors">
+              <View className="p-8 border-b border-surface-container-high bg-white">
+                <Text className="font-headline-sm text-headline-sm text-on-surface mb-2">
+                  सहमति और गोपनीयता / Consent & Privacy
+                </Text>
+                <Text className="font-body-md text-body-md text-text-warm-gray">
+                  Manage what data NitiSaathi can access to provide your services.
+                </Text>
+              </View>
             
             <View className="flex-col">
               <View className="px-4 py-2 border-b border-surface-container-low bg-surface-bright">

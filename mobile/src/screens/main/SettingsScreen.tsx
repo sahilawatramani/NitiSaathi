@@ -15,10 +15,28 @@ import type { MoreStackParamList } from '../../navigation/MainNavigator';
 import { Colors, Typography, Spacing, BorderRadius } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
 
-type Props = NativeStackScreenProps<MoreStackParamList, 'Settings'>;
+const LANGUAGES: Array<{ code: 'hi' | 'en' | 'mr'; label: string; native: string }> = [
+  { code: 'hi', label: 'Hindi', native: 'हिंदी' },
+  { code: 'en', label: 'English', native: 'English' },
+  { code: 'mr', label: 'Marathi', native: 'मराठी' },
+];
 
 const SettingsScreen: React.FC<Props> = ({ navigation }) => {
-  const { logout, user } = useAuth();
+  const { logout, user, language, setLanguage } = useAuth();
+  const [showLangPicker, setShowLangPicker] = React.useState(false);
+
+  const handleSelectLang = async (lang: 'hi' | 'en' | 'mr') => {
+    setLanguage(lang);
+    setShowLangPicker(false);
+    try {
+      const { profileService } = await import('../../services/profileService');
+      await profileService.upsert({ language_pref: lang });
+    } catch (e) {
+      console.log('Error updating language pref:', e);
+    }
+  };
+
+  const currentLangObj = LANGUAGES.find((l) => l.code === language) || LANGUAGES[0];
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -41,10 +59,36 @@ const SettingsScreen: React.FC<Props> = ({ navigation }) => {
 
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Preferences</Text>
-          <TouchableOpacity style={styles.menuItem}>
-            <Text style={styles.menuText}>भाषा / Language (Hindi)</Text>
-            <Text style={styles.chevron}>→</Text>
+          <TouchableOpacity 
+            style={styles.menuItem}
+            onPress={() => setShowLangPicker(!showLangPicker)}
+          >
+            <Text style={styles.menuText}>भाषा / Language ({currentLangObj.native})</Text>
+            <Text style={styles.chevron}>{showLangPicker ? '▼' : '→'}</Text>
           </TouchableOpacity>
+
+          {showLangPicker && (
+            <View style={styles.langPickerContainer}>
+              {LANGUAGES.map((item) => (
+                <TouchableOpacity
+                  key={item.code}
+                  style={[
+                    styles.langOption,
+                    language === item.code && styles.langOptionSelected,
+                  ]}
+                  onPress={() => handleSelectLang(item.code)}
+                >
+                  <Text style={[
+                    styles.langOptionText,
+                    language === item.code && styles.langOptionTextSelected,
+                  ]}>
+                    {item.native} ({item.label})
+                  </Text>
+                  {language === item.code && <Text style={{ color: Colors.primary }}>✓</Text>}
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
         </View>
 
         <TouchableOpacity style={styles.logoutBtn} onPress={logout}>
@@ -99,8 +143,36 @@ const styles = StyleSheet.create({
   },
   menuText: { ...Typography.bodyMd, color: Colors.onSurface },
   chevron: { ...Typography.bodyMd, color: Colors.textWarmGray },
+  langPickerContainer: {
+    marginTop: Spacing.sm,
+    backgroundColor: Colors.surfaceContainerLowest,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    borderColor: Colors.outlineVariant,
+    overflow: 'hidden',
+  },
+  langOption: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.outlineVariant,
+  },
+  langOptionSelected: {
+    backgroundColor: `${Colors.primary}10`,
+  },
+  langOptionText: {
+    ...Typography.bodyMd,
+    color: Colors.onSurface,
+  },
+  langOptionTextSelected: {
+    fontWeight: '700',
+    color: Colors.primary,
+  },
   logoutBtn: {
-    marginTop: 'auto',
+    marginTop: Spacing.xl,
     padding: Spacing.md,
     borderRadius: BorderRadius.lg,
     backgroundColor: Colors.errorContainer,

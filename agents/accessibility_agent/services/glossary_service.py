@@ -1,15 +1,21 @@
 """
 Financial & Welfare Scheme Glossary Service for Gig Workers.
+Provides localized term definitions in English (en), Hindi (hi), and Marathi (mr).
 """
 import os
 import json
 import logging
 from pathlib import Path
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Union
 
-from ..models.schemas import GlossaryTerm
+from ..models.schemas import (
+    GlossaryTerm,
+    GlossaryTermLocalized,
+    GlossaryTermSingle,
+)
 
 logger = logging.getLogger(__name__)
+
 
 class GlossaryService:
     """Service to load, index, and query the financial and welfare scheme glossary."""
@@ -45,17 +51,13 @@ class GlossaryService:
             logger.error(f"Failed to load glossary from {self.data_path}: {e}")
 
     def _build_indices(self) -> None:
-        """Build normalized lookup maps for terms, Hindi names, and aliases."""
+        """Build normalized lookup maps for terms, localized names, and aliases."""
         self._term_lookup.clear()
         for term in self.terms:
-            keys = [
-                term.term_id.lower(),
-                term.term_en.lower(),
-                term.term_hi.lower(),
-            ]
-            # Strip punctuation/parentheses
-            keys.append(term.term_en.lower().split('(')[0].strip())
-            keys.append(term.term_hi.lower().split('(')[0].strip())
+            keys = [term.term_id.lower()]
+            for lang, loc in term.translations.items():
+                keys.append(loc.term.lower())
+                keys.append(loc.term.lower().split("(")[0].strip())
             for alt in term.alternatives:
                 keys.append(alt.lower())
 
@@ -63,11 +65,32 @@ class GlossaryService:
                 if k:
                     self._term_lookup[k] = term
 
-    def get_all_terms(self, category: Optional[str] = None) -> List[GlossaryTerm]:
-        """Retrieve all terms, optionally filtered by category."""
-        if category:
-            return [t for t in self.terms if t.category.lower() == category.lower()]
-        return self.terms
+    def localize_term(self, term: GlossaryTerm, target_lang: str = "hi") -> GlossaryTermSingle:
+        """Project a GlossaryTerm into a single localized GlossaryTermSingle."""
+        lang = target_lang if target_lang in term.translations else ("hi" if "hi" in term.translations else "en")
+        loc = term.translations.get(lang) or next(iter(term.translations.values()))
+        return GlossaryTermSingle(
+            term_id=term.term_id,
+            category=term.category,
+            language=lang,
+            term=loc.term,
+            simplified_definition=loc.simplified_definition,
+            gig_context_example=loc.gig_context_example,
+            phonetic=loc.phonetic,
+            alternatives=term.alternatives,
+        )
+
+    def get_all_terms(
+        self,
+        category: Optional[str] = None,
+        target_lang: str = "hi",
+        all_langs: bool = False,
+    ) -> Union[List[GlossaryTermSingle], List[GlossaryTerm]]:
+        """Retrieve all terms, optionally filtered by category and localized."""
+        filtered = [t for t in self.terms if not category or t.category.lower() == category.lower()]
+        if all_langs:
+            return filtered
+        return [self.localize_term(t, target_lang) for t in filtered]
 
     def get_categories(self) -> List[str]:
         """Return list of distinct categories."""
@@ -81,46 +104,62 @@ class GlossaryService:
         if norm in self._term_lookup:
             return self._term_lookup[norm]
 
-        # Clean non-alphanumerics except hyphen
-        cleaned = ''.join(ch for ch in norm if ch.isalnum() or ch in ('-', '_', ' ')).strip()
+        cleaned = "".join(ch for ch in norm if ch.isalnum() or ch in ("-", "_", " ")).strip()
         if cleaned in self._term_lookup:
             return self._term_lookup[cleaned]
 
         return None
 
-    def search_terms(self, query: str, language: str = "hi", category: Optional[str] = None) -> List[GlossaryTerm]:
-        """Search glossary terms matching query string across English and Hindi fields."""
+    def search_terms(
+        self,
+        query: str,
+        target_lang: str = "hi",
+        category: Optional[str] = None,
+        all_langs: bool = False,
+    ) -> Union[List[GlossaryTermSingle], List[GlossaryTerm]]:
+        """Search glossary terms matching query string across all language fields."""
         if not query or not query.strip():
-            return self.get_all_terms(category)
+            return self.get_all_terms(category=category, target_lang=target_lang, all_langs=all_langs)
 
         q = query.strip().lower()
-        results: List[GlossaryTerm] = []
+        matched: List[GlossaryTerm] = []
 
         for term in self.terms:
             if category and term.category.lower() != category.lower():
                 continue
 
-            # Check match in name, definitions, or aliases
-            matches = (
-                q in term.term_en.lower()
-                or q in term.term_hi.lower()
-                or q in term.simplified_definition_en.lower()
-                or q in term.simplified_definition_hi.lower()
-                or any(q in alt.lower() for alt in term.alternatives)
-            )
+            matches = any(
+                q in loc.term.lower() or q in loc.simplified_definition.lower() or q in loc.gig_context_example.lower()
+                for loc in term.translations.values()
+            ) or any(q in alt.lower() for alt in term.alternatives) or q in term.term_id.lower()
+
             if matches:
-                results.append(term)
+                matched.append(term)
 
-        return results
+        if all_langs:
+            return matched
+        return [self.localize_term(t, target_lang) for t in matched]
 
-    def get_term_by_id(self, term_id: str) -> Optional[GlossaryTerm]:
+    def get_term_by_id(
+        self,
+        term_id: str,
+        target_lang: str = "hi",
+        all_langs: bool = False,
+    ) -> Optional[Union[GlossaryTermSingle, GlossaryTerm]]:
         """Lookup term by unique term_id."""
         for term in self.terms:
             if term.term_id == term_id:
-                return term
+                return term if all_langs else self.localize_term(term, target_lang)
+        
+        # Try lookup by alias/name
+        found = self.find_term(term_id)
+        if found:
+            return found if all_langs else self.localize_term(found, target_lang)
         return None
 
+
 _glossary_instance = None
+
 
 def get_glossary_service() -> GlossaryService:
     global _glossary_instance

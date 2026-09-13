@@ -12,14 +12,11 @@ export const getNudges = async () => {
   const notifs = await getNotifications();
   return (notifs || []).map(n => ({
     id: n.id, 
-    isHighPriority: n.notification_type === 'proactive_nudge',
-    tagTitle: n.title, 
-    timeAgo: new Date(n.created_at).toLocaleDateString('hi-IN'),
-    headline: n.title, 
-    bodyHindi: n.message, 
-    bodyEnglish: n.message,
-    outcomeHindi: null, 
-    outcomeEnglish: null, 
+    isHighPriority: n.notification_type === 'proactive_nudge' || n.priority === 'urgent',
+    tagTitle: n.title || 'Nudge', 
+    timeAgo: n.created_at ? new Date(n.created_at).toLocaleDateString('hi-IN') : 'हाल ही में',
+    headline: n.title || 'सूचना', 
+    message: n.message,
     is_read: n.is_read,
   }));
 };

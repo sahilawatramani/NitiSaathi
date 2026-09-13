@@ -113,10 +113,7 @@ export default function NudgesScreen() {
                     </Text>
                     
                     <Text className="font-body-md text-body-md text-on-surface-variant mb-6 leading-relaxed">
-                      {nudge.bodyHindi}{'\n'}
-                      <Text className="text-text-warm-gray">
-                        {nudge.bodyEnglish}
-                      </Text>
+                      {nudge.message || nudge.bodyHindi}
                     </Text>
 
                     <View className="flex-row items-center justify-between border-t border-surface-container pt-4">

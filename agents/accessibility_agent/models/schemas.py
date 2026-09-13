@@ -54,17 +54,29 @@ class WordToWordResponse(BaseModel):
 
 # ── Glossary Schemas ─────────────────────────────────────────────────────
 
+class GlossaryTermLocalized(BaseModel):
+    """Localized content for a single language."""
+    term: str
+    simplified_definition: str
+    gig_context_example: str
+    phonetic: Optional[str] = None
+
 class GlossaryTerm(BaseModel):
-    """Financial/Scheme glossary term."""
+    """Financial/Scheme glossary term with multi-language bundle."""
     term_id: str
-    term_en: str
-    term_hi: str
     category: str
-    simplified_definition_en: str
-    simplified_definition_hi: str
-    gig_context_example_en: str
-    gig_context_example_hi: str
-    phonetic_hi: Optional[str] = None
+    translations: Dict[str, GlossaryTermLocalized]  # keyed "en", "hi", "mr"
+    alternatives: List[str] = Field(default_factory=list)
+
+class GlossaryTermSingle(BaseModel):
+    """Financial/Scheme glossary term returned for a single target language."""
+    term_id: str
+    category: str
+    language: str
+    term: str
+    simplified_definition: str
+    gig_context_example: str
+    phonetic: Optional[str] = None
     alternatives: List[str] = Field(default_factory=list)
 
 class GlossaryQuery(BaseModel):
@@ -76,7 +88,8 @@ class GlossaryQuery(BaseModel):
 class GlossaryListResponse(BaseModel):
     """List of glossary terms."""
     total: int
-    terms: List[GlossaryTerm]
+    target_lang: Optional[str] = None
+    terms: List[Any]
 
 # ── Number to Words & Spoken Currency Schemas ────────────────────────────
 

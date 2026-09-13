@@ -218,21 +218,22 @@ class GoogleTranslateService:
 
     def _offline_translate(self, text: str, target_lang: str, source_lang: Optional[str]) -> str:
         """
-        Rule-based and glossary-based offline translation fallback.
+        Rule-based and glossary-based offline translation fallback for hi, mr, and en.
         """
         if target_lang == "en" and source_lang == "en":
             return text
             
         translated = text
         # Replace financial glossary terms first
-        for term in self.glossary_service.get_all_terms():
-            if target_lang == "hi":
-                # Replace English term with Hindi term
-                pattern = re.compile(rf'\b{re.escape(term.term_en)}\b', re.IGNORECASE)
-                translated = pattern.sub(term.term_hi, translated)
+        for term in self.glossary_service.terms:
+            loc_en = term.translations.get("en")
+            loc_target = term.translations.get(target_lang) or term.translations.get("hi")
+            if loc_en and loc_target and target_lang != "en":
+                pattern = re.compile(rf'\b{re.escape(loc_en.term)}\b', re.IGNORECASE)
+                translated = pattern.sub(loc_target.term, translated)
                 for alt in term.alternatives:
                     pattern_alt = re.compile(rf'\b{re.escape(alt)}\b', re.IGNORECASE)
-                    translated = pattern_alt.sub(term.term_hi, translated)
+                    translated = pattern_alt.sub(loc_target.term, translated)
 
         # Common phrase replacements for gig workers if target is Hindi
         if target_lang == "hi":
@@ -253,6 +254,26 @@ class GoogleTranslateService:
             ]
             for en_phrase, hi_phrase in common_phrases:
                 translated = re.sub(rf'\b{re.escape(en_phrase)}\b', hi_phrase, translated, flags=re.IGNORECASE)
+
+        # Common phrase replacements for gig workers if target is Marathi
+        elif target_lang == "mr":
+            common_phrases_mr = [
+                ("Your", "तुमचे"),
+                ("your", "तुमचे"),
+                ("is due in", "ची अंतिम तारीख आहे"),
+                ("insurance premium", "विमा हप्ता"),
+                ("Keep sufficient balance", "पुरेशी शिल्लक ठेवा"),
+                ("Balance is", "शिल्लक आहे"),
+                ("predicted earnings", "अंदाजित कमाई"),
+                ("next week", "पुढील आठवड्यात"),
+                ("is eligible", "पात्र आहे"),
+                ("not eligible", "पात्र नाही"),
+                ("Do not share your UPI PIN", "तुमचा यूपीआय पिन कोणाशीही शेअर करू नका"),
+                ("One-time password", "एकवेळचा पासवर्ड"),
+                ("monthly savings", "मासिक बचत"),
+            ]
+            for en_phrase, mr_phrase in common_phrases_mr:
+                translated = re.sub(rf'\b{re.escape(en_phrase)}\b', mr_phrase, translated, flags=re.IGNORECASE)
 
         return translated
 
@@ -282,22 +303,18 @@ class GoogleTranslateService:
             is_financial = glossary_match is not None
 
             if is_financial:
-                translated_word = glossary_match.term_hi if target_lang == "hi" else glossary_match.term_en
-                simplified_def = (
-                    glossary_match.simplified_definition_hi if target_lang == "hi" 
-                    else glossary_match.simplified_definition_en
-                )
-                phonetic = glossary_match.phonetic_hi
-                gig_note = (
-                    glossary_match.gig_context_example_hi if target_lang == "hi"
-                    else glossary_match.gig_context_example_en
-                )
-                financial_terms_found.add(glossary_match.term_en)
+                loc_en = glossary_match.translations.get("en")
+                loc_target = glossary_match.translations.get(target_lang) or loc_en or next(iter(glossary_match.translations.values()))
+                translated_word = loc_target.term
+                simplified_def = loc_target.simplified_definition
+                phonetic = loc_target.phonetic
+                gig_note = loc_target.gig_context_example
+                financial_terms_found.add(loc_en.term if loc_en else glossary_match.term_id)
             else:
                 # If it's a number or currency
                 if re.match(r'^₹?\d+(?:\.\d+)?$', clean_word):
                     translated_word = clean_word
-                    simplified_def = "राशि / संख्या" if target_lang == "hi" else "Amount / Number"
+                    simplified_def = "रक्कम / संख्या" if target_lang == "mr" else ("राशि / संख्या" if target_lang == "hi" else "Amount / Number")
                     phonetic = None
                     gig_note = None
                 else:

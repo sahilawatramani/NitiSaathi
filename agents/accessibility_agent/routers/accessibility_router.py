@@ -89,33 +89,39 @@ async def word_to_word_translate(request: WordToWordRequest):
 
 @router.get("/glossary", response_model=GlossaryListResponse)
 async def get_glossary(
-    query: Optional[str] = Query(None, description="Search query in English or Hindi"),
+    query: Optional[str] = Query(None, description="Search query in English, Hindi, or Marathi"),
     category: Optional[str] = Query(None, description="Filter by category"),
-    language: Optional[str] = Query("hi", description="Language preference")
+    target_lang: str = Query("hi", description="Language preference ('en', 'hi', 'mr')"),
+    language: Optional[str] = Query(None, description="Alias for target_lang"),
+    all: bool = Query(False, description="Return full multi-language bundle if true")
 ):
     """
     List or search all curated financial, banking, and government welfare scheme terms.
+    Returns single target language content by default (not bundled).
     """
     try:
         glossary_svc = get_glossary_service()
-        terms = glossary_svc.search_terms(query=query or "", language=language or "hi", category=category)
-        return GlossaryListResponse(total=len(terms), terms=terms)
+        lang = language or target_lang
+        terms = glossary_svc.search_terms(query=query or "", target_lang=lang, category=category, all_langs=all)
+        return GlossaryListResponse(total=len(terms), target_lang=None if all else lang, terms=terms)
     except Exception as e:
         logger.error(f"Glossary search failed: {e}")
         raise HTTPException(status_code=500, detail=f"Glossary search error: {str(e)}")
 
-@router.get("/glossary/{term_id}", response_model=GlossaryTerm)
+@router.get("/glossary/{term_id}")
 async def get_glossary_term(
-    term_id: str = Path(..., description="Unique term ID (e.g., 'e_shram', 'pmsby')")
+    term_id: str = Path(..., description="Unique term ID (e.g., 'e_shram', 'pmsby')"),
+    target_lang: str = Query("hi", description="Language preference ('en', 'hi', 'mr')"),
+    language: Optional[str] = Query(None, description="Alias for target_lang"),
+    all: bool = Query(False, description="Return full multi-language bundle if true")
 ):
     """
     Get detailed breakdown for a specific glossary term.
+    Returns single localized term by default.
     """
     glossary_svc = get_glossary_service()
-    term = glossary_svc.get_term_by_id(term_id)
-    if not term:
-        # Try find by string
-        term = glossary_svc.find_term(term_id)
+    lang = language or target_lang
+    term = glossary_svc.get_term_by_id(term_id, target_lang=lang, all_langs=all)
     if not term:
         raise HTTPException(status_code=404, detail=f"Term '{term_id}' not found in glossary.")
     return term

@@ -1,28 +1,52 @@
 /**
  * NudgesScreen — Dedicated notification feed for nudges.
  */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { MoreStackParamList } from '../../navigation/MainNavigator';
 import { Colors, Typography, Spacing, BorderRadius } from '../../theme';
+import { nudgeService, NudgeLog } from '../../services/nudgeService';
 
 type Props = NativeStackScreenProps<MoreStackParamList, 'Nudges'>;
 
-const MOCK_NUDGES = [
-  { id: 1, title: 'Low Balance', desc: 'Your balance is critically low for auto-debit.', type: 'urgent' },
-  { id: 2, title: 'Earnings Dip', desc: 'Your earnings are down 12% compared to last week.', type: 'warning' },
-  { id: 3, title: 'Scheme Eligible', desc: 'You qualify for PMJJBY based on your profile.', type: 'info' },
+const FALLBACK_NUDGES: NudgeLog[] = [
+  { id: 1, user_id: 1, message: 'Your balance is critically low for upcoming auto-debit.', priority: 'urgent', created_at: new Date().toISOString() },
+  { id: 2, user_id: 1, message: 'Your earnings are down 12% compared to last week.', priority: 'warning', created_at: new Date().toISOString() },
+  { id: 3, user_id: 1, message: 'You qualify for PMJJBY scheme based on your profile.', priority: 'info', created_at: new Date().toISOString() },
 ];
 
 const NudgesScreen: React.FC<Props> = ({ navigation }) => {
+  const [nudges, setNudges] = useState<NudgeLog[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const data = await nudgeService.list();
+        if (mounted) {
+          setNudges(data && data.length > 0 ? data : FALLBACK_NUDGES);
+        }
+      } catch {
+        if (mounted) setNudges(FALLBACK_NUDGES);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <View style={styles.appBar}>
@@ -32,32 +56,37 @@ const NudgesScreen: React.FC<Props> = ({ navigation }) => {
         <Text style={styles.appBarTitle}>सूचनाएं / Nudges</Text>
       </View>
       <ScrollView contentContainerStyle={styles.container}>
-        {MOCK_NUDGES.map(nudge => {
-          let bgColor: string = Colors.surfaceContainerLow;
-          let iconColor: string = Colors.onSurfaceVariant;
-          let iconBg: string = Colors.surfaceVariant;
-          if (nudge.type === 'urgent') {
-            bgColor = Colors.errorContainer;
-            iconColor = Colors.error;
-            iconBg = `${Colors.error}40`;
-          } else if (nudge.type === 'warning') {
-            bgColor = Colors.cautionTint;
-            iconColor = Colors.secondary;
-            iconBg = `${Colors.secondary}40`;
-          }
+        {loading ? (
+          <ActivityIndicator size="large" color={Colors.primary} style={{ marginTop: 32 }} />
+        ) : (
+          nudges.map((nudge) => {
+            const isUrgent = nudge.priority === 'urgent' || nudge.priority === 'high';
+            const isWarning = nudge.priority === 'warning' || nudge.priority === 'medium';
+            let bgColor: string = Colors.surfaceContainerLow;
+            let iconBg: string = Colors.surfaceVariant;
+            if (isUrgent) {
+              bgColor = Colors.errorContainer;
+              iconBg = `${Colors.error}40`;
+            } else if (isWarning) {
+              bgColor = Colors.cautionTint;
+              iconBg = `${Colors.secondary}40`;
+            }
 
-          return (
-            <View key={nudge.id} style={[styles.nudgeCard, { backgroundColor: bgColor }]}>
-              <View style={[styles.iconBg, { backgroundColor: iconBg }]}>
-                <Text style={styles.icon}>🔔</Text>
+            const title = (nudge.nudge_type || nudge.trigger_id || 'Nudge Notification').replace(/_/g, ' ');
+
+            return (
+              <View key={nudge.id} style={[styles.nudgeCard, { backgroundColor: bgColor }]}>
+                <View style={[styles.iconBg, { backgroundColor: iconBg }]}>
+                  <Text style={styles.icon}>🔔</Text>
+                </View>
+                <View style={styles.content}>
+                  <Text style={styles.title}>{title}</Text>
+                  <Text style={styles.desc}>{nudge.message}</Text>
+                </View>
               </View>
-              <View style={styles.content}>
-                <Text style={styles.title}>{nudge.title}</Text>
-                <Text style={styles.desc}>{nudge.desc}</Text>
-              </View>
-            </View>
-          );
-        })}
+            );
+          })
+        )}
       </ScrollView>
     </SafeAreaView>
   );

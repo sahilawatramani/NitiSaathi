@@ -1,6 +1,6 @@
 {
-  "version": "1.0.0",
-  "last_updated": "2026-09-08",
+  "version": "2.0.0",
+  "last_updated": "2026-09-14",
   "categories": [
     "Government Schemes",
     "Banking & UPI",
@@ -12,218 +12,452 @@
   "terms": [
     {
       "term_id": "e_shram",
-      "term_en": "e-Shram",
-      "term_hi": "ई-श्रम",
       "category": "Government Schemes",
-      "simplified_definition_en": "National database and identity card for unorganised and gig workers providing direct access to social security benefits.",
-      "simplified_definition_hi": "असंगठित और गिग श्रमिकों के लिए राष्ट्रीय पहचान पत्र जिससे सरकारी योजनाओं का सीधा लाभ मिलता है।",
-      "gig_context_example_en": "Registering on e-Shram gives you a 12-digit UAN number and access to PMSBY accident insurance.",
-      "gig_context_example_hi": "ई-श्रम पर रजिस्टर करने से आपको 12 अंकों का UAN नंबर और PMSBY बीमा की सुविधा मिलती है।",
-      "phonetic_hi": "ई-श्रम",
+      "translations": {
+        "en": {
+          "term": "e-Shram",
+          "simplified_definition": "National database and identity card for unorganised and gig workers providing direct access to social security benefits.",
+          "gig_context_example": "Registering on e-Shram gives you a 12-digit UAN number and access to PMSBY accident insurance.",
+          "phonetic": "e-Shram"
+        },
+        "hi": {
+          "term": "ई-श्रम",
+          "simplified_definition": "असंगठित और गिग श्रमिकों के लिए राष्ट्रीय पहचान पत्र जिससे सरकारी योजनाओं का सीधा लाभ मिलता है।",
+          "gig_context_example": "ई-श्रम पर रजिस्टर करने से आपको 12 अंकों का UAN नंबर और PMSBY बीमा की सुविधा मिलती है।",
+          "phonetic": "ई-श्रम"
+        },
+        "mr": {
+          "term": "ई-श्रम",
+          "simplified_definition": "असंघटित आणि गिग कामगारांसाठी राष्ट्रीय ओळखपत्र, ज्याद्वारे सामाजिक सुरक्षा आणि सरकारी योजनांचा थेट लाभ मिळतो.",
+          "gig_context_example": "ई-श्रमवर नोंदणी केल्याने तुम्हाला १२ अंकी UAN क्रमांक आणि PMSBY विमा संरक्षण मिळते.",
+          "phonetic": "ई-श्रम"
+        }
+      },
       "alternatives": ["eShram", "eshram", "e-shram card", "shramik card"]
     },
     {
       "term_id": "pm_sym",
-      "term_en": "PM-SYM",
-      "term_hi": "पीएम-एसवाईएम (श्रम योगी मान-धन)",
       "category": "Government Schemes",
-      "simplified_definition_en": "Government pension scheme providing ₹3,000 monthly pension after age 60 for informal workers.",
-      "simplified_definition_hi": "सरकारी पेंशन योजना जिसमें 60 वर्ष की आयु के बाद हर महीने ₹3,000 की निश्चित पेंशन मिलती है।",
-      "gig_context_example_en": "If you are 28 years old, contributing ₹55/month into PM-SYM secures ₹3,000 monthly pension for your retirement.",
-      "gig_context_example_hi": "यदि आपकी उम्र 28 वर्ष है, तो ₹55/महीना जमा करके आपको 60 साल की उम्र के बाद ₹3,000 महीना पेंशन मिलेगी।",
-      "phonetic_hi": "पीएम श्रम योगी मानधन",
+      "translations": {
+        "en": {
+          "term": "PM-SYM",
+          "simplified_definition": "Government pension scheme providing ₹3,000 monthly pension after age 60 for informal workers.",
+          "gig_context_example": "If you are 28 years old, contributing ₹55/month into PM-SYM secures ₹3,000 monthly pension for your retirement.",
+          "phonetic": "PM-SYM"
+        },
+        "hi": {
+          "term": "पीएम-एसवाईएम (श्रम योगी मान-धन)",
+          "simplified_definition": "सरकारी पेंशन योजना जिसमें 60 वर्ष की आयु के बाद हर महीने ₹3,000 की निश्चित पेंशन मिलती है।",
+          "gig_context_example": "यदि आपकी उम्र 28 वर्ष है, तो ₹55/महीना जमा करके आपको 60 साल की उम्र के बाद ₹3,000 महीना पेंशन मिलेगी।",
+          "phonetic": "पीएम श्रम योगी मानधन"
+        },
+        "mr": {
+          "term": "पीएम-एसवायएम (श्रमयोगी मानधन)",
+          "simplified_definition": "असंघटित कामगारांसाठी सरकारी पेन्शन योजना, ज्यामध्ये वयाच्या ६० वर्षांनंतर दरमहा ₹३,००० निश्चित पेन्शन मिळते.",
+          "gig_context_example": "तुमचे वय २८ वर्षे असल्यास, दरमहा ₹५५ भरून वयाच्या ६० वर्षांनंतर ₹३,००० मासिक पेन्शन सुरक्षित करा.",
+          "phonetic": "पीएम श्रमयोगी मानधन"
+        }
+      },
       "alternatives": ["PMSYM", "Pradhan Mantri Shram Yogi Maandhan", "pension scheme"]
     },
     {
       "term_id": "pmsby",
-      "term_en": "PMSBY",
-      "term_hi": "पीएमएसबीवाई (सुरक्षा बीमा)",
       "category": "Government Schemes",
-      "simplified_definition_en": "Accident insurance scheme providing ₹2 Lakh coverage for just ₹20 annual premium.",
-      "simplified_definition_hi": "दुर्घटना बीमा योजना जिसमें सिर्फ ₹20 प्रति वर्ष के प्रीमियम पर ₹2 लाख का दुर्घटना कवर मिलता है।",
-      "gig_context_example_en": "Keep at least ₹20 in your bank account before May 31 for automatic PMSBY renewal so accident cover stays active.",
-      "gig_context_example_hi": "31 मई से पहले अपने खाते में कम से कम ₹20 रखें ताकि आपका ₹2 लाख का दुर्घटना बीमा चालू रहे।",
-      "phonetic_hi": "प्रधानमंत्री सुरक्षा बीमा योजना",
+      "translations": {
+        "en": {
+          "term": "PMSBY",
+          "simplified_definition": "Accident insurance scheme providing ₹2 Lakh coverage for just ₹20 annual premium.",
+          "gig_context_example": "Keep at least ₹20 in your bank account before May 31 for automatic PMSBY renewal so accident cover stays active.",
+          "phonetic": "PMSBY"
+        },
+        "hi": {
+          "term": "पीएमएसबीवाई (सुरक्षा बीमा)",
+          "simplified_definition": "दुर्घटना बीमा योजना जिसमें सिर्फ ₹20 प्रति वर्ष के प्रीमियम पर ₹2 लाख का दुर्घटना कवर मिलता है।",
+          "gig_context_example": "31 मई से पहले अपने खाते में कम से कम ₹20 रखें ताकि आपका ₹2 लाख का दुर्घटना बीमा चालू रहे।",
+          "phonetic": "प्रधानमंत्री सुरक्षा बीमा योजना"
+        },
+        "mr": {
+          "term": "पीएमएसबीवाय (सुरक्षा विमा)",
+          "simplified_definition": "फक्त ₹२० वार्षिक हप्त्यामध्ये ₹२ लाखांचे अपघाती विमा संरक्षण देणारी सरकारी योजना.",
+          "gig_context_example": "अपघात विमा चालू ठेवण्यासाठी ३१ मे पूर्वी खात्यात किमान ₹२० शिल्लक ठेवा.",
+          "phonetic": "प्रधानमंत्री सुरक्षा विमा योजना"
+        }
+      },
       "alternatives": ["Pradhan Mantri Suraksha Bima Yojana", "accident insurance"]
     },
     {
       "term_id": "pmjjby",
-      "term_en": "PMJJBY",
-      "term_hi": "पीएमजेजेबीवाई (जीवन ज्योति बीमा)",
       "category": "Government Schemes",
-      "simplified_definition_en": "Life insurance scheme providing ₹2 Lakh life cover for ₹436 annual premium.",
-      "simplified_definition_hi": "जीवन बीमा योजना जिसमें किसी भी कारण से मृत्यु होने पर परिवार को ₹2 लाख की आर्थिक सहायता मिलती है (वार्षिक प्रीमियम ₹436)।",
-      "gig_context_example_en": "PMJJBY protects your family with ₹2 Lakh life cover for ₹436 per year.",
-      "gig_context_example_hi": "PMJJBY के तहत साल में ₹436 देकर आप अपने परिवार को ₹2 लाख का जीवन बीमा दे सकते हैं।",
-      "phonetic_hi": "प्रधानमंत्री जीवन ज्योति बीमा योजना",
+      "translations": {
+        "en": {
+          "term": "PMJJBY",
+          "simplified_definition": "Life insurance scheme providing ₹2 Lakh life cover for ₹436 annual premium.",
+          "gig_context_example": "PMJJBY protects your family with ₹2 Lakh life cover for ₹436 per year.",
+          "phonetic": "PMJJBY"
+        },
+        "hi": {
+          "term": "पीएमजेजेबीवाई (जीवन ज्योति बीमा)",
+          "simplified_definition": "जीवन बीमा योजना जिसमें किसी भी कारण से मृत्यु होने पर परिवार को ₹2 लाख की आर्थिक सहायता मिलती है (वार्षिक प्रीमियम ₹436)।",
+          "gig_context_example": "PMJJBY के तहत साल में ₹436 देकर आप अपने परिवार को ₹2 लाख का जीवन बीमा दे सकते हैं।",
+          "phonetic": "प्रधानमंत्री जीवन ज्योति बीमा योजना"
+        },
+        "mr": {
+          "term": "पीएमजेजेबीवाय (जीवन ज्योती विमा)",
+          "simplified_definition": "वार्षिक ₹४३६ हप्त्यात कोणत्याही कारणास्तव मृत्यू झाल्यास कुटुंबाला ₹२ लाखांचे जीवन विमा संरक्षण देणारी योजना.",
+          "gig_context_example": "PMJJBY द्वारे वर्षाला ₹४३६ भरून तुम्ही तुमच्या कुटुंबासाठी ₹२ लाखांचे जीवन विमा संरक्षण मिळवू शकता.",
+          "phonetic": "प्रधानमंत्री जीवन ज्योती विमा योजना"
+        }
+      },
       "alternatives": ["Pradhan Mantri Jeevan Jyoti Bima Yojana", "life insurance"]
     },
     {
       "term_id": "apy",
-      "term_en": "Atal Pension Yojana",
-      "term_hi": "अटल पेंशन योजना (APY)",
       "category": "Government Schemes",
-      "simplified_definition_en": "Guaranteed monthly pension of ₹1,000 to ₹5,000 after age 60 based on contribution.",
-      "simplified_definition_hi": "60 वर्ष के बाद ₹1,000 से ₹5,000 तक की निश्चित मासिक पेंशन देने वाली सरकारी योजना।",
-      "gig_context_example_en": "Joining Atal Pension Yojana at age 25 ensures guaranteed pension during old age.",
-      "gig_context_example_hi": "25 की उम्र में अटल पेंशन योजना से जुड़ने पर बुढ़ापे में हर महीने तय पेंशन मिलती है।",
-      "phonetic_hi": "अटल पेंशन योजना",
+      "translations": {
+        "en": {
+          "term": "Atal Pension Yojana",
+          "simplified_definition": "Guaranteed monthly pension of ₹1,000 to ₹5,000 after age 60 based on contribution.",
+          "gig_context_example": "Joining Atal Pension Yojana at age 25 ensures guaranteed pension during old age.",
+          "phonetic": "Atal Pension Yojana"
+        },
+        "hi": {
+          "term": "अटल पेंशन योजना (APY)",
+          "simplified_definition": "60 वर्ष के बाद ₹1,000 से ₹5,000 तक की निश्चित मासिक पेंशन देने वाली सरकारी योजना।",
+          "gig_context_example": "25 की उम्र में अटल पेंशन योजना से जुड़ने पर बुढ़ापे में हर महीने तय पेंशन मिलती है।",
+          "phonetic": "अटल पेंशन योजना"
+        },
+        "mr": {
+          "term": "अटल पेन्शन योजना (APY)",
+          "simplified_definition": "वयाच्या ६० वर्षांनंतर योगदानानुसार दरमहा ₹१,००० ते ₹५,००० ची हमीशीर मासिक पेन्शन देणारी सरकारी योजना.",
+          "gig_context_example": "वयाच्या २५ व्या वर्षी अटल पेन्शन योजनेत सामील झाल्याने म्हातारपणात दरमहा खात्रीशीर पेन्शन मिळते.",
+          "phonetic": "अटल पेन्शन योजना"
+        }
+      },
       "alternatives": ["APY", "Atal Pension"]
     },
     {
       "term_id": "welfare_cess",
-      "term_en": "Welfare Cess",
-      "term_hi": "कल्याण उपकर (वेलफेयर सेस)",
       "category": "Government Schemes",
-      "simplified_definition_en": "Fee contributed by platform companies (Swiggy, Zomato, Ola, Uber) into the state gig worker welfare fund.",
-      "simplified_definition_hi": "डिलीवरी या टैक्सी कंपनियों द्वारा सरकार के पास जमा किया जाने वाला शुल्क जो गिग श्रमिकों के कल्याण में इस्तेमाल होता है।",
-      "gig_context_example_en": "The welfare cess paid by aggregators funds accident benefits and medical support for delivery riders.",
-      "gig_context_example_hi": "कंपनियों द्वारा भरा जाने वाला वेलफेयर सेस राइडर्स के इलाज और दुर्घटना सहायता के लिए इस्तेमाल होता है।",
-      "phonetic_hi": "वेलफेयर सेस",
+      "translations": {
+        "en": {
+          "term": "Welfare Cess",
+          "simplified_definition": "Fee contributed by platform companies (Swiggy, Zomato, Ola, Uber) into the state gig worker welfare fund.",
+          "gig_context_example": "The welfare cess paid by aggregators funds accident benefits and medical support for delivery riders.",
+          "phonetic": "Welfare Cess"
+        },
+        "hi": {
+          "term": "कल्याण उपकर (वेलफेयर सेस)",
+          "simplified_definition": "डिलीवरी या टैक्सी कंपनियों द्वारा सरकार के पास जमा किया जाने वाला शुल्क जो गिग श्रमिकों के कल्याण में इस्तेमाल होता है।",
+          "gig_context_example": "कंपनियों द्वारा भरा जाने वाला वेलफेयर सेस राइडर्स के इलाज और दुर्घटना सहायता के लिए इस्तेमाल होता है।",
+          "phonetic": "वेलफेयर सेस"
+        },
+        "mr": {
+          "term": "कल्याणकारी उपकर (वेलफेअर सेस)",
+          "simplified_definition": "डिलिव्हरी किंवा कॅब कंपन्यांकडून सरकारी कामगार कल्याण निधीमध्ये जमा केला जाणारा उपकर.",
+          "gig_context_example": "कंपन्यांनी भरलेला वेलफेअर सेस गिग कामगारांच्या अपघात मदत आणि वैद्यकीय उपचारांसाठी वापरला जातो.",
+          "phonetic": "वेलफेअर सेस"
+        }
+      },
       "alternatives": ["gig cess", "aggregator cess", "welfare fee"]
     },
     {
       "term_id": "platform_payout",
-      "term_en": "Platform Payout",
-      "term_hi": "कंपनी से कमाई / भुगतान",
       "category": "Gig Platform Earnings",
-      "simplified_definition_en": "Money deposited into your account from apps like Zomato, Swiggy, Uber, Ola, Zepto, or Blinkit for deliveries/trips.",
-      "simplified_definition_hi": "डिलीवरी या ट्रिप पूरा करने पर जोमैटो, स्विगी, उबर आदि ऐप से आपके बैंक खाते में आने वाला पैसा।",
-      "gig_context_example_en": "Your weekly platform payout of ₹4,200 arrived today from Swiggy.",
-      "gig_context_example_hi": "स्विगी से आपकी इस हफ्ते की कमाई ₹4,200 आज आपके खाते में जमा हो गई है।",
-      "phonetic_hi": "प्लेटफॉर्म पेआउट",
+      "translations": {
+        "en": {
+          "term": "Platform Payout",
+          "simplified_definition": "Money deposited into your account from apps like Zomato, Swiggy, Uber, Ola, Zepto, or Blinkit for deliveries/trips.",
+          "gig_context_example": "Your weekly platform payout of ₹4,200 arrived today from Swiggy.",
+          "phonetic": "Platform Payout"
+        },
+        "hi": {
+          "term": "कंपनी से कमाई / भुगतान",
+          "simplified_definition": "डिलीवरी या ट्रिप पूरा करने पर जोमैटो, स्विगी, उबर आदि ऐप से आपके बैंक खाते में आने वाला पैसा।",
+          "gig_context_example": "स्विगी से आपकी इस हफ्ते की कमाई ₹4,200 आज आपके खाते में जमा हो गई है।",
+          "phonetic": "प्लेटफॉर्म पेआउट"
+        },
+        "mr": {
+          "term": "प्लॅटफॉर्म कमाई / पेआउट",
+          "simplified_definition": "डिलिव्हरी किंवा ट्रिप पूर्ण केल्यानंतर स्विगी, झोमॅटो, उबर इत्यादी ॲप्सकडून बँक खात्यात जमा होणारी रक्कम.",
+          "gig_context_example": "स्विगीकडून तुमची या आठवड्याची ₹४,२०० ची कमाई आज खात्यात जमा झाली आहे.",
+          "phonetic": "प्लॅटफॉर्म पेआउट"
+        }
+      },
       "alternatives": ["weekly payout", "daily earnings", "swiggy payout", "zomato payout", "uber payout"]
     },
     {
       "term_id": "informal_borrowing",
-      "term_en": "Informal Borrowing",
-      "term_hi": "उधार / दोस्तों या परिवार से लिया पैसा",
       "category": "Budgeting & Cash Flow",
-      "simplified_definition_en": "Money borrowed temporarily from friends, family, or local contacts without a formal bank loan.",
-      "simplified_definition_hi": "आपातकाल में दोस्तों, रिश्तेदारों या जान-पहचान वालों से लिया गया आपसी उधार।",
-      "gig_context_example_en": "Tracking informal borrowing helps you repay on time and avoid financial stress.",
-      "gig_context_example_hi": "दोस्तों से लिए उधार का हिसाब रखने से समय पर वापसी और बचत की योजना आसान होती है।",
-      "phonetic_hi": "इनफॉर्मल बॉरोइंग",
+      "translations": {
+        "en": {
+          "term": "Informal Borrowing",
+          "simplified_definition": "Money borrowed temporarily from friends, family, or local contacts without a formal bank loan.",
+          "gig_context_example": "Tracking informal borrowing helps you repay on time and avoid financial stress.",
+          "phonetic": "Informal Borrowing"
+        },
+        "hi": {
+          "term": "उधार / दोस्तों या परिवार से लिया पैसा",
+          "simplified_definition": "आपातकाल में दोस्तों, रिश्तेदारों या जान-पहचान वालों से लिया गया आपसी उधार।",
+          "gig_context_example": "दोस्तों से लिए उधार का हिसाब रखने से समय पर वापसी और बचत की योजना आसान होती है।",
+          "phonetic": "उधार"
+        },
+        "mr": {
+          "term": "हातउसने / अनौपचारिक कर्ज",
+          "simplified_definition": "बँकेच्या कर्जाशिवाय मित्र, नातेवाईक किंवा ओळखीच्या व्यक्तींकडून गरजेच्या वेळी घेतलेले उसनवार पैसे.",
+          "gig_context_example": "हातउसनवारीची नोंद ठेवल्याने वेळेवर परतफेड करणे सोपे होते आणि आर्थिक ताण कमी होतो.",
+          "phonetic": "हातउसने पैसे"
+        }
+      },
       "alternatives": ["udhaar", "loan from friends", "hand loan", "karz"]
     },
     {
       "term_id": "emi",
-      "term_en": "EMI (Equated Monthly Installment)",
-      "term_hi": "ईएमआई / मासिक किस्त",
       "category": "Banking & UPI",
-      "simplified_definition_en": "Fixed monthly repayment amount for a bike, phone, or personal loan.",
-      "simplified_definition_hi": "बाइक, मोबाइल या अन्य लोन के लिए हर महीने बैंक को चुकाई जाने वाली तय किस्त।",
-      "gig_context_example_en": "Your bike EMI of ₹2,100 is due in 4 days. Keep sufficient balance to avoid bounce charges.",
-      "gig_context_example_hi": "आपकी बाइक की ₹2,100 की किस्त 4 दिन में कटेगी। बाउंस चार्ज से बचने के लिए बैलेंस बनाए रखें।",
-      "phonetic_hi": "ई एम आई / किस्त",
+      "translations": {
+        "en": {
+          "term": "EMI (Equated Monthly Installment)",
+          "simplified_definition": "Fixed monthly repayment amount for a bike, phone, or personal loan.",
+          "gig_context_example": "Your bike EMI of ₹2,100 is due in 4 days. Keep sufficient balance to avoid bounce charges.",
+          "phonetic": "EMI"
+        },
+        "hi": {
+          "term": "ईएमआई / मासिक किस्त",
+          "simplified_definition": "बाइक, मोबाइल या अन्य लोन के लिए हर महीने बैंक को चुकाई जाने वाली तय किस्त।",
+          "gig_context_example": "आपकी बाइक की ₹2,100 की किस्त 4 दिन में कटेगी। बाउंस चार्ज से बचने के लिए बैलेंस बनाए रखें।",
+          "phonetic": "ई एम आई"
+        },
+        "mr": {
+          "term": "ईएमआय / मासिक हप्ता",
+          "simplified_definition": "दुचाकी, मोबाईल किंवा वैयक्तिक कर्जाची परतफेड करण्यासाठी दरमहा बँकेला दिला जाणारा ठरलेला हप्ता.",
+          "gig_context_example": "तुमचा बाईकचा ₹२,१०० चा हप्ता ४ दिवसांत कापला जाईल. बाऊन्स शुल्क टाळण्यासाठी खात्यात पुरेसे पैसे ठेवा.",
+          "phonetic": "ईएमआय / हप्ता"
+        }
+      },
       "alternatives": ["loan installment", "monthly installment", "kist"]
     },
     {
       "term_id": "upi_collect_request",
-      "term_en": "UPI Collect Request",
-      "term_hi": "यूपीआई कलेक्ट रिक्वेस्ट (पैसे मांगने की रिक्वेस्ट)",
       "category": "Banking & UPI",
-      "simplified_definition_en": "A payment notification requesting you to enter your PIN to send money to someone else.",
-      "simplified_definition_hi": "किसी द्वारा भेजा गया पेमेंट अनुरोध जिसमें पिन डालने पर आपके खाते से पैसे कट जाते हैं।",
-      "gig_context_example_en": "Never enter your UPI PIN on a collect request to receive money. PIN is ONLY for sending money.",
-      "gig_context_example_hi": "पैसे पाने के लिए कभी यूपीआई पिन न डालें। पिन केवल पैसे भेजने के लिए होता है।",
-      "phonetic_hi": "यूपीआई कलेक्ट रिक्वेस्ट",
+      "translations": {
+        "en": {
+          "term": "UPI Collect Request",
+          "simplified_definition": "A payment notification requesting you to enter your PIN to send money to someone else.",
+          "gig_context_example": "Never enter your UPI PIN on a collect request to receive money. PIN is ONLY for sending money.",
+          "phonetic": "UPI Collect Request"
+        },
+        "hi": {
+          "term": "यूपीआई कलेक्ट रिक्वेस्ट (पैसे मांगने की रिक्वेस्ट)",
+          "simplified_definition": "किसी द्वारा भेजा गया पेमेंट अनुरोध जिसमें पिन डालने पर आपके खाते से पैसे कट जाते हैं।",
+          "gig_context_example": "पैसे पाने के लिए कभी यूपीआई पिन न डालें। पिन केवल पैसे भेजने के लिए होता है।",
+          "phonetic": "यूपीआई कलेक्ट रिक्वेस्ट"
+        },
+        "mr": {
+          "term": "यूपीआय कलेक्ट रिक्वेस्ट (पैसे मागण्याची विनंती)",
+          "simplified_definition": "दुसऱ्या व्यक्तीने पाठवलेली विनंती, ज्यावर पिन टाकल्यास तुमच्या खात्यातून पैसे कापले जातात.",
+          "gig_context_example": "पैसे मिळवण्यासाठी कधीही यूपीआय पिन टाकू नका; पिन फक्त पैसे पाठवण्यासाठी असतो.",
+          "phonetic": "यूपीआय कलेक्ट रिक्वेस्ट"
+        }
+      },
       "alternatives": ["collect request", "payment request", "upi request"]
     },
     {
       "term_id": "upi_pin",
-      "term_en": "UPI PIN",
-      "term_hi": "यूपीआई पिन (गुप्त पासवर्ड)",
       "category": "Digital Safety & Fraud",
-      "simplified_definition_en": "4 or 6 digit secret password used only to authorize money transfers from your bank account.",
-      "simplified_definition_hi": "4 या 6 अंकों का गुप्त पासवर्ड जो आपके खाते से पैसे भेजने के लिए उपयोग किया जाता है।",
-      "gig_context_example_en": "No bank, company, or customer will ever ask for your UPI PIN. Never share it with anyone.",
-      "gig_context_example_hi": "कोई भी बैंक, कंपनी या ग्राहक आपसे कभी यूपीआई पिन नहीं पूछेगा। इसे कभी किसी को न बताएं।",
-      "phonetic_hi": "यूपीआई पिन",
+      "translations": {
+        "en": {
+          "term": "UPI PIN",
+          "simplified_definition": "4 or 6 digit secret password used only to authorize money transfers from your bank account.",
+          "gig_context_example": "No bank, company, or customer will ever ask for your UPI PIN. Never share it with anyone.",
+          "phonetic": "UPI PIN"
+        },
+        "hi": {
+          "term": "यूपीआई पिन (गुप्त पासवर्ड)",
+          "simplified_definition": "4 या 6 अंकों का गुप्त पासवर्ड जो आपके खाते से पैसे भेजने के लिए उपयोग किया जाता है।",
+          "gig_context_example": "कोई भी बैंक, कंपनी या ग्राहक आपसे कभी यूपीआई पिन नहीं पूछेगा। इसे कभी किसी को न बताएं।",
+          "phonetic": "यूपीआई पिन"
+        },
+        "mr": {
+          "term": "यूपीआय पिन (गुप्त पासवर्ड)",
+          "simplified_definition": "खात्यातून पैसे पाठवण्यासाठी वापरला जाणारा ४ किंवा ६ अंकी अत्यंत गोपनीय सुरक्षा कोड.",
+          "gig_context_example": "कोणतीही बँक किंवा कंपनी कधीही यूपीआय पिन मागत नाही; तो कोणाशीही शेअर करू नका.",
+          "phonetic": "यूपीआय पिन"
+        }
+      },
       "alternatives": ["PIN", "mpin", "secret pin"]
     },
     {
       "term_id": "otp",
-      "term_en": "OTP (One Time Password)",
-      "term_hi": "ओटीपी (एक बार का पासवर्ड)",
       "category": "Digital Safety & Fraud",
-      "simplified_definition_en": "Temporary security code sent via SMS to verify your transactions or logins.",
-      "simplified_definition_hi": "लेन-देन या लॉगिन सत्यापित करने के लिए मोबाइल पर एसएमएस द्वारा आने वाला 6 अंकों का सुरक्षा कोड।",
-      "gig_context_example_en": "Sharing your OTP allows fraudsters to access your account. Keep it completely confidential.",
-      "gig_context_example_hi": "ओटीपी शेयर करने से जालसाज आपके खाते से पैसे निकाल सकते हैं। इसे किसी को न बताएं।",
-      "phonetic_hi": "ओ टी पी",
+      "translations": {
+        "en": {
+          "term": "OTP (One Time Password)",
+          "simplified_definition": "Temporary security code sent via SMS to verify your transactions or logins.",
+          "gig_context_example": "Sharing your OTP allows fraudsters to access your account. Keep it completely confidential.",
+          "phonetic": "OTP"
+        },
+        "hi": {
+          "term": "ओटीपी (एक बार का पासवर्ड)",
+          "simplified_definition": "लेन-देन या लॉगिन सत्यापित करने के लिए मोबाइल पर एसएमएस द्वारा आने वाला 6 अंकों का सुरक्षा कोड।",
+          "gig_context_example": "ओटीपी शेयर करने से जालसाज आपके खाते से पैसे निकाल सकते हैं। इसे किसी को न बताएं।",
+          "phonetic": "ओ टी पी"
+        },
+        "mr": {
+          "term": "ओटीपी (एकवेळचा पासवर्ड)",
+          "simplified_definition": "व्यवहार किंवा लॉगिन प्रमाणित करण्यासाठी एसएमएसद्वारे मोबाईलवर येणारा तात्पुरता सुरक्षा कोड.",
+          "gig_context_example": "ओटीपी कोणालाही दिल्यास खात्यातून फसवणूक होऊ शकते; तो नेहमी गोपनीय ठेवा.",
+          "phonetic": "ओटीपी"
+        }
+      },
       "alternatives": ["One Time Password", "sms code", "verification code"]
     },
     {
       "term_id": "fake_kyc_fraud",
-      "term_en": "Fake KYC Scam",
-      "term_hi": "फर्जी केवाईसी धोखाधड़ी",
       "category": "Digital Safety & Fraud",
-      "simplified_definition_en": "Fraudsters pretending to be bank/wallet agents claiming your account will be blocked unless you click a link or install an app.",
-      "simplified_definition_hi": "अकाउंट ब्लॉक होने का डर दिखाकर फर्जी ऐप डाउनलोड कराने या जानकारी चुराने की धोखाधड़ी।",
-      "gig_context_example_en": "Banks never ask you to install AnyDesk or TeamViewer for KYC. Report such calls immediately.",
-      "gig_context_example_hi": "केवाईसी के लिए बैंक कभी स्क्रीन-शेयरिंग ऐप डाउनलोड करने को नहीं कहता। ऐसे फोन कॉल से सावधान रहें।",
-      "phonetic_hi": "फेक केवाईसी स्कैम",
+      "translations": {
+        "en": {
+          "term": "Fake KYC Scam",
+          "simplified_definition": "Fraudsters pretending to be bank/wallet agents claiming your account will be blocked unless you click a link or install an app.",
+          "gig_context_example": "Banks never ask you to install AnyDesk or TeamViewer for KYC. Report such calls immediately.",
+          "phonetic": "Fake KYC Scam"
+        },
+        "hi": {
+          "term": "फर्जी केवाईसी धोखाधड़ी",
+          "simplified_definition": "अकाउंट ब्लॉक होने का डर दिखाकर फर्जी ऐप डाउनलोड कराने या जानकारी चुराने की धोखाधड़ी।",
+          "gig_context_example": "केवाईसी के लिए बैंक कभी स्क्रीन-शेयरिंग ऐप डाउनलोड करने को नहीं कहता। ऐसे फोन कॉल से सावधान रहें।",
+          "phonetic": "फेक केवाईसी स्कैम"
+        },
+        "mr": {
+          "term": "बनावट केवायसी फसवणूक",
+          "simplified_definition": "खाते बंद होण्याची भीती दाखवून बनावट ॲप इन्स्टॉल करायला लावणारी किंवा माहिती चोरणारी सायबर फसवणूक.",
+          "gig_context_example": "केवायसीसाठी बँक कधीही स्क्रीन-शेअरिंग ॲप डाऊनलोड करायला सांगत नाही; अशा कॉल्सपासून सावध राहा.",
+          "phonetic": "फेक केवायसी स्कॅम"
+        }
+      },
       "alternatives": ["KYC scam", "fake kyc call", "account block scam"]
     },
     {
       "term_id": "tds",
-      "term_en": "TDS (Tax Deducted at Source)",
-      "term_hi": "टीडीएस (स्रोत पर काटा गया टैक्स)",
       "category": "Taxation & Compliance",
-      "simplified_definition_en": "1% tax deducted in advance by delivery platforms from your gross earnings under Section 194O/194C.",
-      "simplified_definition_hi": "कंपनियों द्वारा आपकी कमाई में से पहले से काटा गया 1% टैक्स जो सरकारी खाते में जमा होता है और जिसे आईटीआर भरकर वापस लिया जा सकता है।",
-      "gig_context_example_en": "You can claim back the TDS deducted from your Swiggy/Zomato payouts by filing a simple ITR-U/ITR-1.",
-      "gig_context_example_hi": "स्विगी/जोमैटो द्वारा काटा गया टीडीएस आप आईटीआर दाखिल करके वापस प्राप्त कर सकते हैं।",
-      "phonetic_hi": "टी डी एस",
+      "translations": {
+        "en": {
+          "term": "TDS (Tax Deducted at Source)",
+          "simplified_definition": "1% tax deducted in advance by delivery platforms from your gross earnings under Section 194O/194C.",
+          "gig_context_example": "You can claim back the TDS deducted from your Swiggy/Zomato payouts by filing a simple ITR-U/ITR-1.",
+          "phonetic": "TDS"
+        },
+        "hi": {
+          "term": "टीडीएस (स्रोत पर काटा गया टैक्स)",
+          "simplified_definition": "कंपनियों द्वारा आपकी कमाई में से पहले से काटा गया 1% टैक्स जो सरकारी खाते में जमा होता है और जिसे आईटीआर भरकर वापस लिया जा सकता है।",
+          "gig_context_example": "स्विगी/जोमैटो द्वारा काटा गया टीडीएस आप आईटीआर दाखिल करके वापस प्राप्त कर सकते हैं।",
+          "phonetic": "टी डी एस"
+        },
+        "mr": {
+          "term": "टीडीएस (उगमस्थानी कापलेला कर)",
+          "simplified_definition": "प्लॅटफॉर्म कंपन्यांनी तुमच्या कमाईतून आधीच कापलेला १% कर, जो इन्कम टॅक्स रिटर्न (ITR) भरून परत मिळवता येतो.",
+          "gig_context_example": "स्विगी किंवा झोमॅटोने कापलेला टीडीएस तुम्ही सोपे आयटीआर रिटर्न भरून परत मिळवू शकता.",
+          "phonetic": "टीडीएस"
+        }
+      },
       "alternatives": ["Tax Deducted at Source", "tax deduction", "194O tax"]
     },
     {
       "term_id": "income_volatility",
-      "term_en": "Income Volatility",
-      "term_hi": "कमाई का उतार-चढ़ाव",
       "category": "Budgeting & Cash Flow",
-      "simplified_definition_en": "Fluctuation in your weekly or daily earnings due to weather, fuel prices, or customer demand.",
-      "simplified_definition_hi": "मौसम, मांग या छुट्टियों के कारण हर हफ्ते कमाई में आने वाला अंतर या बदलाव।",
-      "gig_context_example_en": "During monsoon, your income volatility increases, so saving 15% in high-earning weeks provides a buffer.",
-      "gig_context_example_hi": "बारिश के दिनों में कमाई में उतार-चढ़ाव बढ़ जाता है, इसलिए अच्छी कमाई वाले हफ्तों में बचत करना जरूरी है।",
-      "phonetic_hi": "इनकम वोलाटिलिटी",
+      "translations": {
+        "en": {
+          "term": "Income Volatility",
+          "simplified_definition": "Fluctuation in your weekly or daily earnings due to weather, fuel prices, or customer demand.",
+          "gig_context_example": "During monsoon, your income volatility increases, so saving 15% in high-earning weeks provides a buffer.",
+          "phonetic": "Income Volatility"
+        },
+        "hi": {
+          "term": "कमाई का उतार-चढ़ाव",
+          "simplified_definition": "मौसम, मांग या छुट्टियों के कारण हर हफ्ते कमाई में आने वाला अंतर या बदलाव।",
+          "gig_context_example": "बारिश के दिनों में कमाई में उतार-चढ़ाव बढ़ जाता है, इसलिए अच्छी कमाई वाले हफ्तों में बचत करना जरूरी है।",
+          "phonetic": "इनकम वोलाटिलिटी"
+        },
+        "mr": {
+          "term": "उत्पन्नातील चढ-उतार",
+          "simplified_definition": "हवामान, पेट्रोलचे दर किंवा ग्राहकांची मागणी यांमुळे साप्ताहिक किंवा दैनंदिन कमाईत होणारे बदल.",
+          "gig_context_example": "पावसाळ्यात कमाईत चढ-उतार वाढतात, त्यामुळे जास्त कमाईच्या आठवड्यात १५% बचत करणे फायद्याचे ठरते.",
+          "phonetic": "उत्पन्न चढ-उतार"
+        }
+      },
       "alternatives": ["irregular income", "fluctuating income", "income swing"]
     },
     {
       "term_id": "rolling_forecast",
-      "term_en": "Rolling Cash Flow Forecast (WMA)",
-      "term_hi": "अगले हफ्ते का अनुमानित बजट (अनुमानित आय)",
       "category": "Budgeting & Cash Flow",
-      "simplified_definition_en": "AI prediction of your upcoming weekly earnings based on your past 4 weeks of platform payouts.",
-      "simplified_definition_hi": "पिछले 4 हफ्तों की कमाई के आधार पर अगले हफ्ते की संभावित कमाई का AI अनुमान।",
-      "gig_context_example_en": "Based on your 4-week trend, your predicted earnings next week are ₹3,400.",
-      "gig_context_example_hi": "पिछले 4 हफ्तों के आधार पर, अगले हफ्ते आपकी संभावित कमाई ₹3,400 रहने का अनुमान है।",
-      "phonetic_hi": "रोलिंग फोरकास्ट",
+      "translations": {
+        "en": {
+          "term": "Rolling Cash Flow Forecast (WMA)",
+          "simplified_definition": "AI prediction of your upcoming weekly earnings based on your past 4 weeks of platform payouts.",
+          "gig_context_example": "Based on your 4-week trend, your predicted earnings next week are ₹3,400.",
+          "phonetic": "Rolling Forecast"
+        },
+        "hi": {
+          "term": "अगले हफ्ते का अनुमानित बजट (अनुमानित आय)",
+          "simplified_definition": "पिछले 4 हफ्तों की कमाई के आधार पर अगले हफ्ते की संभावित कमाई का AI अनुमान।",
+          "gig_context_example": "पिछले 4 हफ्तों के आधार पर, अगले हफ्ते आपकी संभावित कमाई ₹3,400 रहने का अनुमान है।",
+          "phonetic": "रोलिंग फोरकास्ट"
+        },
+        "mr": {
+          "term": "पुढील आठवड्याचा अंदाजित रोख प्रवाह (WMA)",
+          "simplified_definition": "मागील ४ आठवड्यांच्या कमाईच्या आधारे पुढील आठवड्यातील संभाव्य उत्पन्नाचा एआय (AI) अंदाज.",
+          "gig_context_example": "गेल्या ४ आठवड्यांच्या आधारे, पुढील आठवड्यात तुमची अंदाजित कमाई ₹३,४०० असेल.",
+          "phonetic": "रोलिंग अंदाज"
+        }
+      },
       "alternatives": ["income prediction", "weekly forecast", "expected income"]
     },
     {
       "term_id": "discretionary_spend",
-      "term_en": "Discretionary Spend",
-      "term_hi": "वैकल्पिक / गैर-जरूरी खर्च",
       "category": "Budgeting & Cash Flow",
-      "simplified_definition_en": "Expenses that are optional (tea, snacks, entertainment, shopping) as opposed to essential needs (rent, fuel, ration).",
-      "simplified_definition_hi": "वे खर्च जो जरूरी नहीं हैं (जैसे बाहर का खाना, मनोरंजन), जिन्हें कम कमाई वाले हफ्तों में टाला जा सकता है।",
-      "gig_context_example_en": "Limiting discretionary spend to ₹300 this week helps cover your upcoming room rent.",
-      "gig_context_example_hi": "इस हफ्ते गैर-जरूरी खर्च को ₹300 तक रखने से कमरे का किराया समय पर जमा हो पाएगा।",
-      "phonetic_hi": "डिस्क्रेशनरी स्पेंड",
+      "translations": {
+        "en": {
+          "term": "Discretionary Spend",
+          "simplified_definition": "Expenses that are optional (tea, snacks, entertainment, shopping) as opposed to essential needs (rent, fuel, ration).",
+          "gig_context_example": "Limiting discretionary spend to ₹300 this week helps cover your upcoming room rent.",
+          "phonetic": "Discretionary Spend"
+        },
+        "hi": {
+          "term": "वैकल्पिक / गैर-जरूरी खर्च",
+          "simplified_definition": "वे खर्च जो जरूरी नहीं हैं (जैसे बाहर का खाना, मनोरंजन), जिन्हें कम कमाई वाले हफ्तों में टाला जा सकता है।",
+          "gig_context_example": "इस हफ्ते गैर-जरूरी खर्च को ₹300 तक रखने से कमरे का किराया समय पर जमा हो पाएगा।",
+          "phonetic": "डिस्क्रेशनरी स्पेंड"
+        },
+        "mr": {
+          "term": "ऐच्छिक / अनावश्यक खर्च",
+          "simplified_definition": "अतिशय गरजेचे नसलेले खर्च (उदा. चहा-नाश्ता, करमणूक, खरेदी), जे कमी कमाईच्या काळात टाळता येतात.",
+          "gig_context_example": "या आठवड्यात अनावश्यक खर्च ₹३०० पर्यंत मर्यादित ठेवल्यास घराचे भाडे वेळेवर भरता येईल.",
+          "phonetic": "ऐच्छिक खर्च"
+        }
+      },
       "alternatives": ["optional expense", "extra expense", "non-essential spending"]
     },
     {
       "term_id": "rbi_whitelist",
-      "term_en": "RBI Whitelist / Registered Lender",
-      "term_hi": "आरबीआई द्वारा मान्यता प्राप्त बैंक / संस्था",
       "category": "Digital Safety & Fraud",
-      "simplified_definition_en": "Official list of legitimate banks and NBFCs legally authorized by the Reserve Bank of India to provide loans.",
-      "simplified_definition_hi": "भारतीय रिजर्व बैंक द्वारा अधिकृत बैंकों और वित्तीय संस्थाओं की सूची जिनसे लोन लेना सुरक्षित है।",
-      "gig_context_example_en": "Always verify loan apps against the RBI registered lender list to avoid predatory loan apps.",
-      "gig_context_example_hi": "फर्जी लोन ऐप से बचने के लिए हमेशा जांचें कि लोन देने वाली कंपनी आरबीआई से पंजीकृत है या नहीं।",
-      "phonetic_hi": "आरबीआई रजिस्टर्ड लेंडर",
+      "translations": {
+        "en": {
+          "term": "RBI Whitelist / Registered Lender",
+          "simplified_definition": "Official list of legitimate banks and NBFCs legally authorized by the Reserve Bank of India to provide loans.",
+          "gig_context_example": "Always verify loan apps against the RBI registered lender list to avoid predatory loan apps.",
+          "phonetic": "RBI Whitelist"
+        },
+        "hi": {
+          "term": "आरबीआई द्वारा मान्यता प्राप्त बैंक / संस्था",
+          "simplified_definition": "भारतीय रिजर्व बैंक द्वारा अधिकृत बैंकों और वित्तीय संस्थाओं की सूची जिनसे लोन लेना सुरक्षित है।",
+          "gig_context_example": "फर्जी लोन ऐप से बचने के लिए हमेशा जांचें कि लोन देने वाली कंपनी आरबीआई से पंजीकृत है या नहीं।",
+          "phonetic": "आरबीआई रजिस्टर्ड लेंडर"
+        },
+        "mr": {
+          "term": "आरबीआय मान्यताप्राप्त बँक / कर्जसंस्था",
+          "simplified_definition": "रिझर्व्ह बँक ऑफ इंडियाने (RBI) कर्ज देण्यासाठी अधिकृत केलेल्या कायदेशीर बँका आणि एनबीएफसींची अधिकृत यादी.",
+          "gig_context_example": "फसव्या लोन ॲप्सपासून वाचण्यासाठी नेहमी कर्ज देणारी संस्था आरबीआय नोंदणीकृत आहे का ते तपासा.",
+          "phonetic": "आरबीआय नोंदणीकृत बँक"
+        }
+      },
       "alternatives": ["RBI registered lender", "authorized bank", "verified NBFC"]
     }
   ]

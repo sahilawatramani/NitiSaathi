@@ -28,6 +28,9 @@ export const createUserProfile = async (profileData) => {
 
 export const getUserProfile = async () => apiFetch('/api/profile/');
 
+export const updateUserProfile = async (partialProfile) =>
+  apiFetch('/api/profile/', { method: 'POST', body: JSON.stringify(partialProfile) });
+
 export const getConsents = async () => apiFetch('/api/privacy/consents');
 
 export const setConsent = async (purpose, granted, language = 'en') =>
