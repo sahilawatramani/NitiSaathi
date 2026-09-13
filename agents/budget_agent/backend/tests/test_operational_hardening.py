@@ -1,12 +1,7 @@
 from fastapi.testclient import TestClient
 
-from app.main import app
 
-
-client = TestClient(app)
-
-
-def test_health_endpoint_has_service_metadata():
+def test_health_endpoint_has_service_metadata(client: TestClient):
     response = client.get("/health")
     assert response.status_code == 200
     body = response.json()
@@ -14,7 +9,7 @@ def test_health_endpoint_has_service_metadata():
     assert body["service"] == "finassist-backend"
 
 
-def test_readiness_endpoint_reports_checks():
+def test_readiness_endpoint_reports_checks(client: TestClient):
     response = client.get("/health/ready")
     assert response.status_code in [200, 503]
 
@@ -26,7 +21,7 @@ def test_readiness_endpoint_reports_checks():
     assert "documents_indexed" in body["checks"]["rag_index"]
 
 
-def test_security_headers_are_present():
+def test_security_headers_are_present(client: TestClient):
     response = client.get("/health")
     assert response.status_code == 200
     assert response.headers.get("x-content-type-options") == "nosniff"

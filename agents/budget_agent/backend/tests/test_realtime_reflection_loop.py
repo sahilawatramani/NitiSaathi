@@ -1,14 +1,9 @@
 import uuid
-
+import pytest
 from fastapi.testclient import TestClient
 
-from app.main import app
 
-
-client = TestClient(app)
-
-
-def _signup_and_login_token() -> str:
+def _signup_and_login_token(client: TestClient) -> str:
     email = f"reflect_{uuid.uuid4().hex[:10]}@example.com"
     password = "Secret123!"
     signup = client.post("/api/auth/signup", json={"email": email, "password": password})
@@ -19,11 +14,15 @@ def _signup_and_login_token() -> str:
     return login.json()["access_token"]
 
 
-def test_reclassify_flow_records_feedback_and_updates_category():
-    token = _signup_and_login_token()
+from unittest.mock import patch
+
+
+@patch("app.routers.realtime.analyze_tax_deductibility", return_value={"is_tax_deductible": False, "tax_category": None, "reasoning": "Mocked rule"})
+def test_reclassify_flow_records_feedback_and_updates_category(mock_tax, client: TestClient):
+    token = _signup_and_login_token(client)
     headers = {"Authorization": f"Bearer {token}"}
 
-    merchant_token = f"REFLECT{uuid.uuid4().hex[:5].upper()}"
+    merchant_token = f"SWIGGY_{uuid.uuid4().hex[:5].upper()}"
     payload = {
         "sms_text": (
             f"Your A/C XXXX1234 is debited by INR 440.00 at {merchant_token} "
@@ -60,8 +59,9 @@ def test_reclassify_flow_records_feedback_and_updates_category():
     assert body["category"] == "Team Lunch"
 
 
-def test_feedback_metrics_endpoint_returns_quality_summary():
-    token = _signup_and_login_token()
+@patch("app.routers.realtime.analyze_tax_deductibility", return_value={"is_tax_deductible": False, "tax_category": None, "reasoning": "Mocked rule"})
+def test_feedback_metrics_endpoint_returns_quality_summary(mock_tax, client: TestClient):
+    token = _signup_and_login_token(client)
     headers = {"Authorization": f"Bearer {token}"}
 
     sms = {

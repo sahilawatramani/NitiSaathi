@@ -4,6 +4,7 @@ These tests use an in-memory test DB and mock external services.
 """
 import pytest
 import time
+import uuid
 from unittest.mock import patch, AsyncMock
 from fastapi.testclient import TestClient
 
@@ -41,8 +42,9 @@ def _mock_httpx_client():
 
 class TestAuthentication:
     def test_register_new_user(self, client):
+        unique_email = f"newuser_e2e_{uuid.uuid4().hex[:8]}@test.com"
         resp = client.post('/api/auth/signup', json={
-            'email': 'newuser_e2e@test.com', 'password': 'StrongPass123!'
+            'email': unique_email, 'password': 'StrongPass123!'
         })
         assert resp.status_code in (200, 201)
         data = resp.json()
