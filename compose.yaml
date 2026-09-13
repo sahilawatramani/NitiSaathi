@@ -8,9 +8,10 @@ services:
       FRAUD_GUARD_URL: http://fraud-guard:8002
       NUDGE_AGENT_URL: http://nudge-agent:8004
       LITERACY_AGENT_URL: http://literacy-agent:8100
+      ACCESSIBILITY_AGENT_URL: http://accessibility-agent:8005
       DATABASE_URL: sqlite:////app/agents/budget_agent/backend/data/finassist.db
     ports: ["8000:8000"]
-    depends_on: [scheme-agent, fraud-guard, nudge-agent, literacy-agent]
+    depends_on: [scheme-agent, fraud-guard, nudge-agent, literacy-agent, accessibility-agent]
 
   scheme-agent:
     build: .
@@ -26,6 +27,11 @@ services:
     build: .
     command: uvicorn agents.nudge_agent.main:app --host 0.0.0.0 --port 8004
     ports: ["8004:8004"]
+
+  accessibility-agent:
+    build: .
+    command: uvicorn agents.accessibility_agent.main:app --host 0.0.0.0 --port 8005
+    ports: ["8005:8005"]
 
   literacy-agent:
     build: .

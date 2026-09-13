@@ -1,19 +1,20 @@
 #!/bin/bash
 
-LOG_DIR="/home/amitkumar/Downloads/Nitisaathi/.logs"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LOG_DIR="$REPO_ROOT/.logs"
 
 echo "=== Stopping NitiSaathi Services ==="
 
 for PID_FILE in budget_api.pid scheme_agent.pid fraud_guard.pid nudge_agent.pid literacy_agent.pid accessibility_agent.pid frontend.pid; do
   if [ -f "$LOG_DIR/$PID_FILE" ]; then
     PID=$(cat "$LOG_DIR/$PID_FILE")
-    if ps -p $PID > /dev/null; then
+    if ps -p $PID > /dev/null 2>&1; then
       echo "Stopping $PID_FILE (PID: $PID)..."
-      kill $PID
+      kill $PID 2>/dev/null || true
     else
       echo "$PID_FILE process not running."
     fi
-    rm "$LOG_DIR/$PID_FILE"
+    rm -f "$LOG_DIR/$PID_FILE"
   fi
 done
 

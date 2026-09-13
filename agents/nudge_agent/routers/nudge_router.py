@@ -4,14 +4,15 @@ FastAPI router for Nudge Agent endpoints.
 import os
 import uuid
 import logging
-from typing import List
+from typing import List, Optional
 import pandas as pd
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query, Path
 
 from ..models.schemas import NudgeOut, FeedbackIn, NudgeEvaluationIn, NudgeEvaluationOut
 from ..services.trigger_registry import run_all_checks
 from ..services.message_service import simplify_message
-from ..services.suppression_service import record_feedback
+from ..services.suppression_service import record_feedback, is_suppressed
+from ..services.nudge_storage_service import save_nudges_batch, get_nudges_by_user, get_all_nudges
 
 logger = logging.getLogger(__name__)
 
@@ -58,7 +59,29 @@ async def evaluate_user_state(request: NudgeEvaluationIn) -> NudgeEvaluationOut:
             message=simplify_message(raw_message, literacy_level="medium", language_pref=request.language_pref),
             status="pending",
         ))
+    
+    # Persist evaluated nudges
+    if nudges:
+        save_nudges_batch(nudges)
+        
     return NudgeEvaluationOut(nudges=nudges, suppressed_trigger_ids=suppressed)
+
+
+@router.get("/", response_model=List[NudgeOut])
+async def list_all_nudges(limit: int = Query(50, ge=1, le=200)):
+    """List recent nudges across all users."""
+    return get_all_nudges(limit=limit)
+
+
+@router.get("/{user_id}/list", response_model=List[NudgeOut])
+@router.get("/list/{user_id}", response_model=List[NudgeOut])
+async def list_user_nudges(
+    user_id: str = Path(..., description="User ID to retrieve nudges for"),
+    limit: int = Query(50, ge=1, le=200)
+):
+    """Retrieve stored nudges for a specific user."""
+    return get_nudges_by_user(user_id=user_id, limit=limit)
+
 
 @router.get("/run-check", response_model=List[NudgeOut])
 async def run_check():
@@ -66,7 +89,6 @@ async def run_check():
     Run all checks for all users found in features.csv,
     simplify the message using the Literacy Agent, and return the list of nudges.
     """
-    # 1. Resolve features.csv path
     current_dir = os.path.dirname(os.path.abspath(__file__))
     csv_path = os.path.normpath(
         os.path.join(current_dir, "..", "..", "..", "data_pipeline", "data", "features.csv")
@@ -78,7 +100,6 @@ async def run_check():
             detail=f"features.csv not found at {csv_path}. Please run the data pipeline first."
         )
     
-    # 2. Extract unique user_ids and their literacy levels
     try:
         df = pd.read_csv(csv_path)
         user_ids = df["user_id"].dropna().unique().tolist()
@@ -86,15 +107,11 @@ async def run_check():
         logger.error(f"Error loading features.csv: {e}")
         raise HTTPException(status_code=500, detail=f"Failed to load user list: {e}")
         
-    # 3. Run all triggers
     raw_nudges = run_all_checks(user_ids)
     
-    # 4. Simplify messages and convert to NudgeOut schema
     nudges = []
     for nudge in raw_nudges:
         user_id = nudge["user_id"]
-        
-        # Determine the user's specific literacy level (defaulting to "medium")
         try:
             user_rows = df[df["user_id"] == user_id]
             if not user_rows.empty:
@@ -116,8 +133,27 @@ async def run_check():
             message=simplified_message,
             status="pending"
         ))
+    
+    if nudges:
+        save_nudges_batch(nudges)
         
     return nudges
+
+
+@router.post("/{nudge_id}/feedback")
+async def post_nudge_feedback_by_id(nudge_id: str, feedback: FeedbackIn):
+    """Record feedback for a specific nudge ID."""
+    try:
+        record_feedback(feedback.user_id, feedback.trigger_id, feedback.rating)
+        return {
+            "status": "success",
+            "nudge_id": nudge_id,
+            "message": f"Recorded '{feedback.rating}' feedback for {feedback.user_id}/{feedback.trigger_id}"
+        }
+    except Exception as e:
+        logger.error(f"Error recording feedback: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @router.post("/feedback")
 async def post_feedback(feedback: FeedbackIn):

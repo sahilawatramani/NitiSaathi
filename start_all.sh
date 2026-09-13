@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-REPO_ROOT="/home/amitkumar/Downloads/Nitisaathi"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOG_DIR="$REPO_ROOT/.logs"
 mkdir -p "$LOG_DIR"
 
@@ -31,17 +31,17 @@ cd "$REPO_ROOT/agents/literacy_agent"
 nohup uvicorn main:app --host 0.0.0.0 --port 8100 > "$LOG_DIR/literacy_agent.log" 2>&1 &
 echo $! > "$LOG_DIR/literacy_agent.pid"
 
-# 5. Start Budget Agent Gateway (8000)
-echo "Starting Budget API Gateway on port 8000..."
-cd "$REPO_ROOT/agents/budget_agent/backend"
-nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 > "$LOG_DIR/budget_api.log" 2>&1 &
-echo $! > "$LOG_DIR/budget_api.pid"
-
-# 6. Start Accessibility Agent (8005)
+# 5. Start Accessibility Agent (8005)
 echo "Starting Accessibility Agent on port 8005..."
 cd "$REPO_ROOT"
 nohup uvicorn agents.accessibility_agent.main:app --host 0.0.0.0 --port 8005 > "$LOG_DIR/accessibility_agent.log" 2>&1 &
 echo $! > "$LOG_DIR/accessibility_agent.pid"
+
+# 6. Start Budget Agent Gateway (8000)
+echo "Starting Budget API Gateway on port 8000..."
+cd "$REPO_ROOT/agents/budget_agent/backend"
+nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 > "$LOG_DIR/budget_api.log" 2>&1 &
+echo $! > "$LOG_DIR/budget_api.pid"
 
 # 7. Start Frontend Expo Web (8081)
 echo "Starting Frontend Expo Web on port 8081..."
@@ -57,7 +57,7 @@ curl -s http://localhost:8001/api/v1/schemes/health && echo " -> Scheme Agent: O
 curl -s http://localhost:8002/api/v1/fraud-guard/health && echo " -> Fraud Guard: OK" || echo " -> Fraud Guard: FAILED"
 curl -s http://localhost:8004/nudges/health && echo " -> Nudge Agent: OK" || echo " -> Nudge Agent: FAILED"
 curl -s http://localhost:8100/health && echo " -> Literacy Agent: OK" || echo " -> Literacy Agent: FAILED"
-curl -s http://localhost:8000/api/health && echo " -> Budget API: OK" || echo " -> Budget API: FAILED"
 curl -s http://localhost:8005/api/v1/accessibility/health && echo " -> Accessibility Agent: OK" || echo " -> Accessibility Agent: FAILED"
+curl -s http://localhost:8000/api/health && echo " -> Budget API: OK" || echo " -> Budget API: FAILED"
 
 echo "=== NitiSaathi is Ready! ==="
