@@ -58,4 +58,9 @@ SMTP_PASSWORD = os.getenv("SMTP_PASSWORD", "")
 SMTP_FROM_EMAIL = os.getenv("SMTP_FROM_EMAIL", "")
 
 # Fix: use absolute path so db location is consistent regardless of working directory
-DATABASE_URL = os.getenv("DATABASE_URL", f"sqlite:///{os.path.join(BASE_DIR, 'data', 'finassist.db')}")
+os.makedirs(os.path.join(BASE_DIR, "data"), exist_ok=True)
+db_env = os.getenv("DATABASE_URL", "")
+if not db_env or db_env == "sqlite:///./data/finassist.db":
+    DATABASE_URL = f"sqlite:///{os.path.join(BASE_DIR, 'data', 'finassist.db')}"
+else:
+    DATABASE_URL = db_env

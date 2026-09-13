@@ -10,7 +10,10 @@ Swagger docs at: http://localhost:8100/docs
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from router import router as literacy_router
+try:
+    from router import router as literacy_router
+except ImportError:
+    from .router import router as literacy_router
 
 app = FastAPI(
     title="NitiSaathi — Literacy Agent",
@@ -41,4 +44,10 @@ async def root():
         "service": "NitiSaathi Literacy Agent",
         "version": "0.1.0",
         "docs": "/docs",
+        "health": "/health",
     }
+
+
+@app.get("/health")
+async def health():
+    return {"status": "ok", "agent": "literacy_agent"}

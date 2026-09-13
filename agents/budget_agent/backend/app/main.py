@@ -224,6 +224,7 @@ def read_root():
     return {"message": "Welcome to FinAssist API!"}
 
 @app.get("/health")
+@app.get("/api/health")
 def health_check():
     return {
         "status": "ok",
