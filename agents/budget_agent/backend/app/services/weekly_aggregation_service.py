@@ -206,9 +206,14 @@ def aggregate_week_for_user(user_id: int, week_start: date, db: Session) -> User
 
 
 def run_weekly_aggregation_for_user(user_id: int, db: Session, weeks_back: int = 8) -> int:
-    """Aggregate the last *weeks_back* weeks for a single user. Returns rows upserted."""
+    """Aggregate the last *weeks_back* weeks for a single user. Returns rows upserted.
+    
+    IMPORTANT: Includes the current incomplete week to ensure income forecasting works
+    even when the user has transactions in the current week.
+    """
     today = date.today()
     count = 0
+    # Include current week (i=0) even if incomplete, plus weeks_back-1 previous complete weeks
     for i in range(weeks_back):
         target = _week_start(today - timedelta(weeks=i))
         try:

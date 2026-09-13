@@ -166,10 +166,7 @@ def get_finassist_data(user_id: int, db: Session) -> Dict[str, Any]:
         "safe_to_spend_today": budget_state["safe_to_spend_today"],
         # Fields consumed by the independent Nudge and Scheme services.
         # `latest` may be absent for a newly onboarded user, hence safe defaults.
-        "predicted_next_week_income": (
-            latest_feature.predicted_next_week_income if latest_feature and latest_feature.predicted_next_week_income is not None
-            else budget_state["income_wma_4w"]
-        ),
+        "predicted_next_week_income": budget_state.get("predicted_next_week_income", budget_state["income_wma_4w"]),
         "pmsby_debit_due_soon": bool(latest_feature.pmsby_debit_due_soon) if latest_feature else False,
         "days_to_next_pmsby_debit": latest_feature.days_to_next_pmsby_debit if latest_feature else None,
         "nudge_trigger_low_balance_before_debit": (

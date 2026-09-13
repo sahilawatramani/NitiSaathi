@@ -22,7 +22,7 @@ _openai_client = OpenAI(api_key=OPENAI_API_KEY) if (OpenAI and OPENAI_API_KEY) e
 _ollama_base = OLLAMA_API_BASE_URL.rstrip("/")
 if not _ollama_base.endswith("/v1"):
     _ollama_base += "/v1"
-_ollama_client = OpenAI(api_key="ollama", base_url=_ollama_base) if OpenAI else None
+_ollama_client = OpenAI(api_key="ollama", base_url=_ollama_base, timeout=180.0) if OpenAI else None
 
 
 def _extract_json_object(raw: str) -> Optional[dict]:
@@ -51,15 +51,24 @@ def generate_chat_completion(system_prompt: str, user_prompt: str, temperature: 
     for provider in providers_to_try:
         if provider == "gemini" and GEMINI_API_KEY:
             try:
-                import google.generativeai as genai
-                genai.configure(api_key=GEMINI_API_KEY)
-                model = genai.GenerativeModel(GEMINI_CHAT_MODEL)
-                response = model.generate_content(
-                    [
-                        {"role": "user", "parts": [f"System: {system_prompt}"]},
-                        {"role": "user", "parts": [user_prompt]},
+                from google import genai
+                from google.genai import types as genai_types
+                import httpx as _httpx
+                client = genai.Client(
+                    api_key=GEMINI_API_KEY,
+                    http_options={"timeout": 60},
+                )
+                response = client.models.generate_content(
+                    model=GEMINI_CHAT_MODEL,
+                    contents=[
+                        genai_types.Content(
+                            role="user",
+                            parts=[
+                                genai_types.Part(text=f"System instructions: {system_prompt}\n\nUser: {user_prompt}"),
+                            ],
+                        )
                     ],
-                    generation_config={"temperature": temperature},
+                    config=genai_types.GenerateContentConfig(temperature=temperature),
                 )
                 res_text = (response.text or "").strip()
                 if res_text:
@@ -92,6 +101,7 @@ def generate_chat_completion(system_prompt: str, user_prompt: str, temperature: 
                         {"role": "user", "content": user_prompt},
                     ],
                     temperature=temperature,
+                    max_tokens=220,
                 )
                 res_text = (response.choices[0].message.content or "").strip()
                 if res_text:

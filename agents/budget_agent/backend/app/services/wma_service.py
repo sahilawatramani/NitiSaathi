@@ -185,7 +185,24 @@ def compute_full_budget_state(user_id: int, db: Session) -> dict:
         .order_by(desc(UserWeeklyFeatures.week_start))
         .first()
     )
-    closing = latest.closing_balance if latest else 0.0
+    
+    # Fallback: if no weekly features exist, compute balance from raw transactions
+    if not latest:
+        from sqlalchemy import func
+        total_credits = (
+            db.query(func.sum(Transaction.amount))
+            .filter(Transaction.user_id == user_id, Transaction.direction == "credit")
+            .scalar()
+        ) or 0.0
+        total_debits = (
+            db.query(func.sum(Transaction.amount))
+            .filter(Transaction.user_id == user_id, Transaction.direction == "debit")
+            .scalar()
+        ) or 0.0
+        closing = total_credits - total_debits
+    else:
+        closing = latest.closing_balance
+    
     low_flag = compute_low_balance_flag(closing, wma)
 
     # 3. Upcoming mandatory debits (7-day horizon)
@@ -221,6 +238,7 @@ def compute_full_budget_state(user_id: int, db: Session) -> dict:
 
     return {
         "income_wma_4w": wma,
+        "predicted_next_week_income": wma,  # Predicted income = WMA of last 4 weeks
         "income_volatility_pct": round(cv * 100, 2),
         "savings_rate_recommendation": rec_rate,
         "low_balance_flag": low_flag,

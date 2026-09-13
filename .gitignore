@@ -2,6 +2,39 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*.pyc
+*.pyo
+*.pyd
+
+# Environment variables & secrets
+.env
+*.env
+.env.*
+!.env.example
+!.env.production.example
+
+# Dependencies
+node_modules/
+.npm/
+
+# Expo & Mobile Build Artifacts
+.expo/
+dist/
+web-build/
+*.tsbuildinfo
+
+# Logs and runtime artifacts
+.logs/
+*.log
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# Database files & caches
+*.sqlite-shm
+*.sqlite-wal
+*test_nitisaathi.db*
+.pytest_cache/
 
 # Large generated datasets
 data/transactions.csv

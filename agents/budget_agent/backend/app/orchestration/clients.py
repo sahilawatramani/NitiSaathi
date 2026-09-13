@@ -16,7 +16,10 @@ import httpx
 
 class AgentServiceClient:
     def __init__(self, timeout_seconds: float | None = None) -> None:
-        self.timeout = timeout_seconds or float(os.getenv("AGENT_SERVICE_TIMEOUT_SECONDS", "1.5"))
+        self.timeout = timeout_seconds or float(os.getenv("AGENT_SERVICE_TIMEOUT_SECONDS", "10.0"))
+        # Literacy agent is a non-critical post-processor — give it a short
+        # independent deadline so an offline service never blocks the chat.
+        self.literacy_timeout = float(os.getenv("LITERACY_AGENT_TIMEOUT_SECONDS", "8.0"))
         self.scheme_url = os.getenv("SCHEME_AGENT_URL", "http://localhost:8001").rstrip("/")
         self.fraud_url = os.getenv("FRAUD_GUARD_URL", "http://localhost:8002").rstrip("/")
         self.nudge_url = os.getenv("NUDGE_AGENT_URL", "http://localhost:8004").rstrip("/")
@@ -101,8 +104,11 @@ class AgentServiceClient:
         })
 
     async def literacy(self, text: str, literacy_level: str, language_pref: str, financial: bool, scheme: bool) -> dict[str, Any]:
-        return await self._post(self.literacy_url, "/literacy/rewrite", {
-            "text": text, "literacy_level": literacy_level,
-            "language_pref": language_pref, "has_financial_content": financial,
-            "has_scheme_content": scheme,
-        })
+        async with httpx.AsyncClient(timeout=self.literacy_timeout) as client:
+            response = await client.post(f"{self.literacy_url}/literacy/rewrite", json={
+                "text": text, "literacy_level": literacy_level,
+                "language_pref": language_pref, "has_financial_content": financial,
+                "has_scheme_content": scheme,
+            })
+            response.raise_for_status()
+            return response.json()

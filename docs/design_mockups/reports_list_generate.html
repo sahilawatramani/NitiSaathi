@@ -1,0 +1,253 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Reports - NitiSaathi</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error-container": "#ffdad6",
+                        "on-tertiary-container": "#75e096",
+                        "caution-tint": "#F8D7DC",
+                        "on-error": "#ffffff",
+                        "primary-container": "#a61c2e",
+                        "on-tertiary-fixed-variant": "#005229",
+                        "outline": "#8d706f",
+                        "surface-tint": "#b32736",
+                        "secondary-container": "#db313f",
+                        "on-secondary-fixed": "#410007",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "on-background": "#1c1b1b",
+                        "on-surface": "#1c1b1b",
+                        "on-primary-fixed": "#410009",
+                        "surface-variant": "#e5e2e1",
+                        "on-primary": "#ffffff",
+                        "inverse-primary": "#ffb3b2",
+                        "inverse-surface": "#313030",
+                        "surface": "#fcf9f8",
+                        "inverse-on-surface": "#f3f0ef",
+                        "on-surface-variant": "#594140",
+                        "on-primary-fixed-variant": "#910621",
+                        "background": "#fcf9f8",
+                        "on-tertiary-fixed": "#00210d",
+                        "surface-container-high": "#eae7e7",
+                        "on-primary-container": "#ffb9b8",
+                        "surface-dim": "#dcd9d9",
+                        "tertiary-container": "#006332",
+                        "tertiary": "#004923",
+                        "tertiary-fixed": "#8df9ac",
+                        "secondary-fixed": "#ffdad8",
+                        "text-warm-gray": "#6B6560",
+                        "primary": "#82001b",
+                        "surface-bright": "#fcf9f8",
+                        "secondary": "#b7102a",
+                        "surface-container-low": "#f6f3f2",
+                        "on-secondary-fixed-variant": "#92001c",
+                        "primary-fixed-dim": "#ffb3b2",
+                        "tertiary-fixed-dim": "#71dc92",
+                        "primary-fixed": "#ffdad9",
+                        "surface-container-highest": "#e5e2e1",
+                        "outline-variant": "#e1bebd",
+                        "secondary-fixed-dim": "#ffb3b1",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-container": "#fffbff",
+                        "background-off-white": "#F7F5F2",
+                        "on-error-container": "#93000a",
+                        "surface-container": "#f0eded"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-max": "1200px",
+                        "gutter": "24px",
+                        "margin-page": "48px",
+                        "stack-md": "16px",
+                        "stack-lg": "32px",
+                        "stack-sm": "8px",
+                        "sidebar-width": "260px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Noto Sans"],
+                        "headline-lg": ["Noto Sans"],
+                        "body-md": ["Noto Sans"],
+                        "display-lg": ["Noto Sans"],
+                        "label-lg": ["Noto Sans"],
+                        "headline-sm": ["Noto Sans"],
+                        "label-sm": ["Noto Sans"],
+                        "body-lg": ["Noto Sans"]
+                    },
+                    "fontSize": {
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "label-lg": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-off-white text-on-surface font-body-md h-screen flex overflow-hidden">
+<!-- SideNavBar (Shared Component) -->
+<aside class="fixed left-0 top-0 h-screen w-sidebar-width bg-background-off-white dark:bg-surface-dim shadow-[4px_0_20px_rgba(26,26,26,0.05)] shadow-sm flex flex-col border-r border-outline-variant dark:border-outline z-50">
+<!-- Header -->
+<div class="p-6">
+<div class="flex items-center gap-3 mb-1">
+<img alt="NitiSaathi Logo" class="w-8 h-8 rounded-full bg-surface-container" data-alt="A modern, abstract geometric logo for NitiSaathi, a gig economy financial guardian app. Clean lines, corporate aesthetic, primarily red and dark gray colors, light mode background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDK1f2NpkNoJQqDNLRxVvISIykizYAsGAL_G4Dbk8LRkW-EQBmKLX4m9MkmwwAZN5gPFld0CNEU-SZvCkrjOQ8G9r31i1b9KBFVcmFRsPtSytKF-fOCpyFqrvFIKgATqY8aI6N0t3P-yhY-V5yqbGziO1pa4MOESaAdRSiuNiptKm3Qv88Bo5dTRyhM-t6cui8xa_0Yn4qczXqjK0jsnpX6TgsDQs99xHSdoonVrzskN_qcxWTjG6UCng">
+<h1 class="font-headline-md text-headline-md text-primary dark:text-primary-fixed-dim font-bold tracking-tight">NitiSaathi</h1>
+</div>
+<p class="text-on-surface-variant text-label-sm">Gig Economy Guardian</p>
+</div>
+<!-- Navigation Tabs -->
+<nav class="flex-1 space-y-1"><a href="#" class="flex items-center gap-3 px-6 py-3 text-[#1A1A1A] hover:bg-primary/5 transition-colors"><span class="material-symbols-outlined">home</span><span class="font-label-lg">गृह / Home</span></a><a class="flex items-center gap-3 px-6 py-3 text-[#1A1A1A] hover:bg-primary/5 transition-colors" href="#"><span class="material-symbols-outlined">account_balance_wallet</span><span class="font-label-lg">बजट / Budget</span></a><a href="#" class="flex items-center gap-3 px-6 py-3 text-[#1A1A1A] hover:bg-primary/5 transition-colors"><span class="material-symbols-outlined">smart_toy</span><span class="font-label-lg">साथी / Assistant</span></a><a class="flex items-center gap-3 px-6 py-3 text-[#1A1A1A] hover:bg-primary/5 transition-colors" href="#"><span class="material-symbols-outlined">description</span><span class="font-label-lg">योजनाएं / Schemes</span></a><a href="#" class="flex items-center gap-3 px-6 py-3 text-[#1A1A1A] hover:bg-primary/5 transition-colors"><span class="material-symbols-outlined">security</span><span class="font-label-lg">धोखाधड़ी जांच / Fraud Check</span></a><a class="flex items-center gap-3 px-6 py-3 text-[#1A1A1A] hover:bg-primary/5 transition-colors" href="#"><span class="material-symbols-outlined">campaign</span><span class="font-label-lg">सूचनाएं / Nudges</span></a><a href="#" class="flex items-center gap-3 px-6 py-3 bg-[#A61C2E]/10 border-l-4 border-[#A61C2E] text-[#A61C2E] font-semibold"><span class="material-symbols-outlined">analytics</span><span class="font-label-lg">रिपोर्ट / Reports</span></a><div class="mx-6 my-4 border-t border-outline-variant/30"></div><a href="#" class="flex items-center gap-3 px-6 py-3 text-[#1A1A1A] hover:bg-primary/5 transition-colors"><span class="material-symbols-outlined">settings</span><span class="font-label-lg">सेटिंग्स / Settings</span></a></nav>
+<!-- Footer -->
+<div class="p-4 border-t border-outline-variant dark:border-outline"><div class="flex items-center gap-3 px-4 py-3 text-[#1A1A1A]"><div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden border border-outline-variant"><img alt="Rajesh" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuClTuLM3rCsTuBf_YRWCsRb3QECOnnvY4BFm336t620q97olwEkYXuqnHyzuY3YTMlCwCv7jejjrTP1i4hJI6Dk5OEFAIviU4Q9PBhKOIGJQnHMSXbCghvy1w2SN3v64j7XsfqOdKtrKTjsp_WAwkOcKvIudGlELv-ka86lKsYDCVdGVbWtCi2bwxGYO_uxDqGdTsCnxWcmxV0wY9XrvmBSlmi_nhG2jgaxIY-_o5sBmMTcFxuLnM3JhA"></div><span class="font-label-lg">राजेश</span></div></div>
+</aside>
+<!-- TopAppBar (Shared Component) -->
+<header class="fixed top-0 right-0 h-16 bg-background dark:bg-background border-b border-surface-container-high dark:border-surface-container-highest flex justify-between items-center px-margin-page ml-sidebar-width w-[calc(100%-260px)] z-40"><div class="flex-1 flex items-center"><h2 class="font-semibold text-headline-md text-[#1A1A1A]">रिपोर्ट / Reports</h2></div><div class="flex items-center gap-4"><button class="text-on-surface-variant hover:bg-surface-container-low rounded-full p-2 cursor-pointer active:opacity-70 transition-opacity"><span class="material-symbols-outlined">notifications</span></button></div></header>
+<!-- Main Content Canvas -->
+<main class="ml-sidebar-width pt-16 flex-1 h-screen overflow-y-auto bg-surface">
+<div class="max-w-container-max mx-auto px-margin-page py-10">
+<!-- Page Title -->
+<div class="mb-8">
+<h1 class="font-display-lg text-display-lg text-on-surface">रिपोर्ट / Reports</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-2">Manage and generate your financial statements.</p>
+</div>
+<!-- Two Column Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Left Column: Generate Report (Grid: 4 cols) -->
+<div class="lg:col-span-4">
+<div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(26,26,26,0.05)] hover:shadow-[0px_8px_30px_rgba(26,26,26,0.08)] transition-shadow duration-300 border border-transparent hover:border-primary/10 p-stack-lg sticky top-[104px]">
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary" data-icon="add_circle">add_circle</span>
+                            नई रिपोर्ट बनाएं / Generate a new report
+                        </h3>
+<!-- Segmented Toggle -->
+<div class="mb-8">
+<label class="block font-label-lg text-label-lg text-on-surface-variant mb-3">Select Period</label>
+<div class="flex bg-surface-container-low rounded-lg p-1 border border-outline-variant/30">
+<button class="flex-1 py-2 px-3 rounded-md bg-surface-container-lowest shadow-sm font-label-sm text-label-sm text-primary font-semibold text-center border border-outline-variant/50 transition-all">
+                                    मासिक<br>Monthly
+                                </button>
+<button class="flex-1 py-2 px-3 rounded-md font-label-sm text-label-sm text-on-surface-variant text-center hover:bg-surface-variant/30 transition-all">
+                                    तिमाही<br>Quarterly
+                                </button>
+<button class="flex-1 py-2 px-3 rounded-md font-label-sm text-label-sm text-on-surface-variant text-center hover:bg-surface-variant/30 transition-all">
+                                    वार्षिक<br>Yearly
+                                </button>
+</div>
+</div>
+<!-- Action Button -->
+<button class="w-full bg-[#E63946] hover:bg-primary-container text-white font-label-lg text-label-lg py-4 rounded-lg flex items-center justify-center gap-2 transition-colors duration-200 active:scale-[0.98]">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+                            रिपोर्ट बनाएं / Generate Report
+                        </button>
+</div>
+</div>
+<!-- Right Column: Report List (Grid: 8 cols) -->
+<div class="lg:col-span-8">
+<div class="bg-surface-container-lowest rounded-xl shadow-[0px_4px_20px_rgba(26,26,26,0.05)] p-stack-lg h-full border border-transparent hover:border-primary/10 transition-all duration-300">
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-6 pb-4 border-b border-background-off-white">
+                            आपकी रिपोर्ट / Your reports
+                        </h3>
+<!-- List Container -->
+<div class="space-y-4">
+<!-- Report Card 1 -->
+<div class="flex items-center justify-between p-4 rounded-lg border border-outline-variant/50 hover:bg-surface-container-low transition-colors duration-200 group">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="insert_drive_file">insert_drive_file</span>
+</div>
+<div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface text-base">July 2024</h4>
+<p class="font-body-md text-label-sm text-on-surface-variant">Generated: 2 July 2024</p>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<!-- Status Pill -->
+<span class="px-3 py-1 rounded-full border border-primary text-primary font-label-sm text-label-sm bg-primary/5 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="check_circle">check_circle</span>
+                                        डाउनलोड के लिए तैयार / Ready to download
+                                    </span>
+<!-- Actions -->
+<div class="flex items-center gap-2">
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-primary/5 rounded-full transition-colors" title="Download">
+<span class="material-symbols-outlined" data-icon="download">download</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-primary/5 rounded-full transition-colors" title="Send/Resend">
+<span class="material-symbols-outlined" data-icon="send">send</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Report Card 2 -->
+<div class="flex items-center justify-between p-4 rounded-lg border border-outline-variant/50 hover:bg-surface-container-low transition-colors duration-200 group">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full bg-surface-variant flex items-center justify-center text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="insert_drive_file">insert_drive_file</span>
+</div>
+<div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface text-base">Q2 2024</h4>
+<p class="font-body-md text-label-sm text-on-surface-variant">Generated: 1 July 2024</p>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<!-- Status Pill -->
+<span class="px-3 py-1 rounded-full border border-outline-variant text-on-surface-variant font-label-sm text-label-sm bg-surface flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]" data-icon="mail">mail</span>
+                                        ईमेल भेजा गया / Emailed
+                                    </span>
+<!-- Actions -->
+<div class="flex items-center gap-2">
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-primary/5 rounded-full transition-colors" title="Download">
+<span class="material-symbols-outlined" data-icon="download">download</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary hover:bg-primary/5 rounded-full transition-colors" title="Send/Resend">
+<span class="material-symbols-outlined" data-icon="send">send</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Empty State Example (Hidden visually in this mockup, but code provided for structure) -->
+<!--
+                            <div class="flex flex-col items-center justify-center py-16 text-center">
+                                <div class="w-24 h-24 mb-4 text-surface-variant/50">
+                                    <span class="material-symbols-outlined text-6xl" data-icon="inventory_2">inventory_2</span>
+                                </div>
+                                <h4 class="font-headline-sm text-headline-sm text-on-surface-variant">अभी तक कोई रिपोर्ट नहीं / No reports yet</h4>
+                                <p class="font-body-md text-body-md text-on-surface-variant/70 mt-2 max-w-sm">Use the panel on the left to generate your first financial report.</p>
+                                <div class="mt-6 animate-bounce text-primary/50">
+                                    <span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+                                </div>
+                            </div>
+                            -->
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+
+
+</body></html>

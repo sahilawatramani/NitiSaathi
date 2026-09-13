@@ -7,6 +7,7 @@ class DailyInsightResponse(BaseModel):
 
     # Core WMA metrics
     income_wma_4w: Optional[float] = None
+    predicted_next_week_income: Optional[float] = None  # Predicted income for next week
     income_volatility_pct: Optional[float] = None
     savings_rate_recommendation: Optional[float] = None
     low_balance_flag: bool = False

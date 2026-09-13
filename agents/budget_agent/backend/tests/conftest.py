@@ -21,8 +21,12 @@ def create_test_db():
     Base.metadata.create_all(bind=engine)
     yield
     Base.metadata.drop_all(bind=engine)
+    engine.dispose()
     if os.path.exists('./test_nitisaathi.db'):
-        os.remove('./test_nitisaathi.db')
+        try:
+            os.remove('./test_nitisaathi.db')
+        except OSError:
+            pass
 
 @pytest.fixture
 def db():

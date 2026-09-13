@@ -8,7 +8,7 @@ from typing import List
 
 from app.models.database import get_db
 from app.models.schemas import Transaction, User
-from app.schemas.transaction import TransactionResponse
+from app.schemas.transaction import TransactionResponse, TransactionCreate
 from app.services.auth_service import get_current_user
 from app.services.ingestion_service import parse_csv_transactions
 from app.agents.expense_agent import classify_expenses_batch
@@ -17,6 +17,31 @@ from app.agents.tax_agent import analyze_tax_batch
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
+
+
+@router.post("/", response_model=TransactionResponse, status_code=201)
+def create_transaction(
+    txn_in: TransactionCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Create a single transaction manually (for mobile app)."""
+    db_txn = Transaction(
+        user_id=current_user.id,
+        date=txn_in.transaction_date,
+        amount=txn_in.amount,
+        direction=txn_in.direction,
+        merchant=txn_in.merchant_name,
+        description=txn_in.description,
+        category=txn_in.category or "Uncategorised",
+        confidence_score=1.0,  # Manual entry = 100% confidence
+        is_tax_deductible=False,  # Default, user can update later
+    )
+    db.add(db_txn)
+    db.commit()
+    db.refresh(db_txn)
+    logger.info("Manual transaction created: %s (user=%s)", db_txn.id, current_user.email)
+    return db_txn
 
 
 @router.post("/upload", response_model=List[TransactionResponse])
@@ -122,3 +147,23 @@ def get_transactions(
         .limit(limit)
         .all()
     )
+
+
+@router.delete("/{transaction_id}", status_code=204)
+def delete_transaction(
+    transaction_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Delete a transaction (user can only delete their own)."""
+    txn = db.query(Transaction).filter(
+        Transaction.id == transaction_id,
+        Transaction.user_id == current_user.id
+    ).first()
+    if not txn:
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Transaction not found")
+    db.delete(txn)
+    db.commit()
+    logger.info("Transaction deleted: %s (user=%s)", transaction_id, current_user.email)
+    return None
