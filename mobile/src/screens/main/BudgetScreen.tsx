@@ -1,5 +1,6 @@
 /**
- * BudgetScreen — Budgeting and income forecasting screen matching video reference.
+ * BudgetScreen — Budgeting and income forecasting screen matching reference design.
+ * Pure single-language strings dynamically loaded via useTranslation().
  */
 import React, { useCallback, useEffect, useState } from 'react';
 import {
@@ -15,10 +16,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { Colors, Typography, Spacing, BorderRadius } from '../../theme';
 import { AppHeader } from '../../components/AppHeader';
+import { useTranslation } from '../../i18n';
 import { analyticsService, BudgetState } from '../../services/analyticsService';
 
 const BudgetScreen: React.FC = () => {
   const navigation = useNavigation<any>();
+  const { t } = useTranslation();
   const [budgetState, setBudgetState] = useState<BudgetState | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -52,27 +55,20 @@ const BudgetScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <AppHeader title="बजट / Budget" />
+      <AppHeader title={t.nav.budget} />
 
       <ScrollView
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); fetchData(); }} />}
       >
-        <Text style={styles.pageSubtitle}>
-          Monitor your income, expenses, and financial goals.
-        </Text>
-
         {/* 1. Income Forecast Card */}
         <View style={styles.card}>
           <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle}>Income Forecast</Text>
-            <TouchableOpacity style={styles.menuDotsBtn}>
-              <Text style={styles.menuDotsText}>⋮</Text>
-            </TouchableOpacity>
+            <Text style={styles.cardTitle}>{t.budget.forecastedIncome}</Text>
           </View>
 
-          {/* Simple Visual Line Chart Representation */}
+          {/* Visual Line Chart */}
           <View style={styles.lineChartBox}>
             <View style={styles.chartLineTrack}>
               <View style={styles.chartDot1} />
@@ -90,15 +86,13 @@ const BudgetScreen: React.FC = () => {
             <View style={styles.infoIconCircle}>
               <Text style={styles.infoIcon}>ℹ️</Text>
             </View>
-            <Text style={styles.infoText}>
-              पिछले 2 महीनों में आपकी कमाई काफी स्थिर रही है / Your income has been fairly steady over the last 2 months
-            </Text>
+            <Text style={styles.infoText}>{t.budget.steadyIncomeCallout}</Text>
           </View>
         </View>
 
         {/* 2. Savings Rate Card */}
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>Savings Rate</Text>
+          <Text style={styles.cardTitle}>{t.budget.savingsGoal}</Text>
 
           <View style={styles.savingsRow}>
             {/* Radial Gauge Visual */}
@@ -111,9 +105,7 @@ const BudgetScreen: React.FC = () => {
             </View>
 
             <View style={styles.savingsDetails}>
-              <Text style={styles.savingsDesc}>
-                Based on your recent transactions, you are saving {savingsRate}% of your total income.
-              </Text>
+              <Text style={styles.savingsDesc}>{t.dashboard.savingsRate}</Text>
             </View>
           </View>
         </View>
@@ -121,25 +113,17 @@ const BudgetScreen: React.FC = () => {
         {/* 3. Safe to Spend Daily */}
         <View style={styles.card}>
           <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle}>Safe-to-Spend / आज का बजट</Text>
+            <Text style={styles.cardTitle}>{t.budget.safeToSpend}</Text>
             <Text style={styles.safeAmount}>₹{safeToSpend.toFixed(2)}/day</Text>
           </View>
-          <Text style={styles.safeDesc}>
-            Calculated after accounting for mandatory savings, upcoming PMSBY debit, and fuel expenses.
-          </Text>
+          <Text style={styles.safeDesc}>{t.budget.causalPlan}</Text>
 
           <View style={styles.actionRow}>
             <TouchableOpacity
               style={styles.actionBtnOutline}
               onPress={() => navigation.navigate('CausalChain')}
             >
-              <Text style={styles.actionBtnOutlineText}>कारण समझें / Causal Chain</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.actionBtnFill}
-              onPress={() => navigation.navigate('Transactions')}
-            >
-              <Text style={styles.actionBtnFillText}>लेन-देन / Transactions</Text>
+              <Text style={styles.actionBtnOutlineText}>{t.budget.causal1}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -152,12 +136,6 @@ const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: Colors.backgroundOffWhite },
   loader: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.backgroundOffWhite },
   container: { padding: Spacing.md, gap: Spacing.md },
-  pageSubtitle: {
-    ...Typography.bodyMd,
-    fontSize: 13,
-    color: Colors.textWarmGray,
-    marginBottom: 4,
-  },
   card: {
     backgroundColor: Colors.surfaceContainerLowest,
     borderRadius: BorderRadius.lg,
@@ -176,14 +154,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: Colors.onSurface,
-  },
-  menuDotsBtn: {
-    padding: 4,
-  },
-  menuDotsText: {
-    fontSize: 20,
-    color: Colors.textWarmGray,
-    fontWeight: '800',
   },
 
   // Line Chart representation
@@ -241,15 +211,15 @@ const styles = StyleSheet.create({
     gap: Spacing.lg,
   },
   gaugeContainer: {
-    width: 90,
-    height: 90,
+    width: 80,
+    height: 80,
     alignItems: 'center',
     justifyContent: 'center',
   },
   gaugeArc: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 76,
+    height: 76,
+    borderRadius: 38,
     borderWidth: 8,
     borderColor: Colors.primaryContainer,
     borderTopColor: '#F0D5D8',
@@ -303,18 +273,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
     color: Colors.primaryContainer,
-  },
-  actionBtnFill: {
-    flex: 1,
-    paddingVertical: 10,
-    borderRadius: BorderRadius.md,
-    backgroundColor: Colors.primaryContainer,
-    alignItems: 'center',
-  },
-  actionBtnFillText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: Colors.onPrimary,
   },
 });
 

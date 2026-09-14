@@ -1,5 +1,6 @@
 /**
- * SettingsScreen — Profile, Preferences & Consent management matching video reference.
+ * SettingsScreen — Profile, Preferences & Consent management matching reference design.
+ * Pure single-language strings dynamically loaded via useTranslation().
  */
 import React, { useState } from 'react';
 import {
@@ -14,10 +15,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Typography, Spacing, BorderRadius } from '../../theme';
 import { AppHeader } from '../../components/AppHeader';
 import { useAuth } from '../../context/AuthContext';
+import { useTranslation, Language } from '../../i18n';
 
 const SettingsScreen: React.FC = () => {
-  const { logout, language, setLanguage } = useAuth();
-  const [activeTab, setActiveTab] = useState<'lang' | 'access' | 'consent' | 'notif'>('consent');
+  const { logout } = useAuth();
+  const { t, language, setLanguage } = useTranslation();
+  const [activeTab, setActiveTab] = useState<'lang' | 'consent'>('consent');
 
   const [toggles, setToggles] = useState({
     txData: true,
@@ -31,9 +34,15 @@ const SettingsScreen: React.FC = () => {
     setToggles((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
+  const LANGUAGES: { key: Language; label: string }[] = [
+    { key: 'hi', label: 'हिंदी (Hindi)' },
+    { key: 'en', label: 'English' },
+    { key: 'mr', label: 'मराठी (Marathi)' },
+  ];
+
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <AppHeader title="सेटिंग्स / Settings" showBack />
+      <AppHeader title={t.settings.title} showBack />
 
       <ScrollView
         contentContainerStyle={styles.container}
@@ -47,13 +56,8 @@ const SettingsScreen: React.FC = () => {
             </View>
           </View>
           <View style={styles.profileInfo}>
-            <Text style={styles.profileName}>राजेश</Text>
-            <Text style={styles.profileRole}>Gig Worker Profile</Text>
-            <TouchableOpacity style={styles.editProfileBtn}>
-              <Text style={styles.editProfileText}>
-                प्रोफ़ाइल संपादित करें / Edit profile
-              </Text>
-            </TouchableOpacity>
+            <Text style={styles.profileName}>{t.settings.profileName}</Text>
+            <Text style={styles.profileRole}>{t.settings.profileSubtitle}</Text>
           </View>
         </View>
 
@@ -64,15 +68,9 @@ const SettingsScreen: React.FC = () => {
             onPress={() => setActiveTab('lang')}
           >
             <Text style={styles.menuIcon}>🌐</Text>
-            <Text style={styles.menuText}>भाषा / Language</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.menuItem, activeTab === 'access' && styles.menuItemActive]}
-            onPress={() => setActiveTab('access')}
-          >
-            <Text style={styles.menuIcon}>♿</Text>
-            <Text style={styles.menuText}>पहुंच / Accessibility</Text>
+            <Text style={[styles.menuText, activeTab === 'lang' && styles.menuTextActive]}>
+              {t.settings.languageTitle} ({language.toUpperCase()})
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -80,142 +78,119 @@ const SettingsScreen: React.FC = () => {
             onPress={() => setActiveTab('consent')}
           >
             <Text style={styles.menuIcon}>🛡️</Text>
-            <Text style={[styles.menuText, styles.menuTextActive]}>
-              सहमति और गोपनीयता / Consent & Privacy
+            <Text style={[styles.menuText, activeTab === 'consent' && styles.menuTextActive]}>
+              {t.settings.consentTitle}
             </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.menuItem, activeTab === 'notif' && styles.menuItemActive]}
-            onPress={() => setActiveTab('notif')}
-          >
-            <Text style={styles.menuIcon}>🔔</Text>
-            <Text style={styles.menuText}>सूचनाएं / Notifications</Text>
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.versionText}>Version 1.2.0</Text>
-
-        {/* 3. Consent & Privacy Detail Card */}
-        <View style={styles.consentCard}>
-          <Text style={styles.consentTitle}>
-            सहमति और गोपनीयता / Consent & Privacy
-          </Text>
-          <Text style={styles.consentSubtitle}>
-            Manage what data NitiSaathi can access to provide your services.
-          </Text>
-
-          <View style={styles.toggleList}>
-            {/* Toggle 1 */}
-            <View style={styles.toggleRow}>
-              <View style={styles.toggleTextCol}>
-                <Text style={styles.toggleHeader}>
-                  लेन-देन डेटा / Transaction data
-                </Text>
-                <Text style={styles.toggleSub}>
-                  Allow access to transaction history for budgeting tools.
-                </Text>
-              </View>
-              <Switch
-                value={toggles.txData}
-                onValueChange={() => toggleSwitch('txData')}
-                trackColor={{ false: Colors.surfaceVariant, true: Colors.primaryContainer }}
-                thumbColor={Colors.surfaceContainerLowest}
-              />
-            </View>
-
-            {/* Toggle 2 */}
-            <View style={styles.toggleRow}>
-              <View style={styles.toggleTextCol}>
-                <Text style={styles.toggleHeader}>
-                  योजना पात्रता / Scheme eligibility
-                </Text>
-                <Text style={styles.toggleSub}>
-                  Share profile data to check eligibility for government schemes.
-                </Text>
-              </View>
-              <Switch
-                value={toggles.schemeEligibility}
-                onValueChange={() => toggleSwitch('schemeEligibility')}
-                trackColor={{ false: Colors.surfaceVariant, true: Colors.primaryContainer }}
-                thumbColor={Colors.surfaceContainerLowest}
-              />
-            </View>
-
-            {/* Toggle 3 */}
-            <View style={styles.toggleRow}>
-              <View style={styles.toggleTextCol}>
-                <Text style={styles.toggleHeader}>
-                  धोखाधड़ी का पता लगाना / Fraud detection
-                </Text>
-                <Text style={styles.toggleSub}>
-                  Enable real-time scanning of messages for potential scams.
-                </Text>
-              </View>
-              <Switch
-                value={toggles.fraudDetection}
-                onValueChange={() => toggleSwitch('fraudDetection')}
-                trackColor={{ false: Colors.surfaceVariant, true: Colors.primaryContainer }}
-                thumbColor={Colors.surfaceContainerLowest}
-              />
-            </View>
-
-            {/* Toggle 4 */}
-            <View style={styles.toggleRow}>
-              <View style={styles.toggleTextCol}>
-                <Text style={styles.toggleHeader}>
-                  सूचनाएं / Notifications
-                </Text>
-                <Text style={styles.toggleSub}>
-                  Receive alerts for budget limits and scheme updates.
-                </Text>
-              </View>
-              <Switch
-                value={toggles.notifications}
-                onValueChange={() => toggleSwitch('notifications')}
-                trackColor={{ false: Colors.surfaceVariant, true: Colors.primaryContainer }}
-                thumbColor={Colors.surfaceContainerLowest}
-              />
-            </View>
-
-            {/* Toggle 5 */}
-            <View style={styles.toggleRow}>
-              <View style={styles.toggleTextCol}>
-                <Text style={styles.toggleHeader}>
-                  मासिक रिपोर्ट / Monthly report
-                </Text>
-                <Text style={styles.toggleSub}>
-                  Compile and send a monthly financial health summary.
-                </Text>
-              </View>
-              <Switch
-                value={toggles.monthlyReport}
-                onValueChange={() => toggleSwitch('monthlyReport')}
-                trackColor={{ false: Colors.surfaceVariant, true: Colors.primaryContainer }}
-                thumbColor={Colors.surfaceContainerLowest}
-              />
+        {/* Language Selection Card */}
+        {activeTab === 'lang' && (
+          <View style={styles.consentCard}>
+            <Text style={styles.consentTitle}>{t.settings.languageTitle}</Text>
+            <View style={styles.langList}>
+              {LANGUAGES.map((item) => (
+                <TouchableOpacity
+                  key={item.key}
+                  style={[styles.langOption, language === item.key && styles.langOptionActive]}
+                  onPress={() => setLanguage(item.key)}
+                >
+                  <Text style={[styles.langText, language === item.key && styles.langTextActive]}>
+                    {item.label}
+                  </Text>
+                  {language === item.key && <Text style={styles.checkIcon}>✓</Text>}
+                </TouchableOpacity>
+              ))}
             </View>
           </View>
+        )}
 
-          <TouchableOpacity style={styles.dataUseLink}>
-            <Text style={styles.dataUseText}>
-              आपका डेटा कैसे उपयोग होता है / How your data is used &gt;
-            </Text>
-          </TouchableOpacity>
-        </View>
+        {/* 3. Consent & Privacy Detail Card */}
+        {activeTab === 'consent' && (
+          <View style={styles.consentCard}>
+            <Text style={styles.consentTitle}>{t.settings.consentTitle}</Text>
+            <Text style={styles.consentSubtitle}>{t.consent.subtitle}</Text>
+
+            <View style={styles.toggleList}>
+              <View style={styles.toggleRow}>
+                <View style={styles.toggleTextCol}>
+                  <Text style={styles.toggleHeader}>{t.consent.txTitle}</Text>
+                  <Text style={styles.toggleSub}>{t.consent.txDesc}</Text>
+                </View>
+                <Switch
+                  value={toggles.txData}
+                  onValueChange={() => toggleSwitch('txData')}
+                  trackColor={{ false: Colors.surfaceVariant, true: Colors.primaryContainer }}
+                  thumbColor={Colors.surfaceContainerLowest}
+                />
+              </View>
+
+              <View style={styles.toggleRow}>
+                <View style={styles.toggleTextCol}>
+                  <Text style={styles.toggleHeader}>{t.consent.schemeTitle}</Text>
+                  <Text style={styles.toggleSub}>{t.consent.schemeDesc}</Text>
+                </View>
+                <Switch
+                  value={toggles.schemeEligibility}
+                  onValueChange={() => toggleSwitch('schemeEligibility')}
+                  trackColor={{ false: Colors.surfaceVariant, true: Colors.primaryContainer }}
+                  thumbColor={Colors.surfaceContainerLowest}
+                />
+              </View>
+
+              <View style={styles.toggleRow}>
+                <View style={styles.toggleTextCol}>
+                  <Text style={styles.toggleHeader}>{t.consent.fraudTitle}</Text>
+                  <Text style={styles.toggleSub}>{t.consent.fraudDesc}</Text>
+                </View>
+                <Switch
+                  value={toggles.fraudDetection}
+                  onValueChange={() => toggleSwitch('fraudDetection')}
+                  trackColor={{ false: Colors.surfaceVariant, true: Colors.primaryContainer }}
+                  thumbColor={Colors.surfaceContainerLowest}
+                />
+              </View>
+
+              <View style={styles.toggleRow}>
+                <View style={styles.toggleTextCol}>
+                  <Text style={styles.toggleHeader}>{t.consent.notifTitle}</Text>
+                  <Text style={styles.toggleSub}>{t.consent.notifDesc}</Text>
+                </View>
+                <Switch
+                  value={toggles.notifications}
+                  onValueChange={() => toggleSwitch('notifications')}
+                  trackColor={{ false: Colors.surfaceVariant, true: Colors.primaryContainer }}
+                  thumbColor={Colors.surfaceContainerLowest}
+                />
+              </View>
+
+              <View style={styles.toggleRow}>
+                <View style={styles.toggleTextCol}>
+                  <Text style={styles.toggleHeader}>{t.consent.reportTitle}</Text>
+                  <Text style={styles.toggleSub}>{t.consent.reportDesc}</Text>
+                </View>
+                <Switch
+                  value={toggles.monthlyReport}
+                  onValueChange={() => toggleSwitch('monthlyReport')}
+                  trackColor={{ false: Colors.surfaceVariant, true: Colors.primaryContainer }}
+                  thumbColor={Colors.surfaceContainerLowest}
+                />
+              </View>
+            </View>
+          </View>
+        )}
 
         {/* 4. Logout Section */}
         <View style={styles.logoutCard}>
           <View style={styles.logoutLeft}>
             <Text style={styles.logoutIcon}>🚪</Text>
             <View>
-              <Text style={styles.logoutTitle}>लॉगआउट / Log out</Text>
-              <Text style={styles.logoutSubtitle}>You can log back in at any time.</Text>
+              <Text style={styles.logoutTitle}>{t.settings.logoutBtn}</Text>
             </View>
           </View>
 
           <TouchableOpacity style={styles.logoutBtn} onPress={logout}>
-            <Text style={styles.logoutBtnText}>Log out</Text>
+            <Text style={styles.logoutBtnText}>{t.settings.logoutBtn}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -226,8 +201,6 @@ const SettingsScreen: React.FC = () => {
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: Colors.backgroundOffWhite },
   container: { padding: Spacing.md, gap: Spacing.md, paddingBottom: Spacing.xxl },
-
-  // 1. Profile Card
   profileCard: {
     backgroundColor: Colors.surfaceContainerLowest,
     borderRadius: BorderRadius.lg,
@@ -246,10 +219,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  avatarCircle: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  avatarCircle: { alignItems: 'center', justifyContent: 'center' },
   avatarIcon: { fontSize: 32 },
   profileInfo: { flex: 1, gap: 2 },
   profileName: {
@@ -263,14 +233,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: Colors.textWarmGray,
   },
-  editProfileBtn: { marginTop: 4 },
-  editProfileText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: Colors.primaryContainer,
-  },
-
-  // 2. Menu List
   menuList: {
     backgroundColor: Colors.surfaceContainerLowest,
     borderRadius: BorderRadius.lg,
@@ -287,9 +249,7 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.md,
     gap: Spacing.sm,
   },
-  menuItemActive: {
-    backgroundColor: '#FDECEE',
-  },
+  menuItemActive: { backgroundColor: '#FDECEE' },
   menuIcon: { fontSize: 16 },
   menuText: {
     ...Typography.bodyMd,
@@ -301,14 +261,6 @@ const styles = StyleSheet.create({
     color: Colors.primaryContainer,
     fontWeight: '700',
   },
-  versionText: {
-    fontSize: 11,
-    color: Colors.textWarmGray,
-    textAlign: 'center',
-    marginVertical: 2,
-  },
-
-  // 3. Consent Detail Card
   consentCard: {
     backgroundColor: Colors.surfaceContainerLowest,
     borderRadius: BorderRadius.lg,
@@ -328,6 +280,23 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: Colors.textWarmGray,
   },
+  langList: { gap: Spacing.sm },
+  langOption: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: Spacing.md,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    borderColor: Colors.outlineVariant,
+  },
+  langOptionActive: {
+    borderColor: Colors.primaryContainer,
+    backgroundColor: '#FAF0F2',
+  },
+  langText: { fontSize: 14, color: Colors.onSurface },
+  langTextActive: { color: Colors.primaryContainer, fontWeight: '700' },
+  checkIcon: { color: Colors.primaryContainer, fontWeight: '700' },
   toggleList: { gap: Spacing.md },
   toggleRow: {
     flexDirection: 'row',
@@ -350,17 +319,6 @@ const styles = StyleSheet.create({
     color: Colors.textWarmGray,
     lineHeight: 15,
   },
-  dataUseLink: {
-    alignSelf: 'flex-start',
-    paddingVertical: 4,
-  },
-  dataUseText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: Colors.primaryContainer,
-  },
-
-  // 4. Logout Section
   logoutCard: {
     backgroundColor: Colors.surfaceContainerLowest,
     borderRadius: BorderRadius.lg,
@@ -384,10 +342,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
     color: Colors.onSurface,
-  },
-  logoutSubtitle: {
-    fontSize: 11,
-    color: Colors.textWarmGray,
   },
   logoutBtn: {
     paddingHorizontal: Spacing.lg,

@@ -1,5 +1,6 @@
 /**
- * FraudCheckScreen — Fraud & Scam detection interface matching video reference.
+ * FraudCheckScreen — Fraud & Scam detection interface matching reference design.
+ * Pure single-language strings dynamically loaded via useTranslation().
  */
 import React, { useState } from 'react';
 import {
@@ -17,6 +18,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { Colors, Typography, Spacing, BorderRadius } from '../../theme';
 import { AppHeader } from '../../components/AppHeader';
+import { useTranslation } from '../../i18n';
 import { fraudService } from '../../services/fraudService';
 
 interface FlaggedTxn {
@@ -27,28 +29,27 @@ interface FlaggedTxn {
   time: string;
 }
 
-const DEFAULT_FLAGGED: FlaggedTxn[] = [
-  {
-    id: '1',
-    amount: 15000,
-    tag: '? असामान्य स्थान / Unusual location',
-    merchant: 'Unknown Merchant (Delhi)',
-    time: 'Today, 10:42 AM',
-  },
-  {
-    id: '2',
-    amount: 4999,
-    tag: '⏱️ असामान्य समय / Odd hours',
-    merchant: 'GameCredits.net',
-    time: 'Yesterday, 11:20 PM',
-  },
-];
-
 const FraudCheckScreen: React.FC = () => {
   const navigation = useNavigation<any>();
+  const { t } = useTranslation();
   const [text, setText] = useState('');
   const [loading, setLoading] = useState(false);
-  const [flaggedList, setFlaggedList] = useState<FlaggedTxn[]>(DEFAULT_FLAGGED);
+  const [flaggedList, setFlaggedList] = useState<FlaggedTxn[]>([
+    {
+      id: '1',
+      amount: 15000,
+      tag: '⚠️ ' + t.fraud.riskScore + ': High',
+      merchant: 'Unknown Merchant (Delhi)',
+      time: 'Today, 10:42 AM',
+    },
+    {
+      id: '2',
+      amount: 4999,
+      tag: '⏱️ ' + t.fraud.riskScore + ': Medium',
+      merchant: 'GameCredits.net',
+      time: 'Yesterday, 11:20 PM',
+    },
+  ]);
 
   const handleCheck = async () => {
     if (!text.trim()) return;
@@ -62,7 +63,7 @@ const FraudCheckScreen: React.FC = () => {
         analysis: {
           is_fraud: true,
           risk_level: 'high',
-          reasons: ['Suspicious OTP/PIN request pattern detected'],
+          reasons: [t.fraud.resultScam],
         },
       });
     } finally {
@@ -76,7 +77,7 @@ const FraudCheckScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <AppHeader title="धोखाधड़ी जांच / Fraud Check" />
+      <AppHeader title={t.nav.fraud} />
 
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -86,27 +87,21 @@ const FraudCheckScreen: React.FC = () => {
           contentContainerStyle={styles.container}
           showsVerticalScrollIndicator={false}
         >
-          <Text style={styles.mainTitle}>Fraud Check</Text>
-
           {/* 1. Security Warning Banner */}
           <View style={styles.securityBanner}>
-            <Text style={styles.securityBannerText}>
-              nitisaathi कभी भी आपका UPI PIN या OTP नहीं मांगेगा / nitisaathi will never ask for your UPI PIN or OTP
-            </Text>
+            <Text style={styles.securityBannerText}>{t.fraud.bannerText}</Text>
           </View>
 
           {/* 2. Check Suspicious Message Card */}
           <View style={styles.card}>
             <View style={styles.cardHeader}>
               <Text style={styles.cardIcon}>📄</Text>
-              <Text style={styles.cardTitle}>
-                एक संदिग्ध मैसेज चेक करें / Check a suspicious message
-              </Text>
+              <Text style={styles.cardTitle}>{t.fraud.checkTitle}</Text>
             </View>
 
             <TextInput
               style={styles.textArea}
-              placeholder="यहाँ मैसेज पेस्ट करें... / Paste the message here..."
+              placeholder={t.fraud.checkPlaceholder}
               placeholderTextColor={Colors.textWarmGray}
               multiline
               numberOfLines={4}
@@ -115,21 +110,16 @@ const FraudCheckScreen: React.FC = () => {
               textAlignVertical="top"
             />
 
-            <TouchableOpacity style={styles.linkRow}>
-              <Text style={styles.linkText}>
-                या हाल की लेनदेन चुनें / or select a recent transaction
-              </Text>
-            </TouchableOpacity>
-
             <TouchableOpacity
               style={[styles.checkBtn, !text.trim() && styles.checkBtnDisabled]}
               onPress={handleCheck}
               disabled={!text.trim() || loading}
+              activeOpacity={0.85}
             >
               {loading ? (
                 <ActivityIndicator size="small" color={Colors.onPrimary} />
               ) : (
-                <Text style={styles.checkBtnText}>जांचें / Check</Text>
+                <Text style={styles.checkBtnText}>{t.fraud.checkBtn}</Text>
               )}
             </TouchableOpacity>
           </View>
@@ -139,9 +129,7 @@ const FraudCheckScreen: React.FC = () => {
             <View style={styles.flaggedHeader}>
               <View style={styles.flaggedLeft}>
                 <Text style={styles.flaggedIcon}>🛡️</Text>
-                <Text style={styles.flaggedTitle}>
-                  स्वतः पहचाने गए लेन-देन
-                </Text>
+                <Text style={styles.flaggedTitle}>{t.fraud.flaggedTitle}</Text>
               </View>
               <View style={styles.flaggedBadge}>
                 <Text style={styles.flaggedBadgeText}>
@@ -149,7 +137,6 @@ const FraudCheckScreen: React.FC = () => {
                 </Text>
               </View>
             </View>
-            <Text style={styles.flaggedSubtitle}>Automatically flagged</Text>
 
             <View style={styles.flaggedList}>
               {flaggedList.map((item) => (
@@ -171,14 +158,14 @@ const FraudCheckScreen: React.FC = () => {
                       style={styles.btnValid}
                       onPress={() => handleResolve(item.id)}
                     >
-                      <Text style={styles.btnValidText}>✓ सही</Text>
+                      <Text style={styles.btnValidText}>{t.fraud.legitBtn}</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
                       style={styles.btnFraud}
                       onPress={() => handleResolve(item.id)}
                     >
-                      <Text style={styles.btnFraudText}>🚫 धोखाधड़ी है</Text>
+                      <Text style={styles.btnFraudText}>{t.fraud.fraudBtn}</Text>
                     </TouchableOpacity>
                   </View>
                 </View>
@@ -194,12 +181,6 @@ const FraudCheckScreen: React.FC = () => {
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: Colors.backgroundOffWhite },
   container: { padding: Spacing.md, gap: Spacing.md, paddingBottom: Spacing.xxl },
-  mainTitle: {
-    ...Typography.headlineSm,
-    fontSize: 24,
-    fontWeight: '800',
-    color: Colors.onSurface,
-  },
 
   // 1. Security Banner
   securityBanner: {
@@ -249,15 +230,6 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: Colors.onSurface,
   },
-  linkRow: {
-    alignSelf: 'center',
-    paddingVertical: 2,
-  },
-  linkText: {
-    fontSize: 12,
-    color: Colors.textWarmGray,
-    textDecorationLine: 'underline',
-  },
   checkBtn: {
     backgroundColor: Colors.primaryContainer,
     borderRadius: BorderRadius.md,
@@ -294,12 +266,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: Colors.onSurface,
-  },
-  flaggedSubtitle: {
-    fontSize: 12,
-    color: Colors.textWarmGray,
-    marginTop: -4,
-    marginLeft: 22,
   },
   flaggedBadge: {
     backgroundColor: '#FDECEE',

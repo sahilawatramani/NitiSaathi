@@ -1,5 +1,6 @@
 /**
- * SchemesListScreen — List of government schemes matching video reference.
+ * SchemesListScreen — List of government schemes matching reference design.
+ * Pure single-language strings dynamically loaded via useTranslation().
  */
 import React from 'react';
 import {
@@ -13,88 +14,80 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { Colors, Typography, Spacing, BorderRadius } from '../../theme';
 import { AppHeader } from '../../components/AppHeader';
-
-interface SchemeItem {
-  id: string;
-  name: string;
-  status: 'eligible' | 'needs_info' | 'not_eligible';
-  statusLabel: string;
-  hasBudgetGuidance?: boolean;
-  desc: string;
-  verifiedDate?: string;
-}
-
-const SCHEMES: SchemeItem[] = [
-  {
-    id: 'eshram',
-    name: 'e-Shram',
-    status: 'eligible',
-    statusLabel: 'योग्य / Eligible',
-    desc: 'National Database for Unorganized Workers offering accidental insurance cover.',
-    verifiedDate: '1 जुलाई 2026 / 1 July 2026',
-  },
-  {
-    id: 'pmsym',
-    name: 'PM-SYM',
-    status: 'needs_info',
-    statusLabel: 'अधिक जानकारी चाहिए / Needs more info',
-    hasBudgetGuidance: true,
-    desc: 'Pradhan Mantri Shram Yogi Maan-dhan. Pension scheme for unorganized workers.',
-    verifiedDate: '1 जुलाई 2026 / 1 July 2026',
-  },
-  {
-    id: 'pmsby',
-    name: 'PMSBY',
-    status: 'eligible',
-    statusLabel: 'योग्य / Eligible',
-    desc: 'Pradhan Mantri Suraksha Bima Yojana.',
-  },
-  {
-    id: 'pmjjby',
-    name: 'PMJJBY',
-    status: 'not_eligible',
-    statusLabel: 'योग्य नहीं / Not eligible',
-    desc: 'Pradhan Mantri Jeevan Jyoti Bima Yojana. Life insurance scheme.',
-    verifiedDate: '1 जुलाई 2026 / 1 July 2026',
-  },
-  {
-    id: 'apy',
-    name: 'APY',
-    status: 'needs_info',
-    statusLabel: 'अधिक जानकारी चाहिए / Needs more info',
-    hasBudgetGuidance: true,
-    desc: 'Atal Pension Yojana. Guaranteed pension scheme for citizens of India.',
-    verifiedDate: '1 जुलाई 2026 / 1 July 2026',
-  },
-  {
-    id: 'state_welfare',
-    name: 'State Welfare Board',
-    status: 'eligible',
-    statusLabel: 'योग्य / Eligible',
-    desc: 'State-specific welfare board registration and benefits for gig workers.',
-  },
-];
+import { useTranslation } from '../../i18n';
 
 const SchemesListScreen: React.FC = () => {
   const navigation = useNavigation<any>();
+  const { t } = useTranslation();
+
+  const schemes = [
+    {
+      id: 'eshram',
+      name: 'e-Shram',
+      status: 'eligible',
+      statusLabel: t.schemes.verified,
+      desc: t.consent.schemeDesc,
+      verifiedDate: t.schemes.verifiedDate,
+    },
+    {
+      id: 'pmsym',
+      name: 'PM-SYM',
+      status: 'needs_info',
+      statusLabel: t.schemes.pension,
+      hasBudgetGuidance: true,
+      desc: t.assistant.quickQ1,
+      verifiedDate: t.schemes.verifiedDate,
+    },
+    {
+      id: 'pmsby',
+      name: 'PMSBY',
+      status: 'eligible',
+      statusLabel: t.schemes.insurance,
+      desc: t.dashboard.action1Title,
+      verifiedDate: t.schemes.verifiedDate,
+    },
+    {
+      id: 'pmjjby',
+      name: 'PMJJBY',
+      status: 'not_eligible',
+      statusLabel: t.schemes.insurance,
+      desc: t.schemes.insurance,
+      verifiedDate: t.schemes.verifiedDate,
+    },
+    {
+      id: 'apy',
+      name: 'APY',
+      status: 'needs_info',
+      statusLabel: t.schemes.pension,
+      hasBudgetGuidance: true,
+      desc: t.schemes.pension,
+      verifiedDate: t.schemes.verifiedDate,
+    },
+    {
+      id: 'state_welfare',
+      name: 'State Welfare Board',
+      status: 'eligible',
+      statusLabel: t.schemes.welfare,
+      desc: t.dashboard.action2Desc,
+      verifiedDate: t.schemes.verifiedDate,
+    },
+  ];
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <AppHeader title="योजनाएं / Schemes" />
+      <AppHeader title={t.nav.schemes} />
 
       <ScrollView
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.headerBlock}>
-          <Text style={styles.mainTitle}>योजनाएं / Schemes</Text>
-          <Text style={styles.subtitle}>
-            आपकी जानकारी के आधार पर / Based on your details
-          </Text>
+          <Text style={styles.mainTitle}>{t.schemes.title}</Text>
+          <Text style={styles.subtitle}>{t.details.subtitle}</Text>
         </View>
 
         <View style={styles.list}>
-          {SCHEMES.map((s) => (
+          {schemes.map((s) => (
             <TouchableOpacity
               key={s.id}
               style={styles.card}
@@ -128,7 +121,7 @@ const SchemesListScreen: React.FC = () => {
               {s.hasBudgetGuidance && (
                 <View style={styles.budgetChip}>
                   <Text style={styles.budgetChipText}>
-                    💡 बजट सलाह उपलब्ध है / Budget guidance available
+                    💡 {t.schemes.budgetGuidance}
                   </Text>
                 </View>
               )}
@@ -139,7 +132,7 @@ const SchemesListScreen: React.FC = () => {
                 <View style={styles.verifiedRow}>
                   <Text style={styles.verifiedIcon}>✓</Text>
                   <Text style={styles.verifiedText}>
-                    अंतिम सत्यापित: {s.verifiedDate}
+                    {t.schemes.verified}: {s.verifiedDate}
                   </Text>
                 </View>
               )}
@@ -157,7 +150,7 @@ const styles = StyleSheet.create({
   headerBlock: { gap: 2, marginBottom: Spacing.xs },
   mainTitle: {
     ...Typography.headlineSm,
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: '800',
     color: Colors.onSurface,
   },

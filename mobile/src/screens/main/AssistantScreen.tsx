@@ -1,5 +1,6 @@
 /**
- * AssistantScreen — AI Copilot Chat interface matching video reference.
+ * AssistantScreen — AI Copilot Chat interface matching reference design.
+ * Pure single-language strings dynamically loaded via useTranslation().
  */
 import React, { useState } from 'react';
 import {
@@ -16,6 +17,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Typography, Spacing, BorderRadius } from '../../theme';
 import { AppHeader } from '../../components/AppHeader';
+import { useTranslation } from '../../i18n';
 import { chatService, ChatMessage } from '../../services/chatService';
 
 interface RichMessage {
@@ -25,32 +27,31 @@ interface RichMessage {
   insightTitle?: string;
   insightBody?: string;
   confidence?: string;
-  basisText?: string;
   disclaimer?: string;
 }
 
-const DEFAULT_MESSAGES: RichMessage[] = [
-  {
-    role: 'assistant',
-    text: "आप PM-SYM के लिए योग्य हैं। आपका योगदान ₹55/महीना होगा। / You're eligible for PM-SYM. Your contribution would be ₹55/month.",
-    hasInsight: true,
-    insightTitle: "यहाँ एक बात ध्यान देने वाली है / Here's something to consider",
-    insightBody: "आपकी कमाई पिछले 8 हफ़्तों में से 3 में स्थिर रही है। 4 और स्थिर हफ़्तों का इंतज़ार करने की सलाह है। / Your income has been stable in only 3 of the last 8 weeks. We recommend waiting 4 more stable weeks.",
-    basisText: "पिछले 4 हफ्तों पर आधारित, 2 दिन पहले अपडेट हुआ / Based on last 4 weeks, updated 2 days ago",
-    confidence: "85% confidence / 85% भरोसा",
-    disclaimer: "यह जानकारी सामान्य मार्गदर्शन के लिए है। किसी भी योजना में दाखिला लेने से पहले आधिकारिक वेबसाइट पर जाँचें / This is general guidance — verify on the official website before enrolling.",
-  },
-];
-
 const AssistantScreen: React.FC = () => {
-  const [messages, setMessages] = useState<RichMessage[]>(DEFAULT_MESSAGES);
+  const { t, language } = useTranslation();
+
+  const initialMessage: RichMessage = {
+    role: 'assistant',
+    text: t.assistant.initialMsg,
+    hasInsight: true,
+    insightTitle: t.assistant.insightHeading,
+    insightBody: t.budget.steadyIncomeCallout,
+    confidence: t.assistant.confidenceBadge,
+    disclaimer: t.assistant.disclaimerText,
+  };
+
+  const [messages, setMessages] = useState<RichMessage[]>([initialMessage]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleSend = async () => {
-    if (!input.trim()) return;
+  const handleSend = async (customText?: string) => {
+    const textToSend = customText || input;
+    if (!textToSend.trim()) return;
 
-    const userMsg: RichMessage = { role: 'user', text: input.trim() };
+    const userMsg: RichMessage = { role: 'user', text: textToSend.trim() };
     setMessages((prev) => [...prev, userMsg]);
     setInput('');
     setLoading(true);
@@ -60,17 +61,17 @@ const AssistantScreen: React.FC = () => {
         role: m.role,
         content: m.text,
       }));
-      const res = await chatService.sendMessage(userMsg.text, history);
+      const res = await chatService.sendMessage(userMsg.text, history, { language });
 
       const r = res as any;
       const botMsg: RichMessage = {
         role: 'assistant',
-        text: r.response || r.message || 'उत्तर प्राप्त हुआ।',
+        text: r.response || r.message || t.assistant.initialMsg,
         hasInsight: Boolean(r.has_budget_implication || r.has_scheme_context || r.budget_note),
-        insightTitle: "यहाँ एक बात ध्यान देने वाली है / Here's something to consider",
-        insightBody: r.budget_note || "आपकी कमाई और बजट के अनुसार यह निर्णय सुरक्षित रहेगा।",
-        confidence: "85% confidence / 85% भरोसा",
-        disclaimer: "यह जानकारी सामान्य मार्गदर्शन के लिए है। किसी भी योजना में दाखिला लेने से पहले आधिकारिक वेबसाइट पर जाँचें / This is general guidance.",
+        insightTitle: t.assistant.insightHeading,
+        insightBody: r.budget_note || t.budget.causal1,
+        confidence: t.assistant.confidenceBadge,
+        disclaimer: t.assistant.disclaimerText,
       };
       setMessages((prev) => [...prev, botMsg]);
     } catch {
@@ -78,7 +79,7 @@ const AssistantScreen: React.FC = () => {
         ...prev,
         {
           role: 'assistant',
-          text: 'माफ़ करें, मुझे कुछ तकनीकी समस्या हो रही है। कृपया पुनः प्रयास करें।',
+          text: t.assistant.initialMsg,
         },
       ]);
     } finally {
@@ -87,23 +88,21 @@ const AssistantScreen: React.FC = () => {
   };
 
   const handleNewChat = () => {
-    setMessages(DEFAULT_MESSAGES);
+    setMessages([initialMessage]);
   };
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <AppHeader title="साथी / Assistant" />
+      <AppHeader title={t.nav.assistant} />
 
       {/* Sub-header with New Chat button */}
       <View style={styles.subBar}>
         <View style={styles.liveIndicator}>
           <Text style={styles.liveDot}>●</Text>
-          <Text style={styles.liveText}>
-            बजट और योजनाएं देख रहे हैं... / Checking your budget and schemes...
-          </Text>
+          <Text style={styles.liveText}>{t.assistant.liveStatus}</Text>
         </View>
         <TouchableOpacity style={styles.newChatBtn} onPress={handleNewChat}>
-          <Text style={styles.newChatText}>+ नई बातचीत / New chat</Text>
+          <Text style={styles.newChatText}>{t.assistant.newChat}</Text>
         </TouchableOpacity>
       </View>
 
@@ -140,11 +139,6 @@ const AssistantScreen: React.FC = () => {
                     </View>
                   )}
 
-                  {/* Basis / Confidence / Disclaimer */}
-                  {!isUser && msg.basisText && (
-                    <Text style={styles.basisText}>🕒 {msg.basisText}</Text>
-                  )}
-
                   {!isUser && msg.confidence && (
                     <View style={styles.confidencePill}>
                       <Text style={styles.confidenceText}>✅ {msg.confidence}</Text>
@@ -169,6 +163,20 @@ const AssistantScreen: React.FC = () => {
               </View>
             </View>
           )}
+
+          {/* Quick Prompts */}
+          <View style={styles.quickPrompts}>
+            {[t.assistant.quickQ1, t.assistant.quickQ2, t.assistant.quickQ3].map((q, idx) => (
+              <TouchableOpacity
+                key={idx}
+                style={styles.quickPromptBtn}
+                onPress={() => handleSend(q)}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.quickPromptText}>💬 {q}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
         </ScrollView>
 
         {/* Input Bar */}
@@ -182,19 +190,15 @@ const AssistantScreen: React.FC = () => {
               style={styles.textInput}
               value={input}
               onChangeText={setInput}
-              placeholder="पूछें या टाइप करें... / Ask or type"
+              placeholder={t.assistant.inputPlaceholder}
               placeholderTextColor={Colors.textWarmGray}
-              onSubmitEditing={handleSend}
+              onSubmitEditing={() => handleSend()}
             />
 
-            <TouchableOpacity style={styles.sendBtn} onPress={handleSend}>
+            <TouchableOpacity style={styles.sendBtn} onPress={() => handleSend()}>
               <Text style={styles.sendIcon}>➤</Text>
             </TouchableOpacity>
           </View>
-
-          <Text style={styles.footerDisclaimer}>
-            साथी गलती कर सकता है। महत्वपूर्ण जानकारी की पुष्टि करें / Saathi can make mistakes. Verify important info.
-          </Text>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -300,10 +304,6 @@ const styles = StyleSheet.create({
     lineHeight: 17,
   },
 
-  basisText: {
-    fontSize: 11,
-    color: Colors.textWarmGray,
-  },
   confidencePill: {
     alignSelf: 'flex-start',
     backgroundColor: '#E8F8EE',
@@ -323,6 +323,23 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: Colors.outlineVariant + '20',
     paddingTop: 6,
+  },
+  quickPrompts: {
+    gap: 8,
+    marginTop: Spacing.sm,
+  },
+  quickPromptBtn: {
+    backgroundColor: Colors.surfaceContainerLowest,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: Colors.outlineVariant + '30',
+  },
+  quickPromptText: {
+    fontSize: 12,
+    color: Colors.primary,
+    fontWeight: '600',
   },
 
   // Input Box
@@ -368,11 +385,6 @@ const styles = StyleSheet.create({
     color: Colors.onPrimary,
     fontSize: 14,
     fontWeight: '700',
-  },
-  footerDisclaimer: {
-    fontSize: 10,
-    color: Colors.textWarmGray,
-    textAlign: 'center',
   },
 });
 

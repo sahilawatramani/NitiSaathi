@@ -1,8 +1,8 @@
 /**
  * WelcomeScreen — Step 1 of 4 Onboarding
- * Bilingual welcome + language picker (हिंदी / English / मराठी)
+ * Pure single-language welcome + dynamic language picker (हिंदी / English / मराठी)
  */
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -14,11 +14,11 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { AuthStackParamList } from '../../navigation/AuthNavigator';
+import { useAuth } from '../../context/AuthContext';
+import { useTranslation, Language } from '../../i18n';
 import { Colors, Typography, Spacing, BorderRadius } from '../../theme';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Welcome'>;
-
-type Language = 'hi' | 'en' | 'mr';
 
 const LANGUAGES: { key: Language; native: string; label: string }[] = [
   { key: 'hi', native: 'हिंदी', label: 'Hindi' },
@@ -27,10 +27,15 @@ const LANGUAGES: { key: Language; native: string; label: string }[] = [
 ];
 
 const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
-  const [selected, setSelected] = useState<Language>('hi');
+  const { language, setLanguage } = useAuth();
+  const { t } = useTranslation();
+
+  const handleSelectLanguage = (lang: Language) => {
+    setLanguage(lang);
+  };
 
   const handleContinue = () => {
-    navigation.navigate('ComfortLevel', { language: selected });
+    navigation.navigate('ComfortLevel', { language });
   };
 
   return (
@@ -42,7 +47,7 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
       >
         {/* Step progress */}
         <View style={styles.stepRow}>
-          <Text style={styles.stepLabel}>Step 1 of 4</Text>
+          <Text style={styles.stepLabel}>{t.common.stepOf} 1 / 4</Text>
           <View style={styles.dots}>
             {[0, 1, 2, 3].map((i) => (
               <View
@@ -62,23 +67,19 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
 
         {/* Brand name */}
         <View style={styles.brandBlock}>
-          <Text style={styles.brandName}>nitisaathi</Text>
-          <Text style={styles.brandTagline}>
-            आपका वित्तीय साथी / Your financial companion
-          </Text>
+          <Text style={styles.brandName}>{t.common.appNameDisplay}</Text>
+          <Text style={styles.brandTagline}>{t.welcome.tagline}</Text>
         </View>
 
         {/* Language selection */}
-        <Text style={styles.sectionTitle}>
-          Choose your language / अपनी भाषा चुनें
-        </Text>
+        <Text style={styles.sectionTitle}>{t.welcome.chooseLanguage}</Text>
         <View style={styles.langGrid}>
           {LANGUAGES.map((lang) => {
-            const isActive = selected === lang.key;
+            const isActive = language === lang.key;
             return (
               <TouchableOpacity
                 key={lang.key}
-                onPress={() => setSelected(lang.key)}
+                onPress={() => handleSelectLanguage(lang.key)}
                 style={[styles.langCard, isActive && styles.langCardActive]}
                 accessibilityRole="radio"
                 accessibilityState={{ selected: isActive }}
@@ -110,8 +111,8 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
         </View>
 
         {/* CTA */}
-        <TouchableOpacity style={styles.cta} onPress={handleContinue}>
-          <Text style={styles.ctaText}>आगे बढ़ें / Continue →</Text>
+        <TouchableOpacity style={styles.cta} onPress={handleContinue} activeOpacity={0.85}>
+          <Text style={styles.ctaText}>{t.welcome.continueBtn}</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
@@ -274,6 +275,7 @@ const styles = StyleSheet.create({
     ...Typography.labelLg,
     color: Colors.onPrimary,
     fontSize: 16,
+    fontWeight: '700',
   },
 });
 

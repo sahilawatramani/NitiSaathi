@@ -1,11 +1,13 @@
 /**
  * Main Tab Navigator — Bottom tabs for the main app experience.
- * Tabs matching video: 1. गृह (Home), 2. बजट (Budget), 3. साथी (Assistant), 4. योजनाएं (Schemes), 5. जांच (Fraud Check)
+ * Dynamic single-language labels matching active language:
+ * 1. Home (गृह / Home / गृह), 2. Budget (बजट / Budget / बजेट), 3. Assistant (साथी / Assistant / साथी), 4. Schemes (योजनाएं / Schemes / योजना), 5. Fraud (जांच / Fraud Check / तपासणी)
  */
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { View, Text, Platform } from 'react-native';
+import { useTranslation } from '../i18n';
 import { Colors, Typography } from '../theme';
 
 // Screens
@@ -106,67 +108,71 @@ const TabIcon = ({
   </View>
 );
 
-const MainTabsNavigator = () => (
-  <Tab.Navigator
-    screenOptions={{
-      headerShown: false,
-      tabBarShowLabel: false,
-      tabBarStyle: {
-        backgroundColor: Colors.surface,
-        borderTopColor: Colors.outlineVariant + '40',
-        borderTopWidth: 1,
-        height: Platform.OS === 'ios' ? 84 : 62,
-        paddingBottom: Platform.OS === 'ios' ? 24 : 6,
-      },
-    }}
-  >
-    <Tab.Screen
-      name="HomeTab"
-      component={DashboardScreen}
-      options={{
-        tabBarIcon: ({ focused }) => (
-          <TabIcon icon="🏠" label="गृह" focused={focused} />
-        ),
+const MainTabsNavigator = () => {
+  const { t } = useTranslation();
+
+  return (
+    <Tab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarShowLabel: false,
+        tabBarStyle: {
+          backgroundColor: Colors.surface,
+          borderTopColor: Colors.outlineVariant + '40',
+          borderTopWidth: 1,
+          height: Platform.OS === 'ios' ? 84 : 62,
+          paddingBottom: Platform.OS === 'ios' ? 24 : 6,
+        },
       }}
-    />
-    <Tab.Screen
-      name="BudgetTab"
-      component={BudgetScreen}
-      options={{
-        tabBarIcon: ({ focused }) => (
-          <TabIcon icon="📊" label="बजट" focused={focused} />
-        ),
-      }}
-    />
-    <Tab.Screen
-      name="SaathiTab"
-      component={AssistantScreen}
-      options={{
-        tabBarIcon: ({ focused }) => (
-          <TabIcon icon="💬" label="साथी" focused={focused} />
-        ),
-      }}
-    />
-    <Tab.Screen
-      name="SchemesTab"
-      component={SchemesListScreen}
-      options={{
-        tabBarIcon: ({ focused }) => (
-          <TabIcon icon="📋" label="योजनाएं" focused={focused} />
-        ),
-      }}
-    />
-    <Tab.Screen
-      name="FraudTab"
-      component={FraudCheckScreen}
-      options={{
-        tabBarIcon: ({ focused }) => (
-          <TabIcon icon="🛡️" label="जांच" focused={focused} />
-        ),
-      }}
-    />
-  </Tab.Navigator>
-);
+    >
+      <Tab.Screen
+        name="HomeTab"
+        component={DashboardScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <TabIcon icon="🏠" label={t.nav.home} focused={focused} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="BudgetTab"
+        component={BudgetScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <TabIcon icon="📊" label={t.nav.budget} focused={focused} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="SaathiTab"
+        component={AssistantScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <TabIcon icon="💬" label={t.nav.assistant} focused={focused} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="SchemesTab"
+        component={SchemesListScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <TabIcon icon="📋" label={t.nav.schemes} focused={focused} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="FraudTab"
+        component={FraudCheckScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <TabIcon icon="🛡️" label={t.nav.fraud} focused={focused} />
+          ),
+        }}
+      />
+    </Tab.Navigator>
+  );
+};
 
 const MainNavigator = () => (
   <RootStack.Navigator screenOptions={{ headerShown: false }}>

@@ -1,6 +1,6 @@
 /**
- * DashboardScreen — Main home screen matching video reference.
- * Includes Urgent Low-Balance Banner, Available Balance, WMA Income Forecast, Action Required, and Financial Health.
+ * DashboardScreen — Main home screen matching reference design.
+ * Pure single-language strings dynamically loaded via useTranslation().
  */
 import React, { useEffect, useState } from 'react';
 import {
@@ -15,9 +15,11 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Typography, Spacing, BorderRadius } from '../../theme';
 import { AppHeader } from '../../components/AppHeader';
+import { useTranslation } from '../../i18n';
 import { analyticsService, BudgetState } from '../../services/analyticsService';
 
 const DashboardScreen: React.FC = () => {
+  const { t } = useTranslation();
   const [budgetState, setBudgetState] = useState<BudgetState | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -55,7 +57,7 @@ const DashboardScreen: React.FC = () => {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <AppHeader title="गृह / Home" />
+      <AppHeader title={t.nav.home} />
 
       <ScrollView
         contentContainerStyle={styles.container}
@@ -68,19 +70,12 @@ const DashboardScreen: React.FC = () => {
             <View style={styles.alertIconBox}>
               <Text style={styles.alertIcon}>⚠️</Text>
             </View>
-            <Text style={styles.urgentTitle}>बैलेंस कम है / Low balance</Text>
+            <Text style={styles.urgentTitle}>{t.dashboard.urgentAlert}</Text>
           </View>
-
-          <Text style={styles.urgentMessage}>
-            आपका PMSBY debit 9 दिनों में है, बैलेंस ₹10 है / Your PMSBY debit is in 9 days, balance is ₹10. Please top up to avoid policy lapse.
-          </Text>
 
           <View style={styles.bannerActions}>
             <TouchableOpacity style={styles.topUpBtn} activeOpacity={0.85}>
-              <Text style={styles.topUpText}>Top Up Now</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.remindBtn} activeOpacity={0.85}>
-              <Text style={styles.remindText}>Remind Me</Text>
+              <Text style={styles.topUpText}>{t.dashboard.action1Title}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -88,8 +83,9 @@ const DashboardScreen: React.FC = () => {
         {/* 2. Available Balance Card */}
         <View style={styles.balanceCard}>
           <View style={styles.balanceLeft}>
-            <Text style={styles.balanceLabel}>AVAILABLE BALANCE</Text>
+            <Text style={styles.balanceLabel}>{t.dashboard.availableBalance}</Text>
             <Text style={styles.balanceAmount}>₹{balance.toFixed(2)}</Text>
+            <Text style={styles.savingsPillText}>{t.dashboard.savingsRate}</Text>
           </View>
           <View style={styles.bankIconBox}>
             <Text style={styles.bankIcon}>🏛️</Text>
@@ -99,20 +95,17 @@ const DashboardScreen: React.FC = () => {
         {/* 3. Income Forecast Chart Card */}
         <View style={styles.forecastCard}>
           <View style={styles.forecastHeader}>
-            <Text style={styles.forecastTitle}>Income Forecast</Text>
-            <View style={styles.pillFilter}>
-              <Text style={styles.pillText}>Last 4 Weeks</Text>
-            </View>
+            <Text style={styles.forecastTitle}>{t.dashboard.weeklyTrend}</Text>
           </View>
 
-          {/* Simple Visual Bar Chart */}
+          {/* Visual Bar Chart */}
           <View style={styles.chartContainer}>
             {[
               { label: 'W1', height: 45 },
-              { label: 'W3', height: 75 },
-              { label: 'W5', height: 60 },
-              { label: 'W7', height: 90 },
-              { label: 'Proj', height: 110, isProj: true },
+              { label: 'W2', height: 75 },
+              { label: 'W3', height: 60 },
+              { label: 'W4', height: 90 },
+              { label: 'W5', height: 110, isProj: true },
             ].map((bar) => (
               <View key={bar.label} style={styles.barCol}>
                 <View
@@ -131,9 +124,9 @@ const DashboardScreen: React.FC = () => {
         {/* 4. Action Required Section */}
         <View style={styles.actionSection}>
           <View style={styles.actionHeader}>
-            <Text style={styles.sectionTitle}>Action Required</Text>
+            <Text style={styles.sectionTitle}>{t.dashboard.urgentActions}</Text>
             <View style={styles.countBadge}>
-              <Text style={styles.countText}>3</Text>
+              <Text style={styles.countText}>2</Text>
             </View>
           </View>
 
@@ -143,25 +136,9 @@ const DashboardScreen: React.FC = () => {
                 <Text style={styles.actionItemIcon}>🏛️</Text>
               </View>
               <View style={styles.actionTextCol}>
-                <Text style={styles.actionItemTitle}>Low Balance Warning</Text>
-                <Text style={styles.actionItemDesc}>
-                  Your balance is critically low for upcoming auto-debits.
-                </Text>
+                <Text style={styles.actionItemTitle}>{t.dashboard.action1Title}</Text>
+                <Text style={styles.actionItemDesc}>{t.dashboard.action1Desc}</Text>
               </View>
-              <Text style={styles.actionTime}>Just now</Text>
-            </View>
-
-            <View style={styles.actionItem}>
-              <View style={[styles.actionIconBox, { backgroundColor: '#FDF2E9' }]}>
-                <Text style={styles.actionItemIcon}>📉</Text>
-              </View>
-              <View style={styles.actionTextCol}>
-                <Text style={styles.actionItemTitle}>Earnings Dip</Text>
-                <Text style={styles.actionItemDesc}>
-                  Earnings down 12% compared to last week
-                </Text>
-              </View>
-              <Text style={styles.actionTime}>2 hours ago</Text>
             </View>
 
             <View style={styles.actionItem}>
@@ -169,12 +146,9 @@ const DashboardScreen: React.FC = () => {
                 <Text style={styles.actionItemIcon}>🛡️</Text>
               </View>
               <View style={styles.actionTextCol}>
-                <Text style={styles.actionItemTitle}>Scheme Eligible</Text>
-                <Text style={styles.actionItemDesc}>
-                  You qualify for PMJJBY based on your profile.
-                </Text>
+                <Text style={styles.actionItemTitle}>{t.dashboard.action2Title}</Text>
+                <Text style={styles.actionItemDesc}>{t.dashboard.action2Desc}</Text>
               </View>
-              <Text style={styles.actionTime}>Yesterday</Text>
             </View>
           </View>
         </View>
@@ -184,13 +158,10 @@ const DashboardScreen: React.FC = () => {
           <View style={styles.healthIconCircle}>
             <Text style={styles.healthIcon}>🛡️</Text>
           </View>
-          <Text style={styles.healthTitle}>Financial Health</Text>
+          <Text style={styles.healthTitle}>{t.dashboard.financialHealth}</Text>
           <View style={styles.healthStatusPill}>
-            <Text style={styles.healthStatusText}>⚠️ At Risk</Text>
+            <Text style={styles.healthStatusText}>⚠️ {t.dashboard.healthAtRisk}</Text>
           </View>
-          <Text style={styles.healthDesc}>
-            Immediate attention required to stabilize savings and secure policies.
-          </Text>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -225,41 +196,26 @@ const styles = StyleSheet.create({
   alertIcon: { fontSize: 16 },
   urgentTitle: {
     ...Typography.headlineSm,
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '700',
     color: Colors.primary,
-  },
-  urgentMessage: {
-    ...Typography.bodyMd,
-    fontSize: 13,
-    color: '#601F28',
-    lineHeight: 18,
+    flex: 1,
   },
   bannerActions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.md,
     marginTop: Spacing.xs,
   },
   topUpBtn: {
     backgroundColor: Colors.primaryContainer,
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: 8,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: 6,
     borderRadius: BorderRadius.md,
   },
   topUpText: {
     color: Colors.onPrimary,
     fontWeight: '700',
-    fontSize: 13,
-  },
-  remindBtn: {
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: 8,
-  },
-  remindText: {
-    color: Colors.primary,
-    fontWeight: '600',
-    fontSize: 13,
+    fontSize: 12,
   },
 
   // 2. Available Balance
@@ -276,15 +232,21 @@ const styles = StyleSheet.create({
   balanceLeft: { gap: 4 },
   balanceLabel: {
     ...Typography.labelSm,
-    fontSize: 11,
+    fontSize: 12,
     color: Colors.textWarmGray,
-    letterSpacing: 0.5,
+    fontWeight: '600',
   },
   balanceAmount: {
     ...Typography.headlineLg,
     fontSize: 32,
     fontWeight: '800',
     color: Colors.onSurface,
+  },
+  savingsPillText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: Colors.primaryContainer,
+    marginTop: 2,
   },
   bankIconBox: {
     width: 44,
@@ -312,26 +274,15 @@ const styles = StyleSheet.create({
   },
   forecastTitle: {
     ...Typography.headlineSm,
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '700',
     color: Colors.onSurface,
-  },
-  pillFilter: {
-    backgroundColor: '#F0EDE9',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  pillText: {
-    fontSize: 11,
-    fontWeight: '600',
-    color: Colors.textWarmGray,
   },
   chartContainer: {
     flexDirection: 'row',
     alignItems: 'flex-end',
     justifyContent: 'space-around',
-    height: 140,
+    height: 130,
     paddingTop: 10,
   },
   barCol: {
@@ -347,7 +298,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#D1828E',
   },
   barProj: {
-    backgroundColor: '#C56070',
+    backgroundColor: '#A61C2E',
   },
   barLabel: {
     fontSize: 11,
@@ -371,7 +322,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     ...Typography.headlineSm,
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '700',
     color: Colors.onSurface,
   },
@@ -417,10 +368,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: Colors.textWarmGray,
   },
-  actionTime: {
-    fontSize: 10,
-    color: Colors.textWarmGray,
-  },
 
   // 5. Financial Health
   healthCard: {
@@ -460,13 +407,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
     color: Colors.primary,
-  },
-  healthDesc: {
-    ...Typography.bodyMd,
-    fontSize: 12,
-    color: Colors.textWarmGray,
-    textAlign: 'center',
-    lineHeight: 17,
   },
 });
 

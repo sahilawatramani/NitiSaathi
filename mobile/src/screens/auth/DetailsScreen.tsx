@@ -1,6 +1,6 @@
 /**
  * DetailsScreen — Step 3 of 4 Onboarding
- * Collect comprehensive gig worker profile details.
+ * Collect gig worker profile details in the active single language.
  */
 import React, { useState } from 'react';
 import {
@@ -16,6 +16,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { AuthStackParamList } from '../../navigation/AuthNavigator';
+import { useTranslation } from '../../i18n';
 import { Colors, Typography, Spacing, BorderRadius } from '../../theme';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Details'>;
@@ -24,6 +25,7 @@ const PLATFORMS = ['Swiggy', 'Zomato', 'Ola', 'Uber', 'Rapido', 'Other'];
 
 const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
   const { language, comfortLevel } = route.params;
+  const { t } = useTranslation();
 
   const [age, setAge] = useState('');
   const [income, setIncome] = useState('');
@@ -65,7 +67,7 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
               <Text style={styles.backIcon}>←</Text>
             </TouchableOpacity>
             <View style={styles.stepIndicator}>
-              <Text style={styles.stepLabel}>STEP 3 OF 4</Text>
+              <Text style={styles.stepLabel}>{t.common.stepOf} 3 / 4</Text>
               <View style={styles.dots}>
                 {[0, 1, 2, 3].map((i) => (
                   <View key={i} style={[styles.dot, i === 2 && styles.dotActive]} />
@@ -74,17 +76,13 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
             </View>
           </View>
 
-          <Text style={styles.title}>
-            आपकी जानकारी / Your Details
-          </Text>
-          <Text style={styles.subtitle}>
-            यह जानकारी सही योजनाएं दिखाने में मदद करती है / This helps us show you the right schemes.
-          </Text>
+          <Text style={styles.title}>{t.details.title}</Text>
+          <Text style={styles.subtitle}>{t.details.subtitle}</Text>
 
           <View style={styles.form}>
             {/* 1. Age */}
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>उम्र / Age</Text>
+              <Text style={styles.label}>{t.details.ageLabel}</Text>
               <TextInput
                 style={styles.input}
                 value={age}
@@ -93,16 +91,11 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
                 placeholder="e.g. 32"
                 placeholderTextColor={Colors.textWarmGray}
               />
-              <Text style={styles.helperText}>
-                कुछ सरकारी योजनाओं की उम्र सीमा होती है / Some schemes have age limits
-              </Text>
             </View>
 
             {/* 2. Monthly Income */}
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>
-                पिछले महीने की अनुमानित कमाई / Approximate income last month
-              </Text>
+              <Text style={styles.label}>{t.details.incomeLabel}</Text>
               <View style={styles.currencyInputRow}>
                 <Text style={styles.currencyPrefix}>₹</Text>
                 <TextInput
@@ -110,7 +103,7 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
                   value={income}
                   onChangeText={setIncome}
                   keyboardType="number-pad"
-                  placeholder="0"
+                  placeholder="15000"
                   placeholderTextColor={Colors.textWarmGray}
                 />
               </View>
@@ -118,9 +111,7 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
 
             {/* 3. Platforms */}
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>
-                आप किस प्लेटफॉर्म पर काम करते हैं? / Which platform(s) do you work with?
-              </Text>
+              <Text style={styles.label}>{t.details.platformsLabel}</Text>
               <View style={styles.chipsRow}>
                 {PLATFORMS.map((p) => {
                   const isSelected = selectedPlatforms.includes(p);
@@ -142,16 +133,19 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
 
             {/* 4. Ongoing EMI */}
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>क्या आपकी कोई EMI चल रही है? / Ongoing EMI?</Text>
+              <Text style={styles.label}>{t.details.emiLabel}</Text>
               <View style={styles.segmentRow}>
-                {(['Yes', 'No'] as const).map((opt) => (
+                {[
+                  { key: 'Yes', label: t.details.yes },
+                  { key: 'No', label: t.details.no },
+                ].map((opt) => (
                   <TouchableOpacity
-                    key={opt}
-                    onPress={() => setHasEmi(opt)}
-                    style={[styles.segmentBtn, hasEmi === opt && styles.segmentBtnActive]}
+                    key={opt.key}
+                    onPress={() => setHasEmi(opt.key as any)}
+                    style={[styles.segmentBtn, hasEmi === opt.key && styles.segmentBtnActive]}
                   >
-                    <Text style={[styles.segmentText, hasEmi === opt && styles.segmentTextActive]}>
-                      {opt}
+                    <Text style={[styles.segmentText, hasEmi === opt.key && styles.segmentTextActive]}>
+                      {opt.label}
                     </Text>
                   </TouchableOpacity>
                 ))}
@@ -160,18 +154,19 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
 
             {/* 5. e-Shram Registration */}
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>
-                क्या आप e-Shram में रजिस्टर्ड हैं? / Registered with e-Shram?
-              </Text>
+              <Text style={styles.label}>{t.details.eShramLabel}</Text>
               <View style={styles.segmentRow}>
-                {(['Yes', 'No', 'Not sure'] as const).map((opt) => (
+                {[
+                  { key: 'Yes', label: t.details.yes },
+                  { key: 'No', label: t.details.no },
+                ].map((opt) => (
                   <TouchableOpacity
-                    key={opt}
-                    onPress={() => setEShram(opt)}
-                    style={[styles.segmentBtn, eShram === opt && styles.segmentBtnActive]}
+                    key={opt.key}
+                    onPress={() => setEShram(opt.key as any)}
+                    style={[styles.segmentBtn, eShram === opt.key && styles.segmentBtnActive]}
                   >
-                    <Text style={[styles.segmentText, eShram === opt && styles.segmentTextActive]}>
-                      {opt}
+                    <Text style={[styles.segmentText, eShram === opt.key && styles.segmentTextActive]}>
+                      {opt.label}
                     </Text>
                   </TouchableOpacity>
                 ))}
@@ -180,18 +175,19 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
 
             {/* 6. EPFO / ESIC Registration */}
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>
-                क्या आप EPFO/ESIC में रजिस्टर्ड हैं? / Registered with EPFO/ESIC?
-              </Text>
+              <Text style={styles.label}>{t.details.epfoLabel}</Text>
               <View style={styles.segmentRow}>
-                {(['Yes', 'No', 'Not sure'] as const).map((opt) => (
+                {[
+                  { key: 'Yes', label: t.details.yes },
+                  { key: 'No', label: t.details.no },
+                ].map((opt) => (
                   <TouchableOpacity
-                    key={opt}
-                    onPress={() => setEpfoEsic(opt)}
-                    style={[styles.segmentBtn, epfoEsic === opt && styles.segmentBtnActive]}
+                    key={opt.key}
+                    onPress={() => setEpfoEsic(opt.key as any)}
+                    style={[styles.segmentBtn, epfoEsic === opt.key && styles.segmentBtnActive]}
                   >
-                    <Text style={[styles.segmentText, epfoEsic === opt && styles.segmentTextActive]}>
-                      {opt}
+                    <Text style={[styles.segmentText, epfoEsic === opt.key && styles.segmentTextActive]}>
+                      {opt.label}
                     </Text>
                   </TouchableOpacity>
                 ))}
@@ -199,8 +195,8 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
             </View>
           </View>
 
-          <TouchableOpacity style={styles.cta} onPress={handleContinue}>
-            <Text style={styles.ctaText}>आगे बढ़ें / Continue →</Text>
+          <TouchableOpacity style={styles.cta} onPress={handleContinue} activeOpacity={0.85}>
+            <Text style={styles.ctaText}>{t.details.continueBtn}</Text>
           </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -224,7 +220,6 @@ const styles = StyleSheet.create({
   form: { flex: 1, gap: Spacing.lg },
   inputGroup: { gap: 6 },
   label: { ...Typography.labelLg, fontSize: 14, color: Colors.onSurfaceVariant, fontWeight: '600' },
-  helperText: { ...Typography.labelSm, fontSize: 11, color: Colors.textWarmGray, marginTop: 2 },
   input: {
     backgroundColor: Colors.surfaceContainerLowest,
     borderWidth: 1,
@@ -315,7 +310,7 @@ const styles = StyleSheet.create({
     marginTop: Spacing.xl,
     marginBottom: Spacing.lg,
   },
-  ctaText: { ...Typography.labelLg, color: Colors.onPrimary, fontSize: 16, fontWeight: '600' },
+  ctaText: { ...Typography.labelLg, color: Colors.onPrimary, fontSize: 16, fontWeight: '700' },
 });
 
 export default DetailsScreen;

@@ -1,6 +1,6 @@
 /**
  * ConsentScreen — Step 4 of 4 Onboarding
- * Granular consent toggles matching video reference.
+ * Granular consent toggles with single-language text and robust login transition.
  */
 import React, { useState } from 'react';
 import {
@@ -10,26 +10,23 @@ import {
   StyleSheet,
   ScrollView,
   Switch,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { AuthStackParamList } from '../../navigation/AuthNavigator';
 import { useAuth } from '../../context/AuthContext';
+import { useTranslation } from '../../i18n';
 import { Colors, Typography, Spacing, BorderRadius } from '../../theme';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Consent'>;
 
-interface ConsentItem {
-  id: string;
-  title: string;
-  desc: string;
-  enabled: boolean;
-}
-
 const ConsentScreen: React.FC<Props> = ({ route, navigation }) => {
   const { profile } = route.params;
-  const { login } = useAuth();
+  const { completeOnboarding } = useAuth();
+  const { t } = useTranslation();
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [toggles, setToggles] = useState<Record<string, boolean>>({
     txData: true,
     schemeEligibility: true,
@@ -43,43 +40,44 @@ const ConsentScreen: React.FC<Props> = ({ route, navigation }) => {
   };
 
   const handleStart = async () => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     try {
-      // Create session or login demo user to access dashboard immediately
-      await login('rajesh@nitisaathi.in', 'password123');
-    } catch {
-      // If offline or mock mode, AuthContext fallback takes user into main app
+      await completeOnboarding({ ...profile, consents: toggles });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const CONSENT_ITEMS: ConsentItem[] = [
+  const consentItems = [
     {
       id: 'txData',
-      title: 'लेन-देन जानकारी / Transaction data',
-      desc: 'आपकी income और खर्च ट्रैक करने के लिए',
+      title: t.consent.txTitle,
+      desc: t.consent.txDesc,
       enabled: toggles.txData,
     },
     {
       id: 'schemeEligibility',
-      title: 'योजना पात्रता जांच / Scheme eligibility check',
-      desc: 'सही सरकारी योजनाएं दिखाने के लिए आपकी प्रोफाइल का उपयोग',
+      title: t.consent.schemeTitle,
+      desc: t.consent.schemeDesc,
       enabled: toggles.schemeEligibility,
     },
     {
       id: 'fraudDetection',
-      title: 'धोखाधड़ी सुरक्षा / Fraud detection',
-      desc: 'संदिग्ध लेन-देन की जांच के लिए',
+      title: t.consent.fraudTitle,
+      desc: t.consent.fraudDesc,
       enabled: toggles.fraudDetection,
     },
     {
       id: 'notifications',
-      title: 'सूचनाएं / Push notifications',
-      desc: 'समय पर अलर्ट भेजने के लिए',
+      title: t.consent.notifTitle,
+      desc: t.consent.notifDesc,
       enabled: toggles.notifications,
     },
     {
       id: 'monthlyReport',
-      title: 'मासिक रिपोर्ट / Monthly PDF report + email',
-      desc: 'आपकी मासिक रिपोर्ट ईमेल पर भेजने के लिए',
+      title: t.consent.reportTitle,
+      desc: t.consent.reportDesc,
       enabled: toggles.monthlyReport,
     },
   ];
@@ -92,7 +90,7 @@ const ConsentScreen: React.FC<Props> = ({ route, navigation }) => {
             <Text style={styles.backIcon}>←</Text>
           </TouchableOpacity>
           <View style={styles.stepIndicator}>
-            <Text style={styles.stepLabel}>STEP 4 OF 4</Text>
+            <Text style={styles.stepLabel}>{t.common.stepOf} 4 / 4</Text>
             <View style={styles.dots}>
               {[0, 1, 2, 3].map((i) => (
                 <View key={i} style={[styles.dot, i === 3 && styles.dotActive]} />
@@ -101,13 +99,11 @@ const ConsentScreen: React.FC<Props> = ({ route, navigation }) => {
           </View>
         </View>
 
-        <Text style={styles.title}>आपकी सहमति / Your Consent</Text>
-        <Text style={styles.subtitle}>
-          आप हर एक को अलग से चालू या बंद कर सकते हैं, कभी भी बदल सकते हैं / You can turn each on or off separately, anytime in Settings.
-        </Text>
+        <Text style={styles.title}>{t.consent.title}</Text>
+        <Text style={styles.subtitle}>{t.consent.subtitle}</Text>
 
         <View style={styles.toggleList}>
-          {CONSENT_ITEMS.map((item) => (
+          {consentItems.map((item) => (
             <View key={item.id} style={styles.toggleRow}>
               <View style={styles.toggleInfo}>
                 <Text style={styles.toggleTitle}>{item.title}</Text>
@@ -124,12 +120,19 @@ const ConsentScreen: React.FC<Props> = ({ route, navigation }) => {
         </View>
 
         <View style={styles.footerBlock}>
-          <TouchableOpacity style={styles.cta} onPress={handleStart} activeOpacity={0.85}>
-            <Text style={styles.ctaText}>शुरू करें / Get Started</Text>
+          <TouchableOpacity
+            style={[styles.cta, isSubmitting && styles.ctaDisabled]}
+            onPress={handleStart}
+            disabled={isSubmitting}
+            activeOpacity={0.85}
+          >
+            {isSubmitting ? (
+              <ActivityIndicator color={Colors.onPrimary} size="small" />
+            ) : (
+              <Text style={styles.ctaText}>{t.consent.getStartedBtn}</Text>
+            )}
           </TouchableOpacity>
-          <Text style={styles.footerNote}>
-            आप बाद में इन्हें चालू कर सकते हैं / You can turn these on later
-          </Text>
+          <Text style={styles.footerNote}>{t.consent.footerNote}</Text>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -167,6 +170,9 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
     alignItems: 'center',
     marginBottom: Spacing.sm,
+  },
+  ctaDisabled: {
+    opacity: 0.7,
   },
   ctaText: { ...Typography.labelLg, color: Colors.onPrimary, fontSize: 16, fontWeight: '700' },
   footerNote: { ...Typography.labelSm, fontSize: 12, color: Colors.textWarmGray, textAlign: 'center' },

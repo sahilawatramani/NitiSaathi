@@ -21,12 +21,13 @@ export const chatService = {
   sendMessage: async (
     message: string,
     chatHistory: ChatMessage[],
-    sessionId?: string
+    options?: { sessionId?: string; language?: string }
   ): Promise<ChatResponse> => {
     const res = await api.post<ChatResponse>('/chat/', {
       message,
       chat_history: chatHistory,
-      session_id: sessionId,
+      session_id: options?.sessionId,
+      language_pref: options?.language,
     });
     return res.data;
   },

@@ -1,6 +1,6 @@
 /**
  * ComfortLevelScreen — Step 2 of 4 Onboarding
- * Financial Comfort Level Picker
+ * Financial Comfort Level Picker with dynamic single-language text
  */
 import React, { useState } from 'react';
 import {
@@ -13,31 +13,33 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { AuthStackParamList } from '../../navigation/AuthNavigator';
+import { useTranslation } from '../../i18n';
 import { Colors, Typography, Spacing, BorderRadius } from '../../theme';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'ComfortLevel'>;
 
-const OPTIONS = [
-  {
-    id: 'beginner',
-    title: 'मुझे ज्यादातर शब्द समझ नहीं आते, सरल भाषा में बताएं',
-    desc: "I don't understand most terms, keep it simple",
-  },
-  {
-    id: 'intermediate',
-    title: 'मुझे कुछ शब्द पता हैं, पर पूरी जानकारी नहीं',
-    desc: 'I know some terms but not all the details',
-  },
-  {
-    id: 'advanced',
-    title: 'मुझे वित्तीय शब्द अच्छे से समझ आते हैं',
-    desc: "I'm comfortable with financial terminology",
-  },
-];
-
 const ComfortLevelScreen: React.FC<Props> = ({ route, navigation }) => {
   const { language } = route.params;
+  const { t } = useTranslation();
   const [selected, setSelected] = useState<string>('intermediate');
+
+  const options = [
+    {
+      id: 'beginner',
+      title: t.comfort.opt1Title,
+      desc: t.comfort.opt1Desc,
+    },
+    {
+      id: 'intermediate',
+      title: t.comfort.opt2Title,
+      desc: t.comfort.opt2Desc,
+    },
+    {
+      id: 'advanced',
+      title: t.comfort.opt3Title,
+      desc: t.comfort.opt3Desc,
+    },
+  ];
 
   const handleContinue = () => {
     if (selected) {
@@ -53,7 +55,7 @@ const ComfortLevelScreen: React.FC<Props> = ({ route, navigation }) => {
             <Text style={styles.backIcon}>←</Text>
           </TouchableOpacity>
           <View style={styles.stepIndicator}>
-            <Text style={styles.stepLabel}>STEP 2 OF 4</Text>
+            <Text style={styles.stepLabel}>{t.common.stepOf} 2 / 4</Text>
             <View style={styles.dots}>
               {[0, 1, 2, 3].map((i) => (
                 <View key={i} style={[styles.dot, i === 1 && styles.dotActive]} />
@@ -62,15 +64,11 @@ const ComfortLevelScreen: React.FC<Props> = ({ route, navigation }) => {
           </View>
         </View>
 
-        <Text style={styles.title}>
-          वित्तीय शब्दों के साथ आप कितने सहज हैं?
-        </Text>
-        <Text style={styles.subtitle}>
-          How comfortable are you with financial terms?
-        </Text>
+        <Text style={styles.title}>{t.comfort.title}</Text>
+        <Text style={styles.subtitle}>{t.comfort.subtitle}</Text>
 
         <View style={styles.optionsList}>
-          {OPTIONS.map((opt) => {
+          {options.map((opt) => {
             const isActive = selected === opt.id;
             return (
               <TouchableOpacity
@@ -102,8 +100,9 @@ const ComfortLevelScreen: React.FC<Props> = ({ route, navigation }) => {
           style={[styles.cta, !selected && styles.ctaDisabled]}
           onPress={handleContinue}
           disabled={!selected}
+          activeOpacity={0.85}
         >
-          <Text style={styles.ctaText}>आगे बढ़ें / Continue →</Text>
+          <Text style={styles.ctaText}>{t.comfort.continueBtn}</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
@@ -121,8 +120,8 @@ const styles = StyleSheet.create({
   dots: { flexDirection: 'row', gap: 4 },
   dot: { width: 16, height: 4, borderRadius: 2, backgroundColor: Colors.surfaceVariant },
   dotActive: { backgroundColor: Colors.vividRed },
-  title: { ...Typography.headlineSm, color: Colors.onSurface, marginBottom: Spacing.xl },
-  subtitle: { ...Typography.bodyMd, color: Colors.textWarmGray, fontWeight: '400' },
+  title: { ...Typography.headlineSm, color: Colors.onSurface, marginBottom: 6, fontWeight: '700' },
+  subtitle: { ...Typography.bodyMd, color: Colors.textWarmGray, marginBottom: Spacing.xl },
   optionsList: { gap: Spacing.md, marginBottom: Spacing.xl },
   optionCard: {
     flexDirection: 'row',
@@ -164,7 +163,7 @@ const styles = StyleSheet.create({
     marginTop: 'auto',
   },
   ctaDisabled: { backgroundColor: Colors.surfaceVariant },
-  ctaText: { ...Typography.labelLg, color: Colors.onPrimary, fontSize: 16 },
+  ctaText: { ...Typography.labelLg, color: Colors.onPrimary, fontSize: 16, fontWeight: '700' },
 });
 
 export default ComfortLevelScreen;
