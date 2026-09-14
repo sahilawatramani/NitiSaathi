@@ -2,7 +2,7 @@
 Pydantic schemas for Scheme Agent
 """
 from pydantic import BaseModel, Field
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Union
 from datetime import date
 
 
@@ -31,6 +31,8 @@ class BudgetAgentState(BaseModel):
     savings_rate_recommendation: Optional[float] = Field(0.05, description="Recommended savings rate (0.05/0.10/0.20)")
     closing_balance: Optional[float] = Field(0.0, description="Current balance in INR")
     financial_persona: Optional[str] = Field("moderate", description="conservative | moderate | growth")
+    monthly_income: Optional[float] = Field(None, description="Current monthly income")
+    recommended_budget: Optional[Dict[str, float]] = Field(None, description="Budget allocation breakdown")
 
 
 class SchemeCategory(BaseModel):
@@ -47,7 +49,7 @@ class SchemeSearchRequest(BaseModel):
     user_profile: Optional[UserProfile] = None
     budget_state: Optional[BudgetAgentState] = None
     selected_categories: Optional[List[str]] = Field(None, description="Categories to filter by")
-    keywords: Optional[List[str]] = Field(None, description="Keywords to match")
+    keywords: Optional[Union[List[str], str]] = Field(None, description="Keywords to match")
     query: Optional[str] = Field(None, description="Free-text search term")
     language: Optional[str] = Field("en", description="Language preference")
 
@@ -73,8 +75,10 @@ class EligibilityResult(BaseModel):
     
     # Elaboration enrichment
     required_documents: Optional[List[str]] = Field(None, description="List of required documents")
+    required_documents_detail: Optional[List[Dict[str, Any]]] = Field(None, description="Detailed required documents metadata")
     step_by_step_process: Optional[List[str]] = Field(None, description="Steps to apply")
     keywords: Optional[List[str]] = Field(None, description="Matching keywords")
+    language: Optional[str] = Field("en", description="Language code")
 
 
 class AffordabilityAnalysis(BaseModel):
@@ -100,6 +104,22 @@ class AffordabilityAnalysis(BaseModel):
     risk_factors: List[str] = Field(description="Risks if user enrolls now")
 
 
+class ElaboratedSchemeCard(BaseModel):
+    """Condensed elaborated scheme card for list rendering"""
+    scheme_code: str
+    scheme_name: str
+    category: str
+    match_score_pct: int
+    eligible: bool
+    eligibility_status: str
+    reasons: List[str]
+    official_portal_url: Optional[str] = None
+    required_documents: Optional[List[str]] = None
+    step_by_step_process: Optional[List[str]] = None
+    budget_affordability_note: Optional[str] = None
+    language: str = "en"
+
+
 class SchemeElaboration(BaseModel):
     """Deep personalized scheme dossier for a specific gig worker"""
     scheme_code: str
@@ -111,12 +131,15 @@ class SchemeElaboration(BaseModel):
     eligibility_status: str
     match_score_pct: int
     reasons: List[str]
+    criteria_breakdown: List[Dict[str, Any]] = Field(default_factory=list, description="Structured criteria status (met/blocked)")
     benefits: List[str]
-    required_documents: List[Dict[str, Any]]
+    required_documents: List[Union[Dict[str, Any], str]]
+    required_documents_detail: Optional[List[Dict[str, Any]]] = None
     step_by_step_process: List[str]
     contribution_required: Optional[float] = None
     contribution_frequency: Optional[str] = None
     affordability_analysis: Optional[AffordabilityAnalysis] = None
+    budget_affordability_note: Optional[str] = None
     data_freshness: str
     target_group: Optional[str] = None
     notes: Optional[str] = None

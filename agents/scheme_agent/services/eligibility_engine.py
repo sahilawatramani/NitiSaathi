@@ -5,7 +5,7 @@ Category Filtering, and Personalized Scheme Elaboration.
 import json
 from datetime import date, datetime
 from pathlib import Path
-from typing import Dict, List, Tuple, Optional, Any
+from typing import Dict, List, Tuple, Optional, Any, Union
 from ..models.schemas import (
     UserProfile,
     BudgetAgentState,
@@ -73,8 +73,8 @@ class SchemeEligibilityEngine:
            - Has Savings Bank Account: 10 pts
            - Aadhaar linked: 5 pts
         5. Prerequisite Fulfillment (e-Shram / State Residence): 15 points
-           - Already registered on e-Shram (or scheme doesn't require it): 15 pts
-           - State matches state board requirement: 15 pts
+           - Already registered on e-Shram (or scheme doesn't require it): 10 pts
+           - State matches state board requirement (or general nationwide scheme): 5 pts
         Total Score: 100 points
         """
         scheme = self.schemes.get(scheme_key, {})
@@ -179,18 +179,18 @@ class SchemeEligibilityEngine:
             if not user.income_tax_payer:
                 reasons.append("✓ Not an income tax payer")
             else:
-                blocking_factors.append("✗ Pays income tax (Blocks subsidized welfare benefits)")
+                blocking_factors.append("✗ Income tax payer (Ineligible for means-tested social welfare)")
 
-        # 4. Monthly Income Cap check
+        # 4. Income Limit check
         max_income = eligibility.get("monthly_income_max")
-        user_income = user.monthly_income if user.monthly_income is not None else 25000.0
         if max_income:
-            if user_income <= max_income:
-                reasons.append(f"✓ Monthly income ₹{user_income:,.0f} is within limit of ₹{max_income:,.0f}")
+            income = user.monthly_income if user.monthly_income is not None else 25000.0
+            if income <= max_income:
+                reasons.append(f"✓ Monthly income ₹{income:,.0f} within limit of ₹{max_income:,.0f}")
             else:
-                blocking_factors.append(f"✗ Monthly income ₹{user_income:,.0f} exceeds limit of ₹{max_income:,.0f}")
+                blocking_factors.append(f"✗ Monthly income ₹{income:,.0f} exceeds limit of ₹{max_income:,.0f}")
 
-        # 5. e-Shram Prerequisite check
+        # 5. e-Shram Registration prerequisite check
         if eligibility.get("e_shram_registered") is True:
             if user.e_shram_registered:
                 reasons.append("✓ Registered on e-Shram portal")
@@ -241,6 +241,10 @@ class SchemeEligibilityEngine:
 
         all_reasons = reasons + blocking_factors
 
+        req_docs = scheme.get("eligibility", {}).get("required_documents")
+        if not req_docs and scheme.get("required_documents_detail"):
+            req_docs = [d["name"] for d in scheme.get("required_documents_detail", [])]
+
         return EligibilityResult(
             scheme_code=scheme.get("scheme_code", scheme_key.upper()),
             scheme_name=scheme.get("full_name", scheme_key),
@@ -255,7 +259,8 @@ class SchemeEligibilityEngine:
             contribution_required=contribution,
             affordable=affordable,
             affordability_reasoning=affordability_reasoning,
-            required_documents=scheme.get("eligibility", {}).get("required_documents") or [d["name"] for d in scheme.get("required_documents_detail", [])],
+            required_documents=req_docs,
+            required_documents_detail=scheme.get("required_documents_detail"),
             step_by_step_process=scheme.get("steps"),
             keywords=scheme.get("keywords"),
         )
@@ -296,6 +301,34 @@ class SchemeEligibilityEngine:
                 user_age=age,
             )
 
+        # Criteria breakdown
+        criteria_breakdown = []
+        for r in result.reasons:
+            is_met = not (r.startswith("✗") or r.startswith("✖") or "Not registered" in r or "Requires residence" in r or "exceeds" in r)
+            cleaned = r.replace("✓ ", "").replace("✗ ", "").replace("✖ ", "").replace("⚠ ", "")
+            criteria_breakdown.append({
+                "criterion": cleaned,
+                "met": is_met,
+                "detail": r,
+            })
+
+        # Budget Affordability Note
+        volatility = 0.0
+        if budget_state and budget_state.income_volatility_pct is not None:
+            volatility = budget_state.income_volatility_pct
+        volatility_display = f"{volatility*100:.0f}%" if volatility <= 1.0 else f"{volatility:.0f}%"
+
+        if result.contribution_required and result.contribution_required > 0:
+            freq_str = "per year" if freq == "annual" else "per month"
+            if afford_analysis and afford_analysis.affordable:
+                budget_note = f"✓ Highly Affordable: ₹{result.contribution_required:,.0f} {freq_str} fits comfortably within your monthly savings capacity, with income volatility at {volatility_display}."
+            elif budget_state:
+                budget_note = f"⚠ Moderate: ₹{result.contribution_required:,.0f} {freq_str} is payable, but monitor auto-debits due to {volatility_display} income volatility."
+            else:
+                budget_note = f"₹{result.contribution_required:,.0f} {freq_str} nominal contribution."
+        else:
+            budget_note = f"✓ 100% Free / Government Funded: No direct out-of-pocket premium required. Zero-cost under your income volatility ({volatility_display})."
+
         return SchemeElaboration(
             scheme_code=scheme.get("scheme_code", matched_key.upper()),
             scheme_name=scheme.get("full_name", matched_key),
@@ -306,11 +339,13 @@ class SchemeEligibilityEngine:
             eligibility_status=result.eligibility_status,
             match_score_pct=result.match_score_pct,
             reasons=result.reasons,
+            criteria_breakdown=criteria_breakdown,
             benefits=scheme.get("benefits", []),
             required_documents=scheme.get("required_documents_detail", [
                 {"name": "Aadhaar Card", "purpose": "Identity Proof", "mandatory": True},
                 {"name": "Bank Account Passbook", "purpose": "Financial Disbursement", "mandatory": True}
             ]),
+            required_documents_detail=scheme.get("required_documents_detail"),
             step_by_step_process=scheme.get("steps", [
                 "Visit the official government portal link",
                 "Complete registration with Aadhaar e-KYC",
@@ -319,6 +354,7 @@ class SchemeEligibilityEngine:
             contribution_required=result.contribution_required,
             contribution_frequency=freq if result.contribution_required else None,
             affordability_analysis=afford_analysis,
+            budget_affordability_note=budget_note,
             data_freshness=result.data_freshness or "✓ Verified",
             target_group=scheme.get("target_group"),
             notes=scheme.get("notes"),
@@ -337,7 +373,7 @@ class SchemeEligibilityEngine:
         Joint reasoning with Budget Agent to determine scheme affordability.
         """
         wma = budget_state.income_wma_4w or 0.0
-        monthly_income = wma * 4.33
+        monthly_income = wma * 4.33 if wma > 0 else (budget_state.monthly_income or 25000.0)
         savings_rate = budget_state.savings_rate_recommendation or 0.05
         available_savings = monthly_income * savings_rate
         monthly_contribution = contribution if frequency == "monthly" else contribution / 12
@@ -346,7 +382,10 @@ class SchemeEligibilityEngine:
         margin = available_savings - monthly_contribution
 
         volatility = budget_state.income_volatility_pct or 0.0
-        if volatility < 0.15:
+        if volatility > 1.0:
+            volatility = volatility / 100.0  # normalize percentage
+
+        if volatility <= 0.15:
             confidence = "high"
         elif volatility <= 0.30:
             confidence = "medium"
@@ -399,7 +438,7 @@ class SchemeEligibilityEngine:
         user: UserProfile,
         budget_state: Optional[BudgetAgentState] = None,
         selected_categories: Optional[List[str]] = None,
-        keywords: Optional[List[str]] = None,
+        keywords: Optional[Union[List[str], str]] = None,
         query: Optional[str] = None,
     ) -> SchemeRecommendation:
         """
@@ -411,6 +450,18 @@ class SchemeEligibilityEngine:
         ineligible_schemes = []
         conditional_schemes = []
 
+        # Parse keywords / query terms
+        search_terms = set()
+        if query and query.strip():
+            search_terms.update(query.lower().split())
+        if keywords:
+            if isinstance(keywords, str) and keywords.strip():
+                search_terms.update(keywords.lower().split())
+            elif isinstance(keywords, (list, tuple, set)):
+                for k in keywords:
+                    if isinstance(k, str) and k.strip():
+                        search_terms.update(k.lower().split())
+
         # Category and Keyword filtering
         for scheme_key, scheme_data in self.schemes.items():
             # Category filter check
@@ -420,15 +471,9 @@ class SchemeEligibilityEngine:
                     continue
 
             # Keyword / query filter check
-            if query or (keywords and len(keywords) > 0):
-                search_terms = set()
-                if query:
-                    search_terms.update(query.lower().split())
-                if keywords:
-                    search_terms.update([k.lower() for k in keywords])
-
+            if search_terms:
                 scheme_text = (
-                    f"{scheme_data.get('full_name', '')} {scheme_data.get('category', '')} "
+                    f"{scheme_data.get('full_name', '')} {scheme_data.get('scheme_code', '')} {scheme_data.get('category', '')} "
                     f"{' '.join(scheme_data.get('keywords', []))} {scheme_data.get('target_group', '')}"
                 ).lower()
 
