@@ -61,28 +61,19 @@ def _intent_and_weights(message: str) -> tuple[str, dict[str, float]]:
 
 
 def _get_checkpointer():
-    """Return a LangGraph checkpointer, or None if not available."""
+    """Return LangGraph checkpointer for async execution."""
     if not LANGGRAPH_AVAILABLE:
         return None
     try:
-        from langgraph.checkpoint.sqlite import SqliteSaver
-        from app.config import DATABASE_URL
-        if DATABASE_URL and DATABASE_URL.startswith('sqlite:///'):
-            db_path = DATABASE_URL.replace('sqlite:///', '')
-            # SqliteSaver needs the plain file path
-            from langgraph.checkpoint.memory import MemorySaver
-            return MemorySaver()
-    except ImportError:
-        pass
-    try:
         from langgraph.checkpoint.memory import MemorySaver
-        logger.info('Using MemorySaver checkpointer (in-memory, no persistence between restarts)')
         return MemorySaver()
-    except ImportError:
-        pass
+    except Exception as exc:
+        logger.warning("Could not initialize checkpointer: %s", exc)
     return None
 
 _CHECKPOINTER = None  # lazy initialized
+
+
 
 def _profile_projection(profile: UserProfile | None, user_id: int) -> dict[str, Any]:
     """Only fields needed by the relevant agents are placed into shared state."""

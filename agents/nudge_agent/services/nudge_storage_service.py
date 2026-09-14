@@ -29,10 +29,24 @@ def init_db():
                 trigger_id TEXT NOT NULL,
                 message TEXT NOT NULL,
                 status TEXT NOT NULL DEFAULT 'pending',
-                created_at TEXT NOT NULL
+                created_at TEXT NOT NULL,
+                outcome_check_at TEXT,
+                outcome_status TEXT DEFAULT 'pending',
+                outcome_details TEXT
             )
         """)
+        # Migration helpers for existing databases
+        for col_def in [
+            ("outcome_check_at", "TEXT"),
+            ("outcome_status", "TEXT DEFAULT 'pending'"),
+            ("outcome_details", "TEXT")
+        ]:
+            try:
+                conn.execute(f"ALTER TABLE nudges ADD COLUMN {col_def[0]} {col_def[1]}")
+            except sqlite3.OperationalError:
+                pass
         conn.execute("CREATE INDEX IF NOT EXISTS idx_nudges_user ON nudges(user_id)")
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_nudges_outcome ON nudges(outcome_status, outcome_check_at)")
     conn.close()
 
 
@@ -41,11 +55,12 @@ init_db()
 
 def save_nudge(nudge: NudgeOut) -> None:
     conn = _get_connection()
+    outcome_check_str = nudge.outcome_check_at.isoformat() if isinstance(nudge.outcome_check_at, datetime) else str(nudge.outcome_check_at) if nudge.outcome_check_at else None
     with conn:
         conn.execute(
             """
-            INSERT OR REPLACE INTO nudges (id, user_id, trigger_id, message, status, created_at)
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT OR REPLACE INTO nudges (id, user_id, trigger_id, message, status, created_at, outcome_check_at, outcome_status, outcome_details)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
             (
                 nudge.id,
@@ -54,6 +69,9 @@ def save_nudge(nudge: NudgeOut) -> None:
                 nudge.message,
                 nudge.status,
                 nudge.created_at.isoformat() if isinstance(nudge.created_at, datetime) else str(nudge.created_at),
+                outcome_check_str,
+                nudge.outcome_status or "pending",
+                nudge.outcome_details,
             ),
         )
     conn.close()
@@ -64,12 +82,60 @@ def save_nudges_batch(nudges: List[NudgeOut]) -> None:
         save_nudge(n)
 
 
+def update_nudge_outcome(nudge_id: str, outcome_status: str, outcome_details: str) -> None:
+    conn = _get_connection()
+    with conn:
+        conn.execute(
+            """
+            UPDATE nudges
+            SET outcome_status = ?, outcome_details = ?, status = 'evaluated'
+            WHERE id = ?
+            """,
+            (outcome_status, outcome_details, nudge_id),
+        )
+    conn.close()
+
+
+def get_pending_outcome_nudges(limit: int = 100) -> List[NudgeOut]:
+    conn = _get_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        SELECT id, user_id, trigger_id, message, status, created_at, outcome_check_at, outcome_status, outcome_details
+        FROM nudges
+        WHERE outcome_status = 'pending'
+        ORDER BY created_at ASC
+        LIMIT ?
+        """,
+        (limit,),
+    )
+    rows = cursor.fetchall()
+    conn.close()
+
+    result = []
+    for row in rows:
+        result.append(
+            NudgeOut(
+                id=row["id"],
+                user_id=row["user_id"],
+                trigger_id=row["trigger_id"],
+                message=row["message"],
+                status=row["status"],
+                created_at=datetime.fromisoformat(row["created_at"]) if "T" in row["created_at"] else datetime.utcnow(),
+                outcome_check_at=datetime.fromisoformat(row["outcome_check_at"]) if row["outcome_check_at"] and "T" in row["outcome_check_at"] else None,
+                outcome_status=row["outcome_status"],
+                outcome_details=row["outcome_details"],
+            )
+        )
+    return result
+
+
 def get_nudges_by_user(user_id: str, limit: int = 50) -> List[NudgeOut]:
     conn = _get_connection()
     cursor = conn.cursor()
     cursor.execute(
         """
-        SELECT id, user_id, trigger_id, message, status, created_at
+        SELECT id, user_id, trigger_id, message, status, created_at, outcome_check_at, outcome_status, outcome_details
         FROM nudges
         WHERE user_id = ?
         ORDER BY created_at DESC
@@ -90,6 +156,9 @@ def get_nudges_by_user(user_id: str, limit: int = 50) -> List[NudgeOut]:
                 message=row["message"],
                 status=row["status"],
                 created_at=datetime.fromisoformat(row["created_at"]) if "T" in row["created_at"] else datetime.utcnow(),
+                outcome_check_at=datetime.fromisoformat(row["outcome_check_at"]) if row["outcome_check_at"] and "T" in row["outcome_check_at"] else None,
+                outcome_status=row["outcome_status"],
+                outcome_details=row["outcome_details"],
             )
         )
     return result
@@ -100,7 +169,7 @@ def get_all_nudges(limit: int = 100) -> List[NudgeOut]:
     cursor = conn.cursor()
     cursor.execute(
         """
-        SELECT id, user_id, trigger_id, message, status, created_at
+        SELECT id, user_id, trigger_id, message, status, created_at, outcome_check_at, outcome_status, outcome_details
         FROM nudges
         ORDER BY created_at DESC
         LIMIT ?
@@ -120,6 +189,10 @@ def get_all_nudges(limit: int = 100) -> List[NudgeOut]:
                 message=row["message"],
                 status=row["status"],
                 created_at=datetime.fromisoformat(row["created_at"]) if "T" in row["created_at"] else datetime.utcnow(),
+                outcome_check_at=datetime.fromisoformat(row["outcome_check_at"]) if row["outcome_check_at"] and "T" in row["outcome_check_at"] else None,
+                outcome_status=row["outcome_status"],
+                outcome_details=row["outcome_details"],
             )
         )
     return result
+

@@ -169,3 +169,59 @@ async def post_feedback(feedback: FeedbackIn):
     except Exception as e:
         logger.error(f"Error recording feedback: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# ── Autonomous Scheduler & Outcome Evaluation Endpoints ─────────────────────
+
+from ..models.schemas import SchedulerStatusOut, NudgeOutcomeRecord
+from ..services.scheduler_service import nudge_scheduler
+
+
+@router.get("/scheduler/status", response_model=SchedulerStatusOut)
+async def get_scheduler_status():
+    """Get status of the proactive autonomous nudge background scheduler."""
+    return nudge_scheduler.get_status()
+
+
+@router.post("/scheduler/start", response_model=SchedulerStatusOut)
+async def start_scheduler():
+    """Start the autonomous background scheduler."""
+    await nudge_scheduler.start()
+    return nudge_scheduler.get_status()
+
+
+@router.post("/scheduler/stop", response_model=SchedulerStatusOut)
+async def stop_scheduler():
+    """Stop the autonomous background scheduler."""
+    await nudge_scheduler.stop()
+    return nudge_scheduler.get_status()
+
+
+@router.post("/outcomes/evaluate-now", response_model=List[NudgeOutcomeRecord])
+async def evaluate_outcomes_now(force_all: bool = Query(True, description="Force evaluation of pending outcome checkpoints")):
+    """Run immediate evaluation of post-intervention outcome checkpoints."""
+    return await nudge_scheduler.evaluate_due_outcomes(force_all=force_all)
+
+
+@router.get("/outcomes/analytics")
+async def get_outcomes_analytics():
+    """Retrieve statistical summary of nudge effectiveness and outcome rates."""
+    all_nudges = get_all_nudges(limit=200)
+    total = len(all_nudges)
+    evaluated = [n for n in all_nudges if n.outcome_status in ["positive", "neutral", "negative"]]
+    positive = [n for n in evaluated if n.outcome_status == "positive"]
+    neutral = [n for n in evaluated if n.outcome_status == "neutral"]
+    negative = [n for n in evaluated if n.outcome_status == "negative"]
+
+    efficacy_rate = round(len(positive) / len(evaluated) * 100, 1) if evaluated else 0.0
+
+    return {
+        "total_nudges_recorded": total,
+        "total_outcomes_evaluated": len(evaluated),
+        "positive_outcomes": len(positive),
+        "neutral_outcomes": len(neutral),
+        "negative_outcomes": len(negative),
+        "efficacy_rate_pct": efficacy_rate,
+        "measured_benefit": "Evaluates PMSBY preservation, buffer maintenance, and goal progression."
+    }
+

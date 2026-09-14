@@ -1,45 +1,78 @@
+import functools
 import json
 from app.services.rag_service import rag_service
 from app.services.llm_service import generate_json_completion
 
-# Rule-based tax deduction map for Indian context
+# Rule-based tax deduction map for Indian context (case-insensitive keys)
 TAX_RULES_MAP = {
-    "Insurance": {"is_tax_deductible": True, "tax_category": "Section 80C / 80D", "reasoning": "Insurance premiums are deductible under 80C (life) or 80D (health)"},
-    "Healthcare": {"is_tax_deductible": True, "tax_category": "Section 80D", "reasoning": "Medical expenses and health insurance qualify under Section 80D"},
-    "Education": {"is_tax_deductible": True, "tax_category": "Section 80C / 80E", "reasoning": "Tuition fees under 80C, education loan interest under 80E"},
-    "Investment": {"is_tax_deductible": True, "tax_category": "Section 80C / 80CCD", "reasoning": "PPF, ELSS, NPS contributions qualify for tax deductions"},
-    "Rent": {"is_tax_deductible": True, "tax_category": "Section 10(13A) / 80GG", "reasoning": "House rent qualifies for HRA exemption or 80GG deduction"},
-    "EMI & Loans": {"is_tax_deductible": True, "tax_category": "Section 24(b) / 80E", "reasoning": "Home loan interest under 24(b), education loan under 80E"},
+    "insurance": {"is_tax_deductible": True, "tax_category": "Section 80C / 80D", "reasoning": "Insurance premiums are deductible under 80C (life) or 80D (health)"},
+    "insurance_premium": {"is_tax_deductible": True, "tax_category": "Section 80C / 80D", "reasoning": "Insurance premiums are deductible under 80C (life) or 80D (health)"},
+    "healthcare": {"is_tax_deductible": True, "tax_category": "Section 80D", "reasoning": "Medical expenses and health insurance qualify under Section 80D"},
+    "medical": {"is_tax_deductible": True, "tax_category": "Section 80D", "reasoning": "Medical expenses qualify under Section 80D"},
+    "education": {"is_tax_deductible": True, "tax_category": "Section 80C / 80E", "reasoning": "Tuition fees under 80C, education loan interest under 80E"},
+    "investment": {"is_tax_deductible": True, "tax_category": "Section 80C / 80CCD", "reasoning": "PPF, ELSS, NPS contributions qualify for tax deductions"},
+    "rent": {"is_tax_deductible": True, "tax_category": "Section 10(13A) / 80GG", "reasoning": "House rent qualifies for HRA exemption or 80GG deduction"},
+    "emi & loans": {"is_tax_deductible": True, "tax_category": "Section 24(b) / 80E", "reasoning": "Home loan interest under 24(b), education loan under 80E"},
+    "loan_emi": {"is_tax_deductible": True, "tax_category": "Section 24(b) / 80E", "reasoning": "Home loan interest under 24(b), education loan under 80E"},
 }
 
-def analyze_tax_deductibility(merchant: str, description: str, category: str) -> dict:
-    """Determines if an expense is likely tax deductible using rules + RAG + LLM."""
+# Standard non-deductible personal, living, and gig operating categories
+NON_DEDUCTIBLE_CATEGORIES = {
+    "food", "food & dining", "food and dining", "grocery", "groceries",
+    "fuel", "petrol", "diesel", "transport", "travel", "commute",
+    "recharge", "mobile recharge", "phone recharge", "utilities", "electricity", "water",
+    "shopping", "clothing", "entertainment", "movies", "ott",
+    "discretionary", "leisure", "family_support", "family support",
+    "personal", "transfer", "peer transfer", "miscellaneous", "others",
+    "platform_payout", "platform payout", "income", "salary & income",
+    "team lunch", "tea/snacks", "repairs", "maintenance"
+}
+
+DEDUCTIBLE_KEYWORDS = {
+    "donation": ("Section 80G", "Donations to eligible charities are deductible under 80G"),
+    "nps": ("Section 80CCD(1B)", "NPS contributions get additional ₹50,000 deduction"),
+    "ppf": ("Section 80C", "PPF contributions deductible up to ₹1.5 lakh"),
+    "elss": ("Section 80C", "ELSS mutual fund investments qualify under 80C"),
+    "lic": ("Section 80C", "Life insurance premiums deductible under 80C"),
+    "pmsby": ("Section 80C / 80D", "PMSBY insurance premium qualifies under tax deduction rules"),
+    "pmjjby": ("Section 80C", "PMJJBY life insurance premium qualifies under Section 80C"),
+    "health insurance": ("Section 80D", "Health insurance premiums deductible under 80D"),
+    "mediclaim": ("Section 80D", "Health insurance / mediclaim premiums deductible under 80D"),
+    "home loan": ("Section 24(b)", "Home loan interest deductible up to ₹2 lakh"),
+    "housing loan": ("Section 24(b)", "Home loan interest deductible up to ₹2 lakh"),
+    "tuition": ("Section 80C", "Children tuition fees qualify under Section 80C"),
+}
+
+
+@functools.lru_cache(maxsize=1024)
+def _cached_tax_analysis(merchant: str, description: str, category: str) -> str:
+    """Internal cached helper returning JSON string of deduction result."""
+    cat_lower = (category or "").strip().lower()
     
     # Step 1: Direct rule-based lookup
-    if category in TAX_RULES_MAP:
-        return TAX_RULES_MAP[category]
+    if cat_lower in TAX_RULES_MAP:
+        return json.dumps(TAX_RULES_MAP[cat_lower])
     
-    # Step 2: Check keywords for common deductible items
+    # Step 2: Check keywords for common deductible items in text
     text = f"{merchant} {description}".lower()
-    deductible_keywords = {
-        "donation": ("Section 80G", "Donations to eligible charities are deductible under 80G"),
-        "nps": ("Section 80CCD(1B)", "NPS contributions get additional ₹50,000 deduction"),
-        "ppf": ("Section 80C", "PPF contributions deductible up to ₹1.5 lakh"),
-        "elss": ("Section 80C", "ELSS mutual fund investments qualify under 80C"),
-        "lic": ("Section 80C", "Life insurance premiums deductible under 80C"),
-        "health insurance": ("Section 80D", "Health insurance premiums deductible under 80D"),
-        "home loan": ("Section 24(b)", "Home loan interest deductible up to ₹2 lakh"),
-    }
-    
-    for keyword, (section, reason) in deductible_keywords.items():
+    for keyword, (section, reason) in DEDUCTIBLE_KEYWORDS.items():
         if keyword in text:
-            return {"is_tax_deductible": True, "tax_category": section, "reasoning": reason}
+            return json.dumps({"is_tax_deductible": True, "tax_category": section, "reasoning": reason})
+            
+    # Step 3: Fast non-deductible lookup for standard personal / gig expenses
+    if cat_lower in NON_DEDUCTIBLE_CATEGORIES or any(nd in cat_lower for nd in ["food", "fuel", "recharge", "grocery", "shop", "entertain"]):
+        return json.dumps({
+            "is_tax_deductible": False,
+            "tax_category": None,
+            "reasoning": f"{category.title()} expenses are standard living/personal expenses (non-deductible under Indian IT Act)"
+        })
     
-    # Step 3: Use RAG + LLM for ambiguous cases
-    rag_results = rag_service.search(f"{merchant} {description} {category} tax deduction india", k=3)
-    kb_context = "\n".join([res["document"] for res in rag_results]) if rag_results else "No relevant tax rules found."
-    
-    prompt = f"""You are an Indian Tax Advisor AI.
+    # Step 4: Use RAG + LLM only for genuinely ambiguous cases
+    try:
+        rag_results = rag_service.search(f"{merchant} {description} {category} tax deduction india", k=3)
+        kb_context = "\n".join([res["document"] for res in rag_results]) if rag_results else "No relevant tax rules found."
+        
+        prompt = f"""You are an Indian Tax Advisor AI.
 
 Transaction:
 - Merchant: {merchant}
@@ -52,19 +85,29 @@ Relevant Tax Rules from Knowledge Base:
 Based on Indian Income Tax Act, determine if this is tax-deductible.
 Return ONLY valid JSON:
 {{"is_tax_deductible": true/false, "tax_category": "Section XX", "reasoning": "brief reason"}}"""
-    
-    result = generate_json_completion(
-        system_prompt="You are an expert Indian tax deduction assistant.",
-        user_prompt=prompt,
-        temperature=0.0,
-    )
-    if not result:
-        return {
-            "is_tax_deductible": False,
-            "tax_category": None,
-            "reasoning": "LLM unavailable; defaulting to conservative non-deductible decision",
-        }
-    return result
+        
+        result = generate_json_completion(
+            system_prompt="You are an expert Indian tax deduction assistant.",
+            user_prompt=prompt,
+            temperature=0.0,
+        )
+        if result:
+            return json.dumps(result)
+    except Exception:
+        pass
+        
+    return json.dumps({
+        "is_tax_deductible": False,
+        "tax_category": None,
+        "reasoning": "Non-deductible standard expense",
+    })
+
+
+def analyze_tax_deductibility(merchant: str, description: str, category: str) -> dict:
+    """Determines if an expense is likely tax deductible using fast rules + cache + RAG."""
+    raw = _cached_tax_analysis(merchant or "", description or "", category or "")
+    return json.loads(raw)
+
 
 
 def analyze_tax_batch(transactions: list[dict]) -> list[dict]:

@@ -1,16 +1,29 @@
 """
 FastAPI application entrypoint for the Nudge Agent.
 """
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .routers import nudge_router
+from .services.scheduler_service import nudge_scheduler
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Start autonomous proactive background scheduler
+    await nudge_scheduler.start()
+    yield
+    # Graceful shutdown
+    await nudge_scheduler.stop()
+
 
 app = FastAPI(
     title="Nudge Agent API",
-    description="Proactive financial nudging service for gig workers",
+    description="Proactive financial nudging and outcome evaluation service for gig workers",
     version="1.0.0",
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url="/redoc",
+    lifespan=lifespan
 )
 
 # Add CORS middleware
@@ -21,6 +34,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 # Include nudge router
 app.include_router(nudge_router.router)
