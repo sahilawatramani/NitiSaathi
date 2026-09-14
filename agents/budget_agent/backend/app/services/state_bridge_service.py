@@ -126,7 +126,6 @@ def get_finassist_data(user_id: int, db: Session) -> Dict[str, Any]:
     # ── 6. Temporal memory summary ────────────────────────────────────────
     memory_summary = get_memory_summary(user_id=user_id, db=db, top_n=5)
 
-    # ── 7. Raw weekly features (last 4 weeks) for advanced LangGraph nodes ─
     raw_weeks = (
         db.query(UserWeeklyFeatures)
         .filter(UserWeeklyFeatures.user_id == user_id)
@@ -134,20 +133,39 @@ def get_finassist_data(user_id: int, db: Session) -> Dict[str, Any]:
         .limit(4)
         .all()
     )
-    weekly_features_last4: List[Dict[str, Any]] = [
-        {
-            "week_start": str(w.week_start),
-            "total_income": w.total_income,
-            "total_expense": w.total_expense,
-            "closing_balance": w.closing_balance,
-            "savings_rate_actual": w.savings_rate_actual,
-            "low_balance_flag": w.low_balance_flag,
-            "had_informal_borrowing": w.had_informal_borrowing,
-            "financial_persona": w.financial_persona,
-        }
-        for w in raw_weeks
-    ]
-    latest_feature = raw_weeks[0] if raw_weeks else None
+    if raw_weeks:
+        weekly_features_last4: List[Dict[str, Any]] = [
+            {
+                "week_start": str(w.week_start),
+                "total_income": w.total_income,
+                "total_expense": w.total_expense,
+                "closing_balance": w.closing_balance,
+                "savings_rate_actual": w.savings_rate_actual,
+                "low_balance_flag": w.low_balance_flag,
+                "had_informal_borrowing": w.had_informal_borrowing,
+                "financial_persona": w.financial_persona,
+            }
+            for w in reversed(raw_weeks)
+        ]
+        latest_feature = raw_weeks[0] if raw_weeks else None
+    else:
+        # Generate weekly breakdown for last 4 weeks from weekly incomes
+        weekly_incomes = get_weekly_incomes(user_id, db, weeks=4)
+        weekly_features_last4 = []
+        today = date.today()
+        for idx, inc in enumerate(weekly_incomes):
+            w_date = today - timedelta(days=today.weekday() + ((len(weekly_incomes) - 1 - idx) * 7))
+            weekly_features_last4.append({
+                "week_start": str(w_date),
+                "total_income": inc,
+                "total_expense": round(inc * (1 - budget_state["savings_rate_recommendation"]), 2),
+                "closing_balance": budget_state["closing_balance"],
+                "savings_rate_actual": budget_state["savings_rate_recommendation"],
+                "low_balance_flag": budget_state["low_balance_flag"],
+                "had_informal_borrowing": False,
+                "financial_persona": budget_state["financial_persona"],
+            })
+        latest_feature = None
 
     # ── 8. Assemble NitisaathiState dict ──────────────────────────────────
     return {

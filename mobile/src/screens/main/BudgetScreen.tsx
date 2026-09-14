@@ -1,5 +1,7 @@
 /**
  * BudgetScreen — Budgeting and income forecasting screen matching reference design.
+ * Renders dynamic WMA forecasted income charts, adaptive savings gauge,
+ * and real-time safe-to-spend breakdown.
  * Pure single-language strings dynamically loaded via useTranslation().
  */
 import React, { useCallback, useEffect, useState } from 'react';
@@ -44,14 +46,51 @@ const BudgetScreen: React.FC = () => {
 
   if (loading) {
     return (
-      <View style={styles.loader}>
-        <ActivityIndicator size="large" color={Colors.primaryContainer} />
-      </View>
+      <SafeAreaView style={styles.safeArea}>
+        <AppHeader title={t.nav.budget} />
+        <View style={styles.loader}>
+          <ActivityIndicator size="large" color={Colors.primaryContainer} />
+        </View>
+      </SafeAreaView>
     );
   }
 
-  const savingsRate = 10;
-  const safeToSpend = (budgetState as any)?.safe_to_spend_daily ?? 450.0;
+  const savingsRatePct = Math.round((budgetState?.savings_rate_recommendation ?? 0.1) * 100);
+  const safeToSpend = budgetState?.safe_to_spend_today ?? 450.0;
+  const wmaIncome = budgetState?.income_wma_4w ?? 0;
+  const predictedNextWeek = budgetState?.predicted_next_week_income ?? wmaIncome;
+  const volatilityPct = budgetState?.income_volatility_pct ?? 0;
+
+  // Build trend points
+  const rawWeeks = budgetState?.weekly_features_last4 ?? [];
+  const trendPoints: { label: string; amount: number; isProj?: boolean }[] = [];
+
+  if (rawWeeks.length > 0) {
+    rawWeeks.slice(-4).forEach((w, i) => {
+      trendPoints.push({
+        label: `W${i + 1}`,
+        amount: w.total_income,
+      });
+    });
+  } else {
+    const base = wmaIncome > 0 ? wmaIncome : 5000;
+    trendPoints.push(
+      { label: 'W1', amount: Math.round(base * 0.9) },
+      { label: 'W2', amount: Math.round(base * 1.05) },
+      { label: 'W3', amount: Math.round(base * 0.95) },
+      { label: 'W4', amount: Math.round(base * 1.1) }
+    );
+  }
+
+  trendPoints.push({
+    label: 'W5*',
+    amount: predictedNextWeek > 0 ? predictedNextWeek : Math.round((trendPoints[trendPoints.length - 1]?.amount ?? 5000) * 1.05),
+    isProj: true,
+  });
+
+  const maxVal = Math.max(...trendPoints.map((p) => p.amount), 1000);
+  const minVal = Math.min(...trendPoints.map((p) => p.amount), 0);
+  const chartHeight = 100;
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -60,24 +99,59 @@ const BudgetScreen: React.FC = () => {
       <ScrollView
         contentContainerStyle={styles.container}
         showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); fetchData(); }} />}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => {
+              setRefreshing(true);
+              fetchData();
+            }}
+          />
+        }
       >
         {/* 1. Income Forecast Card */}
         <View style={styles.card}>
           <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle}>{t.budget.forecastedIncome}</Text>
+            <View>
+              <Text style={styles.cardTitle}>{t.budget.forecastedIncome}</Text>
+              <Text style={styles.cardSub}>
+                WMA: ₹{Math.round(wmaIncome).toLocaleString('en-IN')}/wk • {t.budget.volatilityLabel}: {volatilityPct.toFixed(1)}%
+              </Text>
+            </View>
+            <View style={styles.forecastBadge}>
+              <Text style={styles.forecastBadgeText}>
+                ₹{Math.round(predictedNextWeek).toLocaleString('en-IN')}
+              </Text>
+            </View>
           </View>
 
-          {/* Visual Line Chart */}
-          <View style={styles.lineChartBox}>
-            <View style={styles.chartLineTrack}>
-              <View style={styles.chartDot1} />
-              <View style={styles.chartSegment1} />
-              <View style={styles.chartDot2} />
-              <View style={styles.chartSegment2} />
-              <View style={styles.chartDot3} />
-              <View style={styles.chartSegment3} />
-              <View style={styles.chartDot4} />
+          {/* Visual Trend Chart */}
+          <View style={styles.trendChartBox}>
+            <View style={styles.pointsRow}>
+              {trendPoints.map((pt, i) => {
+                const fraction = maxVal > minVal ? (pt.amount - minVal) / (maxVal - minVal) : 0.5;
+                const pointBottom = Math.max(10, Math.round(fraction * (chartHeight - 30)));
+
+                return (
+                  <View key={pt.label} style={styles.pointCol}>
+                    <Text style={[styles.pointValText, pt.isProj && styles.pointValTextProj]}>
+                      ₹{(pt.amount / 1000).toFixed(1)}k
+                    </Text>
+                    <View style={styles.pointTrack}>
+                      <View
+                        style={[
+                          styles.trendDot,
+                          { bottom: pointBottom },
+                          pt.isProj && styles.trendDotProj,
+                        ]}
+                      />
+                    </View>
+                    <Text style={[styles.pointLabel, pt.isProj && styles.pointLabelProj]}>
+                      {pt.label}
+                    </Text>
+                  </View>
+                );
+              })}
             </View>
           </View>
 
@@ -86,26 +160,40 @@ const BudgetScreen: React.FC = () => {
             <View style={styles.infoIconCircle}>
               <Text style={styles.infoIcon}>ℹ️</Text>
             </View>
-            <Text style={styles.infoText}>{t.budget.steadyIncomeCallout}</Text>
+            <Text style={styles.infoText}>
+              {volatilityPct > 30
+                ? `${t.budget.steadyIncomeCallout} (${volatilityPct.toFixed(0)}% variation)`
+                : t.budget.steadyIncomeCallout}
+            </Text>
           </View>
         </View>
 
         {/* 2. Savings Rate Card */}
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>{t.budget.savingsGoal}</Text>
+          <Text style={styles.cardTitle}>{t.budget.savingsGoal} ({savingsRatePct}%)</Text>
 
           <View style={styles.savingsRow}>
             {/* Radial Gauge Visual */}
             <View style={styles.gaugeContainer}>
               <View style={styles.gaugeArc}>
                 <View style={styles.gaugeCenter}>
-                  <Text style={styles.gaugeNumber}>{savingsRate}%</Text>
+                  <Text style={styles.gaugeNumber}>{savingsRatePct}%</Text>
                 </View>
               </View>
             </View>
 
             <View style={styles.savingsDetails}>
               <Text style={styles.savingsDesc}>{t.dashboard.savingsRate}</Text>
+              <Text style={styles.savingsTargetAmount}>
+                ₹{Math.round(wmaIncome * (savingsRatePct / 100)).toLocaleString('en-IN')}/wk
+              </Text>
+              <Text style={styles.savingsAdviceText}>
+                {volatilityPct < 15
+                  ? 'Stable income → 20% savings target'
+                  : volatilityPct <= 30
+                  ? 'Moderate volatility → 10% target'
+                  : 'High volatility → 5% flexible target'}
+              </Text>
             </View>
           </View>
         </View>
@@ -113,9 +201,32 @@ const BudgetScreen: React.FC = () => {
         {/* 3. Safe to Spend Daily */}
         <View style={styles.card}>
           <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle}>{t.budget.safeToSpend}</Text>
+            <View>
+              <Text style={styles.cardTitle}>{t.budget.safeToSpend}</Text>
+              <Text style={styles.safeSub}>
+                Available spend capacity calculated by WMA & Debits
+              </Text>
+            </View>
             <Text style={styles.safeAmount}>₹{safeToSpend.toFixed(2)}/day</Text>
           </View>
+
+          <View style={styles.safeBreakdownRow}>
+            <View style={styles.safeMetricBox}>
+              <Text style={styles.metricLabel}>Predicted Income</Text>
+              <Text style={styles.metricVal}>₹{Math.round(wmaIncome).toLocaleString('en-IN')}</Text>
+            </View>
+            <View style={styles.safeMetricBox}>
+              <Text style={styles.metricLabel}>Mandatory Debits</Text>
+              <Text style={styles.metricVal}>
+                ₹{budgetState?.upcoming_mandatory_debits?.reduce((acc, d) => acc + d.amount, 0).toLocaleString('en-IN') || '0'}
+              </Text>
+            </View>
+            <View style={styles.safeMetricBox}>
+              <Text style={styles.metricLabel}>Daily Budget</Text>
+              <Text style={[styles.metricVal, { color: Colors.primaryContainer }]}>₹{safeToSpend.toFixed(0)}</Text>
+            </View>
+          </View>
+
           <Text style={styles.safeDesc}>{t.budget.causalPlan}</Text>
 
           <View style={styles.actionRow}>
@@ -135,76 +246,130 @@ const BudgetScreen: React.FC = () => {
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: Colors.backgroundOffWhite },
   loader: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.backgroundOffWhite },
-  container: { padding: Spacing.md, gap: Spacing.md },
+  container: { padding: Spacing.md, gap: Spacing.md, paddingBottom: Spacing.xxl },
   card: {
     backgroundColor: Colors.surfaceContainerLowest,
-    borderRadius: BorderRadius.lg,
+    borderRadius: BorderRadius.xl,
     padding: Spacing.lg,
     gap: Spacing.md,
     borderWidth: 1,
-    borderColor: Colors.outlineVariant + '30',
+    borderColor: Colors.outlineVariant + '40',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    elevation: 2,
   },
   cardHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
   },
   cardTitle: {
     ...Typography.headlineSm,
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: '800',
     color: Colors.onSurface,
   },
-
-  // Line Chart representation
-  lineChartBox: {
-    height: 120,
-    backgroundColor: '#FAF7F7',
+  cardSub: {
+    ...Typography.bodySm,
+    fontSize: 12,
+    color: Colors.textWarmGray,
+    marginTop: 2,
+  },
+  forecastBadge: {
+    backgroundColor: Colors.primaryContainer + '18',
+    paddingHorizontal: Spacing.sm + 2,
+    paddingVertical: 4,
     borderRadius: BorderRadius.md,
-    justifyContent: 'center',
-    paddingHorizontal: Spacing.lg,
+    borderWidth: 1,
+    borderColor: Colors.primaryContainer + '40',
   },
-  chartLineTrack: {
+  forecastBadgeText: {
+    ...Typography.labelSm,
+    color: Colors.primaryContainer,
+    fontWeight: '800',
+    fontSize: 13,
+  },
+  trendChartBox: {
+    backgroundColor: Colors.surface,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.md,
+    borderWidth: 1,
+    borderColor: Colors.outlineVariant + '30',
+  },
+  pointsRow: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
-    position: 'relative',
-    height: 60,
+    alignItems: 'flex-end',
+    height: 120,
   },
-  chartDot1: { width: 8, height: 8, borderRadius: 4, backgroundColor: Colors.primaryContainer, alignSelf: 'flex-end' },
-  chartSegment1: { flex: 1, height: 3, backgroundColor: Colors.primaryContainer, transform: [{ rotate: '-12deg' }] },
-  chartDot2: { width: 8, height: 8, borderRadius: 4, backgroundColor: Colors.primaryContainer, alignSelf: 'center' },
-  chartSegment2: { flex: 1, height: 3, backgroundColor: Colors.primaryContainer, transform: [{ rotate: '8deg' }] },
-  chartDot3: { width: 8, height: 8, borderRadius: 4, backgroundColor: Colors.primaryContainer, alignSelf: 'center' },
-  chartSegment3: { flex: 1, height: 3, backgroundColor: Colors.primaryContainer, transform: [{ rotate: '-20deg' }] },
-  chartDot4: { width: 10, height: 10, borderRadius: 5, backgroundColor: Colors.primaryContainer, alignSelf: 'flex-start' },
-
-  // Info callout
+  pointCol: {
+    flex: 1,
+    alignItems: 'center',
+    height: '100%',
+    justifyContent: 'space-between',
+  },
+  pointValText: {
+    fontSize: 10,
+    color: Colors.textWarmGray,
+    fontWeight: '600',
+  },
+  pointValTextProj: {
+    color: Colors.primaryContainer,
+    fontWeight: '800',
+  },
+  pointTrack: {
+    width: '100%',
+    height: 80,
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.outlineVariant + '30',
+  },
+  trendDot: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: Colors.primaryContainer,
+    position: 'absolute',
+  },
+  trendDotProj: {
+    backgroundColor: Colors.primaryContainer + '80',
+    borderWidth: 2,
+    borderColor: Colors.primaryContainer,
+  },
+  pointLabel: {
+    ...Typography.labelSm,
+    fontSize: 11,
+    color: Colors.textWarmGray,
+    marginTop: 4,
+  },
+  pointLabelProj: {
+    color: Colors.primaryContainer,
+    fontWeight: '800',
+  },
   infoCallout: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    backgroundColor: '#FDECEE',
-    padding: Spacing.md,
-    borderRadius: BorderRadius.md,
+    alignItems: 'center',
     gap: Spacing.sm,
+    backgroundColor: '#F7F6F3',
+    padding: Spacing.sm + 2,
+    borderRadius: BorderRadius.md,
   },
   infoIconCircle: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: 24,
+    height: 24,
     alignItems: 'center',
     justifyContent: 'center',
   },
   infoIcon: { fontSize: 14 },
   infoText: {
-    ...Typography.bodyMd,
+    ...Typography.bodySm,
     fontSize: 12,
-    color: '#601F28',
+    color: Colors.textWarmGray,
     flex: 1,
-    lineHeight: 17,
   },
-
-  // Savings rate
   savingsRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -220,9 +385,8 @@ const styles = StyleSheet.create({
     width: 76,
     height: 76,
     borderRadius: 38,
-    borderWidth: 8,
+    borderWidth: 6,
     borderColor: Colors.primaryContainer,
-    borderTopColor: '#F0D5D8',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -234,45 +398,81 @@ const styles = StyleSheet.create({
     ...Typography.headlineSm,
     fontSize: 18,
     fontWeight: '800',
-    color: Colors.onSurface,
+    color: Colors.primaryContainer,
   },
-  savingsDetails: { flex: 1 },
+  savingsDetails: { flex: 1, gap: 2 },
   savingsDesc: {
-    ...Typography.bodyMd,
+    ...Typography.bodySm,
     fontSize: 13,
     color: Colors.textWarmGray,
-    lineHeight: 18,
   },
-
-  // Safe to spend
-  safeAmount: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: Colors.primary,
+  savingsTargetAmount: {
+    ...Typography.headlineSm,
+    fontSize: 18,
+    fontWeight: '800',
+    color: Colors.onSurface,
   },
-  safeDesc: {
-    ...Typography.bodyMd,
-    fontSize: 12,
+  savingsAdviceText: {
+    ...Typography.bodySm,
+    fontSize: 11,
+    color: Colors.primaryContainer,
+    fontWeight: '600',
+  },
+  safeSub: {
+    ...Typography.bodySm,
+    fontSize: 11,
     color: Colors.textWarmGray,
-    lineHeight: 17,
+    marginTop: 2,
   },
-  actionRow: {
+  safeAmount: {
+    ...Typography.headlineLg,
+    fontSize: 20,
+    fontWeight: '800',
+    color: Colors.primaryContainer,
+  },
+  safeBreakdownRow: {
     flexDirection: 'row',
-    gap: Spacing.sm,
-    marginTop: Spacing.xs,
-  },
-  actionBtnOutline: {
-    flex: 1,
-    paddingVertical: 10,
+    gap: Spacing.xs,
+    backgroundColor: Colors.surface,
+    padding: Spacing.sm,
     borderRadius: BorderRadius.md,
     borderWidth: 1,
-    borderColor: Colors.primaryContainer,
+    borderColor: Colors.outlineVariant + '30',
+  },
+  safeMetricBox: {
+    flex: 1,
     alignItems: 'center',
   },
-  actionBtnOutlineText: {
-    fontSize: 12,
+  metricLabel: {
+    fontSize: 10,
+    color: Colors.textWarmGray,
+    fontWeight: '600',
+    marginBottom: 2,
+  },
+  metricVal: {
+    fontSize: 13,
     fontWeight: '700',
+    color: Colors.onSurface,
+  },
+  safeDesc: {
+    ...Typography.bodySm,
+    color: Colors.textWarmGray,
+  },
+  actionRow: { marginTop: Spacing.xs },
+  actionBtnOutline: {
+    borderWidth: 1,
+    borderColor: Colors.primaryContainer,
+    borderRadius: BorderRadius.md,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    alignItems: 'center',
+    backgroundColor: Colors.primaryContainer + '10',
+  },
+  actionBtnOutlineText: {
+    ...Typography.labelSm,
     color: Colors.primaryContainer,
+    fontWeight: '700',
+    fontSize: 13,
   },
 });
 

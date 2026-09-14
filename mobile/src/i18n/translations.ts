@@ -92,6 +92,8 @@ export interface TranslationSchema {
     availableBalance: string;
     savingsRate: string;
     weeklyTrend: string;
+    actualLabel: string;
+    projLabel: string;
     urgentActions: string;
     action1Title: string;
     action1Desc: string;
@@ -100,6 +102,8 @@ export interface TranslationSchema {
     financialHealth: string;
     healthAtRisk: string;
     healthStable: string;
+    healthyDesc: string;
+    lowBalDesc: string;
     actionDetails: string;
   };
   budget: {
@@ -108,6 +112,7 @@ export interface TranslationSchema {
     forecastedIncome: string;
     steadyIncomeCallout: string;
     savingsGoal: string;
+    volatilityLabel: string;
     causalPlan: string;
     causal1: string;
     causal2: string;
@@ -331,26 +336,31 @@ export const translations: Record<Language, TranslationSchema> = {
     },
     dashboard: {
       greeting: 'नमस्ते राजेश 👋',
-      urgentAlert: 'PMSBY डेबिट 9 दिनों में देय है • वर्तमान शेष: ₹10.00',
+      urgentAlert: 'PMSBY डेबिट देय है • खाता शेष पर ध्यान दें',
       availableBalance: 'उपलब्ध शेष',
-      savingsRate: '10% बचत दर',
+      savingsRate: 'सुझाई गई बचत दर',
       weeklyTrend: 'साप्ताहिक आय प्रवृत्ति (WMA 4-सप्ताह)',
+      actualLabel: 'वास्तविक कमाई',
+      projLabel: 'अनुमानित',
       urgentActions: 'ज़रूरी कार्रवाई',
       action1Title: 'PMSBY बीमा किस्त सुरक्षित करें',
-      action1Desc: '₹20 शेष की आवश्यकता है (खाता शेष कम है)',
+      action1Desc: 'न्यूनतम शेष बनाए रखें ताकि बीमा लैप्स न हो',
       action2Title: 'e-Shram कार्ड नवीनीकरण',
-      action2Desc: 'स्टेट वेलफेयर बोर्ड से ₹1,000 दुर्घटना कवर सक्षम',
+      action2Desc: 'दुर्घटना कवर व सरकारी सहायता सक्रिय रखें',
       financialHealth: 'वित्तीय स्थिति',
       healthAtRisk: 'जोखिम में (कम शेष)',
-      healthStable: 'स्थिर',
+      healthStable: 'सुरक्षित व स्थिर',
+      healthyDesc: 'आपका बजट और बैलेंस सुरक्षित स्तर पर है।',
+      lowBalDesc: 'आपका बैंक बैलेंस 30% सीमा से कम है। अनावश्यक खर्च टालें।',
       actionDetails: 'विवरण देखें',
     },
     budget: {
       title: 'मासिक बजट व पूर्वानुमान',
-      safeToSpend: 'खर्च करने की सुरक्षित सीमा',
+      safeToSpend: 'आज खर्च करने की सुरक्षित सीमा',
       forecastedIncome: 'अनुमानित आय',
       steadyIncomeCallout: 'स्थिर आय का अनुमान • खर्च सीमित रखें',
-      savingsGoal: 'बचत लक्ष्य (10%)',
+      savingsGoal: 'बचत लक्ष्य',
+      volatilityLabel: 'आय में उतार-चढ़ाव',
       causalPlan: 'सुझाई गई बचत योजना',
       causal1: 'दैनिक खर्च ₹450 तक सीमित रखें',
       causal2: 'शनिवार/रविवार अतिरिक्त 2 घंटे काम करें',
@@ -573,26 +583,31 @@ export const translations: Record<Language, TranslationSchema> = {
     },
     dashboard: {
       greeting: 'Hello Rajesh 👋',
-      urgentAlert: 'PMSBY debit due in 9 days • Current balance: ₹10.00',
+      urgentAlert: 'PMSBY debit due soon • Please maintain balance',
       availableBalance: 'Available Balance',
-      savingsRate: '10% Savings Rate',
+      savingsRate: 'Recommended Savings Rate',
       weeklyTrend: 'Weekly Income Trend (4-Week WMA)',
+      actualLabel: 'Actual Income',
+      projLabel: 'Projected',
       urgentActions: 'Action Required',
       action1Title: 'Secure PMSBY Insurance Premium',
-      action1Desc: '₹20 balance needed (Account balance is low)',
+      action1Desc: 'Maintain minimum balance to prevent policy lapse',
       action2Title: 'e-Shram Card Renewal',
-      action2Desc: 'Enables ₹1,000 accident cover from State Board',
+      action2Desc: 'Keep accident cover & government welfare active',
       financialHealth: 'Financial Health',
       healthAtRisk: 'At Risk (Low Balance)',
-      healthStable: 'Stable',
+      healthStable: 'Healthy & Stable',
+      healthyDesc: 'Your budget and balance are in a healthy position.',
+      lowBalDesc: 'Your balance is below 30% of average income. Defer non-essential expenses.',
       actionDetails: 'View Details',
     },
     budget: {
       title: 'Monthly Budget & Forecast',
-      safeToSpend: 'Safe to Spend',
+      safeToSpend: 'Safe to Spend Today',
       forecastedIncome: 'Forecasted Income',
       steadyIncomeCallout: 'Steady income projection • Keep spend steady',
-      savingsGoal: 'Savings Target (10%)',
+      savingsGoal: 'Savings Target',
+      volatilityLabel: 'Income Volatility',
       causalPlan: 'Recommended Savings Plan',
       causal1: 'Cap daily discretionary spending at ₹450',
       causal2: 'Work 2 additional hours on weekends',
@@ -815,26 +830,31 @@ export const translations: Record<Language, TranslationSchema> = {
     },
     dashboard: {
       greeting: 'नमस्ते राजेश 👋',
-      urgentAlert: 'PMSBY डेबिट 9 दिवसांत देय आहे • चालू शिल्लक: ₹10.00',
+      urgentAlert: 'PMSBY डेबिट देय आहे • बँक शिल्लक तपासा',
       availableBalance: 'उपलब्ध शिल्लक',
-      savingsRate: '10% बचत दर',
+      savingsRate: 'शिफारस केलेला बचत दर',
       weeklyTrend: 'साप्ताहिक उत्पन्न कल (4-आठवडे WMA)',
+      actualLabel: 'प्रत्यक्ष उत्पन्न',
+      projLabel: 'अंदाजित',
       urgentActions: 'तातडीची कृती',
       action1Title: 'PMSBY विमा हप्ता सुरक्षित करा',
-      action1Desc: '₹20 शिल्लक आवश्यक आहे (खाते शिल्लक कमी आहे)',
+      action1Desc: 'विमा रद्द होऊ नये म्हणून किमान शिल्लक ठेवा',
       action2Title: 'ई-श्रम कार्ड नूतनीकरण',
-      action2Desc: 'राज्य कल्याण मंडळाकडून ₹1,000 अपघात कवच सक्षम',
+      action2Desc: 'अपघात कवच आणि सरकारी लाभ सुरू ठेवा',
       financialHealth: 'आर्थिक स्थिती',
       healthAtRisk: 'धोक्यात (कमी शिल्लक)',
-      healthStable: 'स्थिर',
+      healthStable: 'सुरक्षित व स्थिर',
+      healthyDesc: 'तुमचे बजेट आणि शिल्लक सुरक्षित पातळीवर आहे.',
+      lowBalDesc: 'तुमची बँक शिल्लक ३०% सुरक्षा मर्यादेपेक्षा कमी आहे.',
       actionDetails: 'तपशील पहा',
     },
     budget: {
       title: 'मासिक बजेट व अंदाज',
-      safeToSpend: 'खर्च करण्याची सुरक्षित मर्यादा',
+      safeToSpend: 'आज खर्च करण्याची सुरक्षित मर्यादा',
       forecastedIncome: 'अंदाजित उत्पन्न',
       steadyIncomeCallout: 'स्थिर उत्पन्न अंदाज • खर्च मर्यादित ठेवा',
-      savingsGoal: 'बचत उद्दिष्ट (10%)',
+      savingsGoal: 'बचत उद्दिष्ट',
+      volatilityLabel: 'उत्पन्नातील चढ-उतार',
       causalPlan: 'शिफारस केलेली बचत योजना',
       causal1: 'दैनिक खर्च ₹450 पर्यंत मर्यादित ठेवा',
       causal2: 'शनिवार/रविवार अतिरिक्त 2 तास काम करा',

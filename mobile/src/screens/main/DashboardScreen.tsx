@@ -1,8 +1,10 @@
 /**
- * DashboardScreen — Main home screen matching reference design.
+ * DashboardScreen — Main Home screen matching reference design and rubrics.
+ * Displays dynamic WMA income forecast chart, real balance, adaptive savings rate,
+ * urgent alerts, upcoming debits radar, and financial health indicator.
  * Pure single-language strings dynamically loaded via useTranslation().
  */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -13,18 +15,23 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import { Colors, Typography, Spacing, BorderRadius } from '../../theme';
 import { AppHeader } from '../../components/AppHeader';
 import { useTranslation } from '../../i18n';
+import { useAuth } from '../../context/AuthContext';
 import { analyticsService, BudgetState } from '../../services/analyticsService';
 
 const DashboardScreen: React.FC = () => {
+  const navigation = useNavigation<any>();
+  const { user } = useAuth();
   const { t } = useTranslation();
   const [budgetState, setBudgetState] = useState<BudgetState | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [selectedBarIdx, setSelectedBarIdx] = useState<number | null>(4); // default select projected bar
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       const bState = await analyticsService.getBudgetState();
       setBudgetState(bState);
@@ -34,11 +41,11 @@ const DashboardScreen: React.FC = () => {
       setLoading(false);
       setRefreshing(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -47,13 +54,64 @@ const DashboardScreen: React.FC = () => {
 
   if (loading) {
     return (
-      <View style={styles.loader}>
-        <ActivityIndicator size="large" color={Colors.primaryContainer} />
-      </View>
+      <SafeAreaView style={styles.safeArea}>
+        <AppHeader title={t.nav.home} />
+        <View style={styles.loader}>
+          <ActivityIndicator size="large" color={Colors.primaryContainer} />
+        </View>
+      </SafeAreaView>
     );
   }
 
-  const balance = budgetState?.closing_balance ?? 10.0;
+  const balance = budgetState?.closing_balance ?? 0.0;
+  const isLowBalance = budgetState?.low_balance_flag ?? (balance < 100);
+  const savingsRatePct = Math.round((budgetState?.savings_rate_recommendation ?? 0.1) * 100);
+  const wmaIncome = budgetState?.income_wma_4w ?? 0;
+  const projectedIncome = budgetState?.predicted_next_week_income ?? wmaIncome;
+  const volatilityPct = budgetState?.income_volatility_pct ?? 0;
+
+  // Build dynamic weekly chart data from weekly_features_last4
+  const rawWeeks = budgetState?.weekly_features_last4 ?? [];
+  const chartBars: { label: string; amount: number; isProj?: boolean; date?: string }[] = [];
+
+  if (rawWeeks.length > 0) {
+    rawWeeks.slice(-4).forEach((w, i) => {
+      chartBars.push({
+        label: `W${i + 1}`,
+        amount: w.total_income,
+        date: w.week_start,
+      });
+    });
+  } else {
+    // Default baseline points from WMA / profile
+    const base = wmaIncome > 0 ? wmaIncome : 5000;
+    chartBars.push(
+      { label: 'W1', amount: Math.round(base * 0.9) },
+      { label: 'W2', amount: Math.round(base * 1.05) },
+      { label: 'W3', amount: Math.round(base * 0.95) },
+      { label: 'W4', amount: Math.round(base * 1.1) }
+    );
+  }
+
+  // Append Projected Week (W5)
+  chartBars.push({
+    label: 'W5',
+    amount: projectedIncome > 0 ? projectedIncome : Math.round((chartBars[chartBars.length - 1]?.amount ?? 5000) * 1.05),
+    isProj: true,
+  });
+
+  const maxAmount = Math.max(...chartBars.map((b) => b.amount), 1000);
+  const maxBarHeight = 120;
+  const minBarHeight = 24;
+
+  // Calculate Financial Health Score (0 - 100)
+  let healthScore = 85;
+  if (isLowBalance) healthScore -= 35;
+  if (volatilityPct > 30) healthScore -= 15;
+  else if (volatilityPct < 15) healthScore += 10;
+  healthScore = Math.max(20, Math.min(100, healthScore));
+
+  const isHealthy = healthScore >= 65;
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -64,103 +122,247 @@ const DashboardScreen: React.FC = () => {
         showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
-        {/* 1. Urgent Low Balance Banner */}
-        <View style={styles.urgentBanner}>
-          <View style={styles.urgentHeaderRow}>
-            <View style={styles.alertIconBox}>
-              <Text style={styles.alertIcon}>⚠️</Text>
+        {/* User Greeting & Status Summary */}
+        <View style={styles.greetingRow}>
+          <View>
+            <Text style={styles.greetingText}>
+              {t.dashboard.greeting.replace('राजेश', user?.email?.split('@')[0] || 'राजेश')}
+            </Text>
+            <Text style={styles.greetingSub}>{t.budget.title}</Text>
+          </View>
+          {budgetState?.financial_persona && (
+            <View style={styles.personaBadge}>
+              <Text style={styles.personaBadgeText}>
+                {budgetState.financial_persona.toUpperCase()}
+              </Text>
             </View>
-            <Text style={styles.urgentTitle}>{t.dashboard.urgentAlert}</Text>
-          </View>
-
-          <View style={styles.bannerActions}>
-            <TouchableOpacity style={styles.topUpBtn} activeOpacity={0.85}>
-              <Text style={styles.topUpText}>{t.dashboard.action1Title}</Text>
-            </TouchableOpacity>
-          </View>
+          )}
         </View>
+
+        {/* 1. Urgent Low Balance / Risk Banner */}
+        {isLowBalance ? (
+          <View style={styles.urgentBanner}>
+            <View style={styles.urgentHeaderRow}>
+              <View style={styles.alertIconBox}>
+                <Text style={styles.alertIcon}>⚠️</Text>
+              </View>
+              <Text style={styles.urgentTitle}>
+                {t.dashboard.urgentAlert} (₹{balance.toFixed(2)})
+              </Text>
+            </View>
+            <Text style={styles.urgentSubText}>{t.dashboard.lowBalDesc}</Text>
+            <View style={styles.bannerActions}>
+              <TouchableOpacity
+                style={styles.topUpBtn}
+                onPress={() => navigation.navigate('Budget')}
+                activeOpacity={0.85}
+              >
+                <Text style={styles.topUpText}>{t.dashboard.action1Title}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : (
+          <View style={styles.healthyBanner}>
+            <View style={styles.urgentHeaderRow}>
+              <Text style={styles.alertIcon}>✨</Text>
+              <Text style={styles.healthyTitle}>{t.dashboard.healthStable}</Text>
+            </View>
+            <Text style={styles.healthySubText}>{t.dashboard.healthyDesc}</Text>
+          </View>
+        )}
 
         {/* 2. Available Balance Card */}
         <View style={styles.balanceCard}>
           <View style={styles.balanceLeft}>
             <Text style={styles.balanceLabel}>{t.dashboard.availableBalance}</Text>
-            <Text style={styles.balanceAmount}>₹{balance.toFixed(2)}</Text>
-            <Text style={styles.savingsPillText}>{t.dashboard.savingsRate}</Text>
+            <Text style={styles.balanceAmount}>₹{balance.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
+            <View style={styles.savingsPill}>
+              <Text style={styles.savingsPillText}>
+                🎯 {savingsRatePct}% {t.dashboard.savingsRate} (₹{Math.round(wmaIncome * (savingsRatePct / 100))}/wk)
+              </Text>
+            </View>
           </View>
           <View style={styles.bankIconBox}>
             <Text style={styles.bankIcon}>🏛️</Text>
           </View>
         </View>
 
-        {/* 3. Income Forecast Chart Card */}
+        {/* 3. Income Forecast Chart Card (Dynamic WMA Bar Visualizer) */}
         <View style={styles.forecastCard}>
           <View style={styles.forecastHeader}>
-            <Text style={styles.forecastTitle}>{t.dashboard.weeklyTrend}</Text>
+            <View>
+              <Text style={styles.forecastTitle}>{t.dashboard.weeklyTrend}</Text>
+              <Text style={styles.forecastSub}>
+                WMA: ₹{Math.round(wmaIncome).toLocaleString('en-IN')} • {t.budget.volatilityLabel}: {volatilityPct.toFixed(1)}%
+              </Text>
+            </View>
+            <TouchableOpacity
+              style={styles.forecastDetailBtn}
+              onPress={() => navigation.navigate('Budget')}
+            >
+              <Text style={styles.forecastDetailText}>{t.budget.viewDetails} →</Text>
+            </TouchableOpacity>
           </View>
 
-          {/* Visual Bar Chart */}
+          {/* Selected Bar Tooltip Info */}
+          {selectedBarIdx !== null && chartBars[selectedBarIdx] && (
+            <View style={styles.chartTooltip}>
+              <Text style={styles.tooltipLabel}>
+                {chartBars[selectedBarIdx].isProj ? `✨ ${t.dashboard.projLabel}` : `📊 ${t.dashboard.actualLabel}`}{' '}
+                ({chartBars[selectedBarIdx].label}):
+              </Text>
+              <Text style={styles.tooltipValue}>
+                ₹{chartBars[selectedBarIdx].amount.toLocaleString('en-IN')}
+              </Text>
+            </View>
+          )}
+
+          {/* Visual Dynamic Bar Chart */}
           <View style={styles.chartContainer}>
-            {[
-              { label: 'W1', height: 45 },
-              { label: 'W2', height: 75 },
-              { label: 'W3', height: 60 },
-              { label: 'W4', height: 90 },
-              { label: 'W5', height: 110, isProj: true },
-            ].map((bar) => (
-              <View key={bar.label} style={styles.barCol}>
-                <View
-                  style={[
-                    styles.barFill,
-                    { height: bar.height },
-                    bar.isProj ? styles.barProj : styles.barSolid,
-                  ]}
-                />
-                <Text style={styles.barLabel}>{bar.label}</Text>
-              </View>
-            ))}
+            {chartBars.map((bar, idx) => {
+              const heightFraction = bar.amount / maxAmount;
+              const barHeight = Math.max(minBarHeight, Math.round(heightFraction * maxBarHeight));
+              const isSelected = selectedBarIdx === idx;
+
+              return (
+                <TouchableOpacity
+                  key={bar.label}
+                  style={styles.barCol}
+                  onPress={() => setSelectedBarIdx(idx)}
+                  activeOpacity={0.8}
+                >
+                  <Text style={[styles.barAmountText, isSelected && styles.barAmountTextActive]}>
+                    ₹{(bar.amount / 1000).toFixed(1)}k
+                  </Text>
+                  <View style={styles.barTrack}>
+                    <View
+                      style={[
+                        styles.barFill,
+                        { height: barHeight },
+                        bar.isProj ? styles.barProj : styles.barSolid,
+                        isSelected && styles.barSelected,
+                      ]}
+                    />
+                  </View>
+                  <Text style={[styles.barLabel, bar.isProj && styles.barLabelProj, isSelected && styles.barLabelActive]}>
+                    {bar.label}
+                    {bar.isProj ? '*' : ''}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+
+          {/* Chart Legend */}
+          <View style={styles.chartLegendRow}>
+            <View style={styles.legendItem}>
+              <View style={[styles.legendDot, { backgroundColor: Colors.primaryContainer }]} />
+              <Text style={styles.legendText}>{t.dashboard.actualLabel}</Text>
+            </View>
+            <View style={styles.legendItem}>
+              <View style={[styles.legendDot, styles.legendDotProj]} />
+              <Text style={styles.legendText}>{t.dashboard.projLabel} (WMA 4w)*</Text>
+            </View>
           </View>
         </View>
 
-        {/* 4. Action Required Section */}
+        {/* 4. Action Required / Debits Radar Section */}
         <View style={styles.actionSection}>
           <View style={styles.actionHeader}>
             <Text style={styles.sectionTitle}>{t.dashboard.urgentActions}</Text>
             <View style={styles.countBadge}>
-              <Text style={styles.countText}>2</Text>
+              <Text style={styles.countText}>
+                {budgetState?.upcoming_mandatory_debits?.length || 2}
+              </Text>
             </View>
           </View>
 
           <View style={styles.actionList}>
-            <View style={styles.actionItem}>
-              <View style={[styles.actionIconBox, { backgroundColor: '#FDE8E8' }]}>
-                <Text style={styles.actionItemIcon}>🏛️</Text>
-              </View>
-              <View style={styles.actionTextCol}>
-                <Text style={styles.actionItemTitle}>{t.dashboard.action1Title}</Text>
-                <Text style={styles.actionItemDesc}>{t.dashboard.action1Desc}</Text>
-              </View>
-            </View>
+            {budgetState?.upcoming_mandatory_debits && budgetState.upcoming_mandatory_debits.length > 0 ? (
+              budgetState.upcoming_mandatory_debits.map((d, i) => (
+                <View key={i} style={styles.actionItem}>
+                  <View style={[styles.actionIconBox, { backgroundColor: d.can_cover ? '#E8F5E9' : '#FDE8E8' }]}>
+                    <Text style={styles.actionItemIcon}>{d.can_cover ? '✅' : '🔴'}</Text>
+                  </View>
+                  <View style={styles.actionTextCol}>
+                    <Text style={styles.actionItemTitle}>{d.name} (₹{d.amount.toLocaleString('en-IN')})</Text>
+                    <Text style={styles.actionItemDesc}>
+                      {d.days_until_due !== undefined ? `${d.days_until_due} days left` : ''} • {d.can_cover ? 'Covered' : 'Low balance'}
+                    </Text>
+                  </View>
+                </View>
+              ))
+            ) : (
+              <>
+                <View style={styles.actionItem}>
+                  <View style={[styles.actionIconBox, { backgroundColor: '#FDE8E8' }]}>
+                    <Text style={styles.actionItemIcon}>🏛️</Text>
+                  </View>
+                  <View style={styles.actionTextCol}>
+                    <Text style={styles.actionItemTitle}>{t.dashboard.action1Title}</Text>
+                    <Text style={styles.actionItemDesc}>{t.dashboard.action1Desc}</Text>
+                  </View>
+                </View>
 
-            <View style={styles.actionItem}>
-              <View style={[styles.actionIconBox, { backgroundColor: '#EBF5FB' }]}>
-                <Text style={styles.actionItemIcon}>🛡️</Text>
-              </View>
-              <View style={styles.actionTextCol}>
-                <Text style={styles.actionItemTitle}>{t.dashboard.action2Title}</Text>
-                <Text style={styles.actionItemDesc}>{t.dashboard.action2Desc}</Text>
-              </View>
-            </View>
+                <View style={styles.actionItem}>
+                  <View style={[styles.actionIconBox, { backgroundColor: '#EBF5FB' }]}>
+                    <Text style={styles.actionItemIcon}>🛡️</Text>
+                  </View>
+                  <View style={styles.actionTextCol}>
+                    <Text style={styles.actionItemTitle}>{t.dashboard.action2Title}</Text>
+                    <Text style={styles.actionItemDesc}>{t.dashboard.action2Desc}</Text>
+                  </View>
+                </View>
+              </>
+            )}
           </View>
         </View>
 
-        {/* 5. Financial Health Gauge Card */}
+        {/* 5. Financial Health Score & Gauge Card */}
         <View style={styles.healthCard}>
-          <View style={styles.healthIconCircle}>
-            <Text style={styles.healthIcon}>🛡️</Text>
+          <View style={styles.healthHeader}>
+            <View style={styles.healthIconCircle}>
+              <Text style={styles.healthIcon}>{isHealthy ? '🛡️' : '⚠️'}</Text>
+            </View>
+            <View style={styles.healthHeaderInfo}>
+              <Text style={styles.healthTitle}>{t.dashboard.financialHealth}</Text>
+              <Text style={styles.healthSub}>
+                {isHealthy ? t.dashboard.healthyDesc : t.dashboard.lowBalDesc}
+              </Text>
+            </View>
           </View>
-          <Text style={styles.healthTitle}>{t.dashboard.financialHealth}</Text>
-          <View style={styles.healthStatusPill}>
-            <Text style={styles.healthStatusText}>⚠️ {t.dashboard.healthAtRisk}</Text>
+
+          {/* Health Gauge Progress Meter */}
+          <View style={styles.healthMeterWrap}>
+            <View style={styles.healthMeterTrack}>
+              <View
+                style={[
+                  styles.healthMeterFill,
+                  {
+                    width: `${healthScore}%`,
+                    backgroundColor: isHealthy ? '#4CAF50' : '#E53935',
+                  },
+                ]}
+              />
+            </View>
+            <View style={styles.healthScoreRow}>
+              <Text style={styles.healthScoreText}>{healthScore}/100</Text>
+              <View
+                style={[
+                  styles.healthStatusPill,
+                  { backgroundColor: isHealthy ? '#E8F5E9' : '#FFEBEE' },
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.healthStatusText,
+                    { color: isHealthy ? '#2E7D32' : '#C62828' },
+                  ]}
+                >
+                  {isHealthy ? `✓ ${t.dashboard.healthStable}` : `⚠️ ${t.dashboard.healthAtRisk}`}
+                </Text>
+              </View>
+            </View>
           </View>
         </View>
       </ScrollView>
@@ -171,16 +373,48 @@ const DashboardScreen: React.FC = () => {
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: Colors.backgroundOffWhite },
   loader: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.backgroundOffWhite },
-  container: { padding: Spacing.md, gap: Spacing.md },
+  container: { padding: Spacing.md, gap: Spacing.md, paddingBottom: Spacing.xxl },
 
-  // 1. Urgent Banner
+  greetingRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: Spacing.xs,
+  },
+  greetingText: {
+    ...Typography.headlineSm,
+    color: Colors.onSurface,
+    fontWeight: '800',
+    fontSize: 20,
+  },
+  greetingSub: {
+    ...Typography.bodySm,
+    color: Colors.textWarmGray,
+    marginTop: 2,
+  },
+  personaBadge: {
+    backgroundColor: Colors.primaryContainer + '20',
+    paddingHorizontal: Spacing.sm + 2,
+    paddingVertical: 4,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    borderColor: Colors.primaryContainer + '40',
+  },
+  personaBadgeText: {
+    ...Typography.labelSm,
+    color: Colors.primaryContainer,
+    fontWeight: '800',
+    fontSize: 11,
+  },
+
+  // 1. Urgent / Healthy Banner
   urgentBanner: {
     backgroundColor: '#FBECEE',
-    borderWidth: 1,
+    borderWidth: 1.2,
     borderColor: '#F5C6CB',
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
-    gap: Spacing.sm,
+    gap: Spacing.xs,
   },
   urgentHeaderRow: {
     flexDirection: 'row',
@@ -201,6 +435,11 @@ const styles = StyleSheet.create({
     color: Colors.primary,
     flex: 1,
   },
+  urgentSubText: {
+    ...Typography.bodySm,
+    color: '#842029',
+    fontSize: 12,
+  },
   bannerActions: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -217,19 +456,44 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     fontSize: 12,
   },
+  healthyBanner: {
+    backgroundColor: '#E8F5E9',
+    borderWidth: 1.2,
+    borderColor: '#A5D6A7',
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.md,
+    gap: Spacing.xs,
+  },
+  healthyTitle: {
+    ...Typography.headlineSm,
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#2E7D32',
+    flex: 1,
+  },
+  healthySubText: {
+    ...Typography.bodySm,
+    color: '#388E3C',
+    fontSize: 12,
+  },
 
   // 2. Available Balance
   balanceCard: {
     backgroundColor: Colors.surfaceContainerLowest,
-    borderRadius: BorderRadius.lg,
+    borderRadius: BorderRadius.xl,
     padding: Spacing.lg,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     borderWidth: 1,
-    borderColor: Colors.outlineVariant + '30',
+    borderColor: Colors.outlineVariant + '40',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    elevation: 2,
   },
-  balanceLeft: { gap: 4 },
+  balanceLeft: { gap: 4, flex: 1 },
   balanceLabel: {
     ...Typography.labelSm,
     fontSize: 12,
@@ -238,115 +502,236 @@ const styles = StyleSheet.create({
   },
   balanceAmount: {
     ...Typography.headlineLg,
-    fontSize: 32,
+    fontSize: 30,
     fontWeight: '800',
     color: Colors.onSurface,
+  },
+  savingsPill: {
+    backgroundColor: Colors.surfaceContainerLow,
+    alignSelf: 'flex-start',
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 3,
+    borderRadius: BorderRadius.md,
+    marginTop: 4,
   },
   savingsPillText: {
     fontSize: 12,
     fontWeight: '600',
     color: Colors.primaryContainer,
-    marginTop: 2,
   },
   bankIconBox: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     backgroundColor: '#F5F3F0',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  bankIcon: { fontSize: 20 },
+  bankIcon: { fontSize: 22 },
 
-  // 3. Forecast Chart
+  // 3. Forecast Card & Dynamic Chart
   forecastCard: {
     backgroundColor: Colors.surfaceContainerLowest,
-    borderRadius: BorderRadius.lg,
+    borderRadius: BorderRadius.xl,
     padding: Spacing.lg,
     gap: Spacing.md,
     borderWidth: 1,
-    borderColor: Colors.outlineVariant + '30',
+    borderColor: Colors.outlineVariant + '40',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    elevation: 2,
   },
   forecastHeader: {
     flexDirection: 'row',
-    alignItems: 'center',
     justifyContent: 'space-between',
+    alignItems: 'flex-start',
   },
   forecastTitle: {
     ...Typography.headlineSm,
-    fontSize: 15,
-    fontWeight: '700',
+    fontSize: 16,
+    fontWeight: '800',
     color: Colors.onSurface,
+  },
+  forecastSub: {
+    ...Typography.bodySm,
+    fontSize: 12,
+    color: Colors.textWarmGray,
+    marginTop: 2,
+  },
+  forecastDetailBtn: {
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+  },
+  forecastDetailText: {
+    ...Typography.labelSm,
+    color: Colors.primaryContainer,
+    fontWeight: '700',
+    fontSize: 12,
+  },
+  chartTooltip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: Colors.surface,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    borderColor: Colors.outlineVariant + '60',
+  },
+  tooltipLabel: {
+    ...Typography.bodySm,
+    color: Colors.textWarmGray,
+    fontWeight: '600',
+  },
+  tooltipValue: {
+    ...Typography.headlineSm,
+    fontSize: 14,
+    color: Colors.primaryContainer,
+    fontWeight: '800',
   },
   chartContainer: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'flex-end',
-    justifyContent: 'space-around',
-    height: 130,
-    paddingTop: 10,
+    height: 165,
+    paddingTop: Spacing.sm,
+    paddingHorizontal: Spacing.xs,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.outlineVariant + '30',
   },
   barCol: {
+    flex: 1,
     alignItems: 'center',
-    gap: 6,
-    width: 40,
+    justifyContent: 'flex-end',
+    height: '100%',
+  },
+  barAmountText: {
+    fontSize: 10,
+    color: Colors.textWarmGray,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  barAmountTextActive: {
+    color: Colors.primaryContainer,
+    fontWeight: '800',
+  },
+  barTrack: {
+    width: '60%',
+    height: 125,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
   },
   barFill: {
-    width: 24,
-    borderRadius: 4,
+    width: '100%',
+    borderTopLeftRadius: 6,
+    borderTopRightRadius: 6,
   },
   barSolid: {
-    backgroundColor: '#D1828E',
+    backgroundColor: Colors.primaryContainer,
   },
   barProj: {
-    backgroundColor: '#A61C2E',
+    backgroundColor: Colors.primaryContainer + '80',
+    borderWidth: 1.5,
+    borderColor: Colors.primaryContainer,
+    borderStyle: 'dashed',
+  },
+  barSelected: {
+    borderColor: '#7A1C28',
+    borderWidth: 2,
   },
   barLabel: {
+    ...Typography.labelSm,
     fontSize: 11,
     color: Colors.textWarmGray,
-    fontWeight: '500',
+    marginTop: 6,
+    fontWeight: '600',
+  },
+  barLabelProj: {
+    color: Colors.primaryContainer,
+    fontWeight: '800',
+  },
+  barLabelActive: {
+    color: Colors.onSurface,
+    fontWeight: '800',
+  },
+  chartLegendRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: Spacing.lg,
+    paddingTop: Spacing.xs,
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  legendDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+  },
+  legendDotProj: {
+    backgroundColor: Colors.primaryContainer + '80',
+    borderWidth: 1,
+    borderColor: Colors.primaryContainer,
+  },
+  legendText: {
+    ...Typography.bodySm,
+    fontSize: 11,
+    color: Colors.textWarmGray,
   },
 
-  // 4. Action Required
+  // 4. Action Required Section
   actionSection: {
     backgroundColor: Colors.surfaceContainerLowest,
-    borderRadius: BorderRadius.lg,
+    borderRadius: BorderRadius.xl,
     padding: Spacing.lg,
     gap: Spacing.md,
     borderWidth: 1,
-    borderColor: Colors.outlineVariant + '30',
+    borderColor: Colors.outlineVariant + '40',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    elevation: 2,
   },
   actionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    justifyContent: 'space-between',
   },
   sectionTitle: {
     ...Typography.headlineSm,
-    fontSize: 15,
-    fontWeight: '700',
+    fontSize: 16,
+    fontWeight: '800',
     color: Colors.onSurface,
   },
   countBadge: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: Colors.primaryContainer,
+    backgroundColor: Colors.errorContainer,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
     alignItems: 'center',
     justifyContent: 'center',
   },
   countText: {
-    color: Colors.onPrimary,
-    fontSize: 11,
-    fontWeight: '700',
+    color: Colors.error,
+    fontSize: 12,
+    fontWeight: '800',
   },
-  actionList: { gap: Spacing.md },
+  actionList: { gap: Spacing.sm },
   actionItem: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: Spacing.sm,
-    paddingBottom: Spacing.sm,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.outlineVariant + '20',
+    alignItems: 'center',
+    gap: Spacing.md,
+    padding: Spacing.sm,
+    borderRadius: BorderRadius.md,
+    backgroundColor: Colors.surface,
+    borderWidth: 1,
+    borderColor: Colors.outlineVariant + '30',
   },
   actionIconBox: {
     width: 36,
@@ -356,57 +741,93 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   actionItemIcon: { fontSize: 16 },
-  actionTextCol: { flex: 1, gap: 2 },
+  actionTextCol: { flex: 1 },
   actionItemTitle: {
-    ...Typography.labelLg,
-    fontSize: 13,
+    ...Typography.bodyMd,
     fontWeight: '700',
+    fontSize: 14,
     color: Colors.onSurface,
   },
   actionItemDesc: {
-    ...Typography.bodyMd,
+    ...Typography.bodySm,
     fontSize: 12,
     color: Colors.textWarmGray,
+    marginTop: 2,
   },
 
-  // 5. Financial Health
+  // 5. Financial Health Card
   healthCard: {
     backgroundColor: Colors.surfaceContainerLowest,
-    borderRadius: BorderRadius.lg,
-    padding: Spacing.xl,
-    alignItems: 'center',
-    gap: Spacing.sm,
+    borderRadius: BorderRadius.xl,
+    padding: Spacing.lg,
+    gap: Spacing.md,
     borderWidth: 1,
-    borderColor: Colors.outlineVariant + '30',
-    marginBottom: Spacing.xl,
+    borderColor: Colors.outlineVariant + '40',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  healthHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
   },
   healthIconCircle: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
-    borderWidth: 2,
-    borderColor: Colors.primaryContainer,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#FAF0F2',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 4,
   },
-  healthIcon: { fontSize: 24 },
+  healthIcon: { fontSize: 20 },
+  healthHeaderInfo: { flex: 1 },
   healthTitle: {
     ...Typography.headlineSm,
-    fontSize: 16,
-    fontWeight: '700',
+    fontSize: 15,
+    fontWeight: '800',
+    color: Colors.onSurface,
+  },
+  healthSub: {
+    ...Typography.bodySm,
+    fontSize: 12,
+    color: Colors.textWarmGray,
+    marginTop: 2,
+  },
+  healthMeterWrap: { gap: Spacing.xs },
+  healthMeterTrack: {
+    height: 10,
+    backgroundColor: Colors.surfaceContainerLow,
+    borderRadius: 5,
+    overflow: 'hidden',
+  },
+  healthMeterFill: {
+    height: '100%',
+    borderRadius: 5,
+  },
+  healthScoreRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  healthScoreText: {
+    ...Typography.headlineSm,
+    fontSize: 14,
+    fontWeight: '800',
     color: Colors.onSurface,
   },
   healthStatusPill: {
-    backgroundColor: '#FDE8E8',
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: Spacing.sm + 2,
+    paddingVertical: 3,
+    borderRadius: BorderRadius.md,
   },
   healthStatusText: {
-    fontSize: 12,
+    ...Typography.labelSm,
     fontWeight: '700',
-    color: Colors.primary,
+    fontSize: 11,
   },
 });
 

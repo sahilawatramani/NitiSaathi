@@ -128,7 +128,8 @@ def calculate_safe_to_spend(
 # ─── DB-Backed Helper Functions ──────────────────────────────────────────────
 
 def get_weekly_incomes(user_id: int, db: Session, weeks: int = 8) -> List[float]:
-    """Fetch the last *weeks* weekly income totals from the features cache."""
+    """Fetch the last *weeks* weekly income totals from the features cache,
+    or calculate from raw transactions/profile if unaggregated."""
     rows = (
         db.query(UserWeeklyFeatures.total_income)
         .filter(UserWeeklyFeatures.user_id == user_id)
@@ -136,8 +137,41 @@ def get_weekly_incomes(user_id: int, db: Session, weeks: int = 8) -> List[float]
         .limit(weeks)
         .all()
     )
-    # Return in chronological order (oldest → newest)
-    return [r.total_income for r in reversed(rows)]
+    if rows:
+        return [r.total_income for r in reversed(rows)]
+
+    # Fallback 1: aggregate directly from raw transaction credits
+    today = date.today()
+    incomes = []
+    has_txn = False
+    for i in range(weeks - 1, -1, -1):
+        w_start = today - timedelta(days=today.weekday() + (i * 7))
+        w_end = w_start + timedelta(days=6)
+        from sqlalchemy import func
+        w_inc = (
+            db.query(func.sum(Transaction.amount))
+            .filter(
+                Transaction.user_id == user_id,
+                Transaction.direction == "credit",
+                Transaction.date >= w_start,
+                Transaction.date <= w_end,
+            )
+            .scalar()
+        ) or 0.0
+        incomes.append(float(w_inc))
+        if w_inc > 0:
+            has_txn = True
+
+    if has_txn:
+        return incomes
+
+    # Fallback 2: estimate from user profile monthly income
+    profile = db.query(UserProfile).filter(UserProfile.user_id == user_id).first()
+    if profile and profile.monthly_income and profile.monthly_income > 0:
+        weekly_est = round(profile.monthly_income / 4.33, 2)
+        return [weekly_est] * min(weeks, 4)
+
+    return []
 
 
 def get_upcoming_mandatory_debits(user_id: int, db: Session, days_ahead: int = 7) -> List[dict]:
@@ -186,7 +220,7 @@ def compute_full_budget_state(user_id: int, db: Session) -> dict:
         .first()
     )
     
-    # Fallback: if no weekly features exist, compute balance from raw transactions
+    # Fallback: if no weekly features exist, compute balance from raw transactions or profile
     if not latest:
         from sqlalchemy import func
         total_credits = (
@@ -199,7 +233,13 @@ def compute_full_budget_state(user_id: int, db: Session) -> dict:
             .filter(Transaction.user_id == user_id, Transaction.direction == "debit")
             .scalar()
         ) or 0.0
-        closing = total_credits - total_debits
+        
+        has_any_txn = db.query(Transaction).filter(Transaction.user_id == user_id).first() is not None
+        if has_any_txn:
+            closing = float(total_credits - total_debits)
+        else:
+            profile = db.query(UserProfile).filter(UserProfile.user_id == user_id).first()
+            closing = float(profile.current_savings if profile and profile.current_savings else 0.0)
     else:
         closing = latest.closing_balance
     
