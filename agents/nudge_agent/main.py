@@ -51,6 +51,7 @@ async def root():
     }
 
 
+@app.get("/health")
 @app.get("/nudges/health")
 async def health():
     """Health check endpoint"""
