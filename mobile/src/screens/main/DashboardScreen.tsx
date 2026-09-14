@@ -21,22 +21,31 @@ import { AppHeader } from '../../components/AppHeader';
 import { useTranslation } from '../../i18n';
 import { useAuth } from '../../context/AuthContext';
 import { analyticsService, BudgetState, BudgetPlannerResponse } from '../../services/analyticsService';
+import { nudgeService, NudgeItem } from '../../services/nudgeService';
+import { schemeService, SchemeEligibilityItem } from '../../services/schemeService';
 
 const DashboardScreen: React.FC = () => {
   const navigation = useNavigation<any>();
   const { user } = useAuth();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const [budgetState, setBudgetState] = useState<BudgetState | null>(null);
   const [plannerData, setPlannerData] = useState<BudgetPlannerResponse | null>(null);
+  const [nudgesList, setNudgesList] = useState<NudgeItem[]>([]);
+  const [schemesList, setSchemesList] = useState<SchemeEligibilityItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [selectedBarIdx, setSelectedBarIdx] = useState<number | null>(null);
 
   const fetchData = useCallback(async () => {
     try {
-      const [bState, pData] = await Promise.all([
+      const [bState, pData, nList, sRes] = await Promise.all([
         analyticsService.getBudgetState().catch(() => null),
         analyticsService.getBudgetPlanner().catch(() => null),
+        nudgeService.list(user?.id || '1', language).catch(() => []),
+        schemeService.filterSchemes({
+          userProfile: { monthly_income: 25000 },
+          language: language || 'en',
+        }).catch(() => null),
       ]);
       if (bState) setBudgetState(bState);
       if (pData) {
@@ -45,13 +54,15 @@ const DashboardScreen: React.FC = () => {
           setSelectedBarIdx(pData.full_trajectory.length - 1);
         }
       }
+      if (nList) setNudgesList(nList);
+      if (sRes?.eligible_schemes) setSchemesList(sRes.eligible_schemes);
     } catch {
       // Offline fallback
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  }, []);
+  }, [user?.id, language]);
 
   useEffect(() => {
     fetchData();
@@ -270,7 +281,148 @@ const DashboardScreen: React.FC = () => {
           </View>
         </View>
 
-        {/* 4. Action Required / Debits Radar Section */}
+        {/* 4. Today's Nudges (Live Proactive Alerts from Nudge Agent) */}
+        <View style={styles.actionSection}>
+          <View style={styles.actionHeader}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <Text style={{ fontSize: 16 }}>🔔</Text>
+              <Text style={styles.sectionTitle}>
+                {language === 'hi' ? 'आज की सूचनाएं (Nudges)' : language === 'mr' ? 'आजच्या सूचना (Nudges)' : "Today's Nudges"}
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Nudges')}
+              style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}
+            >
+              <Text style={{ ...Typography.labelSm, color: Colors.primary, fontWeight: '700', fontSize: 12 }}>
+                {language === 'hi' ? 'सभी देखें →' : language === 'mr' ? 'सर्व पहा →' : 'View All →'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.actionList}>
+            {nudgesList && nudgesList.length > 0 ? (
+              nudgesList.slice(0, 3).map((nudge) => {
+                const isUrgent = nudge.priority === 'urgent' || nudge.trigger_id?.includes('low_balance');
+                const isMilestone = nudge.priority === 'milestone' || nudge.trigger_id?.includes('milestone');
+                const pillBg = isUrgent ? '#FDE8E8' : isMilestone ? '#E8F5E9' : '#EBF5FB';
+                const pillColor = isUrgent ? '#C62828' : isMilestone ? '#2E7D32' : '#0284C7';
+                const badgeLabel = isUrgent
+                  ? (language === 'hi' ? 'जरूरी' : language === 'mr' ? 'तातडीचे' : 'URGENT')
+                  : isMilestone
+                  ? (language === 'hi' ? 'उपलब्धि' : language === 'mr' ? 'टप्पा' : 'MILESTONE')
+                  : (language === 'hi' ? 'सलाह' : language === 'mr' ? 'सल्ला' : 'ADVISORY');
+
+                return (
+                  <View key={nudge.id} style={[styles.nudgeCard, { borderLeftColor: pillColor }]}>
+                    <View style={styles.nudgeHeaderRow}>
+                      <View style={[styles.nudgePriorityPill, { backgroundColor: pillBg }]}>
+                        <Text style={[styles.nudgePriorityText, { color: pillColor }]}>{badgeLabel}</Text>
+                      </View>
+                      {nudge.action_label && (
+                        <TouchableOpacity
+                          onPress={() => {
+                            if (nudge.action_url?.includes('budget')) navigation.navigate('BudgetTab');
+                            else if (nudge.action_url?.includes('schemes')) navigation.navigate('SchemesTab');
+                            else navigation.navigate('Nudges');
+                          }}
+                          style={styles.nudgeActionBtn}
+                        >
+                          <Text style={styles.nudgeActionBtnText}>{nudge.action_label} →</Text>
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                    <Text style={styles.nudgeTitle}>{nudge.title || nudge.trigger_id.replace('_', ' ').toUpperCase()}</Text>
+                    <Text style={styles.nudgeMessage} numberOfLines={3}>{nudge.message}</Text>
+                  </View>
+                );
+              })
+            ) : (
+              <View style={styles.actionItem}>
+                <View style={[styles.actionIconBox, { backgroundColor: '#E8F5E9' }]}>
+                  <Text style={styles.actionItemIcon}>✅</Text>
+                </View>
+                <View style={styles.actionTextCol}>
+                  <Text style={styles.actionItemTitle}>
+                    {language === 'hi' ? 'कोई नया अलर्ट नहीं है' : 'No Urgent Alerts'}
+                  </Text>
+                  <Text style={styles.actionItemDesc}>
+                    {language === 'hi' ? 'आपका वित्तीय स्वास्थ्य स्थिर है।' : 'Your cashflow and buffers are stable.'}
+                  </Text>
+                </View>
+              </View>
+            )}
+          </View>
+        </View>
+
+        {/* 5. Recommended Welfare Schemes (Live from Scheme Agent) */}
+        <View style={styles.actionSection}>
+          <View style={styles.actionHeader}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+              <Text style={{ fontSize: 16 }}>📋</Text>
+              <Text style={styles.sectionTitle}>
+                {language === 'hi' ? 'सुझाई गई सरकारी योजनाएं' : language === 'mr' ? 'शिफारस केलेल्या योजना' : 'Recommended Schemes'}
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('SchemesTab')}
+              style={{ flexDirection: 'row', alignItems: 'center', gap: 2 }}
+            >
+              <Text style={{ ...Typography.labelSm, color: Colors.primary, fontWeight: '700', fontSize: 12 }}>
+                {language === 'hi' ? 'खोजें →' : language === 'mr' ? 'शोधा →' : 'Discover →'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.actionList}>
+            {schemesList && schemesList.length > 0 ? (
+              schemesList.slice(0, 3).map((sc) => (
+                <TouchableOpacity
+                  key={sc.scheme_code}
+                  style={styles.schemeCard}
+                  onPress={() => navigation.navigate('SchemeDetail', { schemeId: sc.scheme_code, schemeName: sc.scheme_name })}
+                  activeOpacity={0.8}
+                >
+                  <View style={styles.schemeCardTop}>
+                    <Text style={styles.schemeCategoryText}>
+                      {sc.category ? sc.category.replace('_', ' ').toUpperCase() : 'WELFARE SCHEME'}
+                    </Text>
+                    {sc.match_score_pct !== undefined && (
+                      <View style={styles.matchScoreBadge}>
+                        <Text style={styles.matchScoreText}>{sc.match_score_pct}% {language === 'hi' ? 'पात्रता' : 'Match'}</Text>
+                      </View>
+                    )}
+                  </View>
+                  <Text style={styles.schemeTitleText}>{sc.scheme_name}</Text>
+                  {sc.reasons && sc.reasons.length > 0 && (
+                    <Text style={styles.schemeReasonText} numberOfLines={2}>
+                      ✓ {sc.reasons[0]}
+                    </Text>
+                  )}
+                </TouchableOpacity>
+              ))
+            ) : (
+              <TouchableOpacity
+                style={styles.schemeCard}
+                onPress={() => navigation.navigate('SchemesTab')}
+                activeOpacity={0.8}
+              >
+                <View style={styles.schemeCardTop}>
+                  <Text style={styles.schemeCategoryText}>INSURANCE</Text>
+                  <View style={styles.matchScoreBadge}>
+                    <Text style={styles.matchScoreText}>95% Match</Text>
+                  </View>
+                </View>
+                <Text style={styles.schemeTitleText}>PM Suraksha Bima Yojana (PMSBY)</Text>
+                <Text style={styles.schemeReasonText}>
+                  ✓ {language === 'hi' ? 'मात्र ₹20 में ₹2 लाख का बीमा' : 'Accident cover of ₹2 Lakh at ₹20/year'}
+                </Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
+
+        {/* 6. Upcoming Mandatory Debits Radar Section */}
         <View style={styles.actionSection}>
           <View style={styles.actionHeader}>
             <Text style={styles.sectionTitle}>{t.dashboard.urgentActions}</Text>
@@ -322,7 +474,7 @@ const DashboardScreen: React.FC = () => {
           </View>
         </View>
 
-        {/* 5. Financial Health Score & Gauge Card */}
+        {/* 7. Financial Health Score & Gauge Card */}
         <View style={styles.healthCard}>
           <View style={styles.healthHeader}>
             <View style={styles.healthIconCircle}>
@@ -688,7 +840,7 @@ const styles = StyleSheet.create({
     color: Colors.textWarmGray,
   },
 
-  // 4. Action Required Section
+  // 4. Action / Nudges / Schemes Section
   actionSection: {
     backgroundColor: Colors.surfaceContainerLowest,
     borderRadius: BorderRadius.xl,
@@ -709,9 +861,99 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     ...Typography.headlineSm,
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '800',
     color: Colors.onSurface,
+  },
+  nudgeCard: {
+    padding: Spacing.sm + 4,
+    borderRadius: BorderRadius.md,
+    backgroundColor: Colors.surface,
+    borderWidth: 1,
+    borderColor: Colors.outlineVariant + '30',
+    borderLeftWidth: 4,
+    gap: 4,
+  },
+  nudgeHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 2,
+  },
+  nudgePriorityPill: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  nudgePriorityText: {
+    fontSize: 10,
+    fontWeight: '800',
+    letterSpacing: 0.4,
+  },
+  nudgeActionBtn: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+    backgroundColor: Colors.primary + '15',
+  },
+  nudgeActionBtnText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: Colors.primary,
+  },
+  nudgeTitle: {
+    ...Typography.bodyMd,
+    fontWeight: '700',
+    fontSize: 13,
+    color: Colors.onSurface,
+  },
+  nudgeMessage: {
+    ...Typography.bodySm,
+    fontSize: 12,
+    color: Colors.textWarmGray,
+    lineHeight: 16,
+  },
+  schemeCard: {
+    padding: Spacing.sm + 4,
+    borderRadius: BorderRadius.md,
+    backgroundColor: Colors.surface,
+    borderWidth: 1,
+    borderColor: Colors.outlineVariant + '30',
+    gap: 4,
+  },
+  schemeCardTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  schemeCategoryText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: Colors.textWarmGray,
+    letterSpacing: 0.5,
+  },
+  matchScoreBadge: {
+    backgroundColor: '#E8F5E9',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  matchScoreText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#2E7D32',
+  },
+  schemeTitleText: {
+    ...Typography.bodyMd,
+    fontWeight: '700',
+    fontSize: 13,
+    color: Colors.onSurface,
+  },
+  schemeReasonText: {
+    ...Typography.bodySm,
+    fontSize: 11,
+    color: Colors.textWarmGray,
+    lineHeight: 15,
   },
   countBadge: {
     backgroundColor: Colors.errorContainer,

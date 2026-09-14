@@ -129,4 +129,69 @@ export const getBudgetPlanner = (currentCost = 1000) =>
 export const updateBudgetPlanner = (history, currentCost = 1000) =>
   api.post('/analytics/budget-planner', { history, current_cost: currentCost });
 
+// ── Nudge Agent (Port 8004) ──────────────────────────────────────────
+const NUDGE_API_BASE = 'http://localhost:8004/nudges';
+export const getNudges = async (userId = '1', language = 'en') => {
+  try {
+    const res = await axios.get(`${NUDGE_API_BASE}/${userId}/list`, { timeout: 3000 });
+    if (res.data && res.data.length > 0) return res.data;
+  } catch {
+    // fallback to run-check or gateway
+  }
+  try {
+    const res = await axios.get(`${NUDGE_API_BASE}/run-check?language_pref=${language}`, { timeout: 3000 });
+    if (res.data && res.data.length > 0) return res.data;
+  } catch {
+    // fallback
+  }
+  try {
+    const res = await api.get('/nudges/');
+    if (res.data && res.data.length > 0) return res.data;
+  } catch {
+    // fallback
+  }
+  return [];
+};
+
+export const postNudgeFeedback = async (nudgeId, rating, triggerId = 'low_balance_before_debit', userId = '1') => {
+  try {
+    return await axios.post(`${NUDGE_API_BASE}/${nudgeId}/feedback`, {
+      user_id: String(userId),
+      trigger_id: triggerId,
+      rating,
+    }, { timeout: 3000 });
+  } catch {
+    try {
+      return await api.post(`/nudges/${nudgeId}/feedback`, { rating });
+    } catch {
+      return null;
+    }
+  }
+};
+
+// ── Scheme Agent (Port 8001) ─────────────────────────────────────────
+const SCHEME_API_BASE = 'http://localhost:8001/api/v1/schemes';
+export const getSchemesRecommendations = async (profile = {}, language = 'en') => {
+  try {
+    const payload = {
+      profile: {
+        age: profile.age || 28,
+        occupation: profile.occupation || 'delivery_partner',
+        monthly_income: profile.monthly_income || 25000,
+        state: profile.state || 'Maharashtra',
+        ...profile,
+      },
+      language_pref: language,
+      limit: 6,
+    };
+    const res = await axios.post(`${SCHEME_API_BASE}/filter`, payload, { timeout: 3000 });
+    if (res.data && (res.data.schemes || res.data.items)) {
+      return res.data.schemes || res.data.items;
+    }
+  } catch {
+    // fallback
+  }
+  return [];
+};
+
 export default api;
