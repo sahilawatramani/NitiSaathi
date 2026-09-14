@@ -1,5 +1,6 @@
 /**
  * MoreHomeScreen — The root screen of the "More" tab, providing navigation to other tools.
+ * Pure single-language loaded dynamically via useTranslation().
  */
 import React from 'react';
 import {
@@ -13,23 +14,26 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { MoreStackParamList } from '../../navigation/MainNavigator';
 import { Colors, Typography, Spacing, BorderRadius } from '../../theme';
+import { useTranslation } from '../../i18n';
 
 type Props = NativeStackScreenProps<MoreStackParamList, 'MoreHome'>;
 
 const MoreHomeScreen: React.FC<Props> = ({ navigation }) => {
+  const { t } = useTranslation();
+
   const MENU_ITEMS = [
-    { title: 'प्रोफ़ाइल / Profile', screen: 'Profile', icon: '👤' },
-    { title: '🌱 Seed Test Data', screen: 'SeedData', icon: '🧪' },
-    { title: 'धोखाधड़ी जांच / Fraud Check', screen: 'FraudCheck', icon: '🛡️' },
-    { title: 'सूचनाएं / Nudges', screen: 'Nudges', icon: '🔔' },
-    { title: 'रिपोर्ट / Reports', screen: 'Reports', icon: '📊' },
-    { title: 'सेटिंग्स / Settings', screen: 'Settings', icon: '⚙️' },
+    { title: t.more.profile, screen: 'Profile', icon: '👤' },
+    { title: t.more.seedData, screen: 'SeedData', icon: '🧪' },
+    { title: t.more.fraudCheck, screen: 'FraudCheck', icon: '🛡️' },
+    { title: t.more.nudges, screen: 'Nudges', icon: '🔔' },
+    { title: t.more.reports, screen: 'Reports', icon: '📊' },
+    { title: t.more.settings, screen: 'Settings', icon: '⚙️' },
   ] as const;
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <View style={styles.appBar}>
-        <Text style={styles.appBarTitle}>और / More Tools</Text>
+        <Text style={styles.appBarTitle}>{t.more.title}</Text>
       </View>
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.menuGrid}>

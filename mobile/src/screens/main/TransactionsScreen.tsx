@@ -1,17 +1,25 @@
 /**
  * TransactionsScreen — List all user transactions with pull-to-refresh.
  * Data from GET /api/transactions/
+ * Pure single-language loaded dynamically via useTranslation().
  */
 import React, { useCallback, useEffect, useState } from 'react';
 import {
-  View, Text, StyleSheet, FlatList, TouchableOpacity,
-  RefreshControl, ActivityIndicator, TextInput,
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  RefreshControl,
+  ActivityIndicator,
+  TextInput,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { BudgetStackParamList } from '../../navigation/MainNavigator';
 import { Colors, Typography, Spacing, BorderRadius } from '../../theme';
 import api from '../../services/api';
+import { useTranslation } from '../../i18n';
 
 export interface Transaction {
   id: number;
@@ -26,6 +34,7 @@ export interface Transaction {
 type Props = NativeStackScreenProps<BudgetStackParamList, 'Transactions'>;
 
 const TransactionsScreen: React.FC<Props> = ({ navigation }) => {
+  const { t } = useTranslation();
   const [txns, setTxns] = useState<Transaction[]>([]);
   const [filtered, setFiltered] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,7 +54,9 @@ const TransactionsScreen: React.FC<Props> = ({ navigation }) => {
     }
   }, []);
 
-  useEffect(() => { fetchTransactions(); }, [fetchTransactions]);
+  useEffect(() => {
+    fetchTransactions();
+  }, [fetchTransactions]);
 
   useEffect(() => {
     if (!search.trim()) {
@@ -54,10 +65,10 @@ const TransactionsScreen: React.FC<Props> = ({ navigation }) => {
       const q = search.toLowerCase();
       setFiltered(
         txns.filter(
-          (t) =>
-            t.description?.toLowerCase().includes(q) ||
-            t.category?.toLowerCase().includes(q) ||
-            t.merchant_name?.toLowerCase().includes(q)
+          (item) =>
+            item.description?.toLowerCase().includes(q) ||
+            item.category?.toLowerCase().includes(q) ||
+            item.merchant_name?.toLowerCase().includes(q)
         )
       );
     }
@@ -70,18 +81,28 @@ const TransactionsScreen: React.FC<Props> = ({ navigation }) => {
 
   const renderItem = ({ item }: { item: Transaction }) => (
     <View style={styles.txnRow}>
-      <View style={[styles.txnIconBg, item.direction === 'credit' ? styles.creditBg : styles.debitBg]}>
+      <View
+        style={[
+          styles.txnIconBg,
+          item.direction === 'credit' ? styles.creditBg : styles.debitBg,
+        ]}
+      >
         <Text style={styles.txnIcon}>{item.direction === 'credit' ? '↓' : '↑'}</Text>
       </View>
       <View style={styles.txnDetails}>
         <Text style={styles.txnDesc} numberOfLines={1}>
-          {item.merchant_name || item.description || 'Transaction'}
+          {item.merchant_name || item.description || t.transactions.title}
         </Text>
         <Text style={styles.txnMeta}>
-          {item.category ?? 'Uncategorised'} • {formatDate(item.transaction_date)}
+          {item.category ?? '—'} • {formatDate(item.transaction_date)}
         </Text>
       </View>
-      <Text style={[styles.txnAmount, item.direction === 'credit' ? styles.creditText : styles.debitText]}>
+      <Text
+        style={[
+          styles.txnAmount,
+          item.direction === 'credit' ? styles.creditText : styles.debitText,
+        ]}
+      >
         {item.direction === 'credit' ? '+' : '-'}₹{Math.abs(item.amount).toLocaleString('en-IN')}
       </Text>
     </View>
@@ -102,12 +123,12 @@ const TransactionsScreen: React.FC<Props> = ({ navigation }) => {
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
           <Text style={styles.backIcon}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.appBarTitle}>लेन-देन / Transactions</Text>
+        <Text style={styles.appBarTitle}>{t.transactions.title}</Text>
         <TouchableOpacity
           style={styles.addBtn}
           onPress={() => navigation.navigate('AddTransaction')}
         >
-          <Text style={styles.addBtnText}>+ Add</Text>
+          <Text style={styles.addBtnText}>+ {t.transactions.addTitle}</Text>
         </TouchableOpacity>
       </View>
 
@@ -116,7 +137,7 @@ const TransactionsScreen: React.FC<Props> = ({ navigation }) => {
         <Text style={styles.searchIcon}>🔍</Text>
         <TextInput
           style={styles.searchInput}
-          placeholder="खोजें / Search transactions..."
+          placeholder={t.transactions.searchPlaceholder}
           placeholderTextColor={Colors.textWarmGray}
           value={search}
           onChangeText={setSearch}
@@ -132,20 +153,22 @@ const TransactionsScreen: React.FC<Props> = ({ navigation }) => {
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
-            onRefresh={() => { setRefreshing(true); fetchTransactions(); }}
+            onRefresh={() => {
+              setRefreshing(true);
+              fetchTransactions();
+            }}
             colors={[Colors.primaryContainer]}
           />
         }
         ListEmptyComponent={
           <View style={styles.emptyState}>
             <Text style={styles.emptyIcon}>💸</Text>
-            <Text style={styles.emptyTitle}>कोई लेन-देन नहीं / No transactions yet</Text>
-            <Text style={styles.emptyDesc}>Tap "+ Add" to record your first transaction.</Text>
+            <Text style={styles.emptyTitle}>{t.transactions.emptyTitle}</Text>
             <TouchableOpacity
               style={styles.emptyBtn}
               onPress={() => navigation.navigate('AddTransaction')}
             >
-              <Text style={styles.emptyBtnText}>+ Add Transaction</Text>
+              <Text style={styles.emptyBtnText}>+ {t.transactions.addTitle}</Text>
             </TouchableOpacity>
           </View>
         }
@@ -158,52 +181,69 @@ const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: Colors.surface },
   loader: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   appBar: {
-    height: 64, flexDirection: 'row', alignItems: 'center',
-    paddingHorizontal: Spacing.md, borderBottomWidth: 1,
-    borderBottomColor: Colors.outlineVariant, backgroundColor: Colors.surface,
+    height: 64,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: Spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.outlineVariant,
+    backgroundColor: Colors.surface,
   },
   backBtn: { padding: Spacing.sm, marginRight: Spacing.sm },
   backIcon: { fontSize: 24, color: Colors.onSurface },
   appBarTitle: { ...Typography.headlineSm, color: Colors.onSurface, flex: 1 },
   addBtn: {
-    backgroundColor: Colors.primaryContainer, borderRadius: BorderRadius.md,
-    paddingHorizontal: Spacing.md, paddingVertical: Spacing.xs,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.xs,
+    backgroundColor: Colors.primaryContainer,
+    borderRadius: BorderRadius.md,
   },
   addBtnText: { ...Typography.labelLg, color: Colors.onPrimary },
   searchBar: {
-    flexDirection: 'row', alignItems: 'center', margin: Spacing.md,
-    backgroundColor: Colors.surfaceContainerLow, borderRadius: BorderRadius.lg,
-    paddingHorizontal: Spacing.md, borderWidth: 1, borderColor: Colors.outlineVariant,
+    flexDirection: 'row',
+    alignItems: 'center',
+    margin: Spacing.md,
+    paddingHorizontal: Spacing.md,
+    backgroundColor: Colors.surfaceContainerLowest,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    borderColor: Colors.outlineVariant,
   },
-  searchIcon: { fontSize: 16, marginRight: Spacing.sm },
-  searchInput: {
-    flex: 1, ...Typography.bodyMd, color: Colors.onSurface, paddingVertical: 12,
-  },
+  searchIcon: { fontSize: 18, marginRight: Spacing.sm },
+  searchInput: { flex: 1, height: 44, ...Typography.bodyMd, color: Colors.onSurface },
   list: { paddingHorizontal: Spacing.md, paddingBottom: Spacing.xxl },
   txnRow: {
-    flexDirection: 'row', alignItems: 'center', gap: Spacing.md,
-    backgroundColor: Colors.surfaceContainerLowest, borderRadius: BorderRadius.lg,
-    padding: Spacing.md, marginBottom: Spacing.sm,
-    borderWidth: 1, borderColor: `${Colors.outlineVariant}50`,
-    elevation: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: Spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.surfaceContainerLow,
   },
-  txnIconBg: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
-  creditBg: { backgroundColor: `${Colors.tertiary}20` },
-  debitBg: { backgroundColor: `${Colors.error}15` },
-  txnIcon: { fontSize: 18, fontWeight: 'bold' },
+  txnIconBg: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: Spacing.md,
+  },
+  creditBg: { backgroundColor: `${Colors.primaryContainer}20` },
+  debitBg: { backgroundColor: `${Colors.error}20` },
+  txnIcon: { fontSize: 18, fontWeight: '700' },
   txnDetails: { flex: 1 },
   txnDesc: { ...Typography.labelLg, color: Colors.onSurface },
-  txnMeta: { ...Typography.labelSm, color: Colors.textWarmGray, marginTop: 2 },
-  txnAmount: { ...Typography.headlineSm, fontSize: 16 },
-  creditText: { color: Colors.tertiary },
+  txnMeta: { ...Typography.bodySm, color: Colors.textWarmGray },
+  txnAmount: { ...Typography.labelLg, fontWeight: '700' },
+  creditText: { color: Colors.primaryContainer },
   debitText: { color: Colors.error },
-  emptyState: { flex: 1, alignItems: 'center', paddingTop: 80 },
-  emptyIcon: { fontSize: 56, marginBottom: Spacing.md },
-  emptyTitle: { ...Typography.headlineSm, color: Colors.onSurface, marginBottom: Spacing.sm },
-  emptyDesc: { ...Typography.bodyMd, color: Colors.textWarmGray, marginBottom: Spacing.xl },
+  emptyState: { alignItems: 'center', paddingTop: Spacing.xxl, gap: Spacing.md },
+  emptyIcon: { fontSize: 48 },
+  emptyTitle: { ...Typography.headlineSm, color: Colors.textWarmGray },
   emptyBtn: {
-    backgroundColor: Colors.primaryContainer, borderRadius: BorderRadius.lg,
-    paddingHorizontal: Spacing.xl, paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.sm,
+    backgroundColor: Colors.primaryContainer,
+    borderRadius: BorderRadius.md,
   },
   emptyBtnText: { ...Typography.labelLg, color: Colors.onPrimary },
 });

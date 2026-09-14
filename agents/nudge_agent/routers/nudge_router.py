@@ -12,7 +12,12 @@ from ..models.schemas import NudgeOut, FeedbackIn, NudgeEvaluationIn, NudgeEvalu
 from ..services.trigger_registry import run_all_checks
 from ..services.message_service import simplify_message
 from ..services.suppression_service import record_feedback, is_suppressed
-from ..services.nudge_storage_service import save_nudges_batch, get_nudges_by_user, get_all_nudges
+from ..services.nudge_storage_service import (
+    save_nudges_batch,
+    get_nudges_by_user,
+    get_all_nudges,
+    get_outcome_analytics_summary,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -206,22 +211,5 @@ async def evaluate_outcomes_now(force_all: bool = Query(True, description="Force
 @router.get("/outcomes/analytics")
 async def get_outcomes_analytics():
     """Retrieve statistical summary of nudge effectiveness and outcome rates."""
-    all_nudges = get_all_nudges(limit=200)
-    total = len(all_nudges)
-    evaluated = [n for n in all_nudges if n.outcome_status in ["positive", "neutral", "negative"]]
-    positive = [n for n in evaluated if n.outcome_status == "positive"]
-    neutral = [n for n in evaluated if n.outcome_status == "neutral"]
-    negative = [n for n in evaluated if n.outcome_status == "negative"]
-
-    efficacy_rate = round(len(positive) / len(evaluated) * 100, 1) if evaluated else 0.0
-
-    return {
-        "total_nudges_recorded": total,
-        "total_outcomes_evaluated": len(evaluated),
-        "positive_outcomes": len(positive),
-        "neutral_outcomes": len(neutral),
-        "negative_outcomes": len(negative),
-        "efficacy_rate_pct": efficacy_rate,
-        "measured_benefit": "Evaluates PMSBY preservation, buffer maintenance, and goal progression."
-    }
+    return get_outcome_analytics_summary()
 

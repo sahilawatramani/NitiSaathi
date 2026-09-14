@@ -1,5 +1,6 @@
 /**
  * RegisterScreen — Email + password registration.
+ * Pure single-language loaded dynamically via useTranslation().
  */
 import React, { useState } from 'react';
 import {
@@ -19,11 +20,13 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { AuthStackParamList } from '../../navigation/AuthNavigator';
 import { useAuth } from '../../context/AuthContext';
 import { Colors, Typography, Spacing, BorderRadius } from '../../theme';
+import { useTranslation } from '../../i18n';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Register'>;
 
 const RegisterScreen: React.FC<Props> = ({ navigation }) => {
   const { signup } = useAuth();
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -47,7 +50,6 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
       await signup(email.trim(), password);
     } catch (err: unknown) {
       const errData = (err as { response?: { data?: { detail?: unknown } } })?.response?.data?.detail;
-      // Pydantic validation errors return an array of objects
       let msg = 'Registration failed.';
       if (typeof errData === 'string') {
         msg = errData;
@@ -69,32 +71,53 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
           <View style={styles.header}>
             <Text style={styles.brand}>nitisaathi</Text>
-            <Text style={styles.subtitle}>आपका वित्तीय साथी / Your financial companion</Text>
+            <Text style={styles.subtitle}>{t.welcome.tagline}</Text>
           </View>
 
           <View style={styles.card}>
-            <Text style={styles.title}>खाता बनाएं / Create Account</Text>
+            <Text style={styles.title}>{t.auth.registerTitle}</Text>
 
-            {[
-              { label: 'ईमेल / Email', value: email, onChange: setEmail, placeholder: 'you@example.com', keyboard: 'email-address' as const },
-              { label: 'पासवर्ड / Password', value: password, onChange: setPassword, placeholder: '••••••••', secure: true },
-              { label: 'पासवर्ड दोहराएं / Confirm', value: confirm, onChange: setConfirm, placeholder: '••••••••', secure: true },
-            ].map((field) => (
-              <View key={field.label} style={styles.inputGroup}>
-                <Text style={styles.label}>{field.label}</Text>
-                <TextInput
-                  style={styles.input}
-                  value={field.value}
-                  onChangeText={field.onChange}
-                  placeholder={field.placeholder}
-                  placeholderTextColor={Colors.textWarmGray}
-                  keyboardType={field.keyboard ?? 'default'}
-                  secureTextEntry={field.secure}
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                />
-              </View>
-            ))}
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>{t.auth.emailLabel}</Text>
+              <TextInput
+                style={styles.input}
+                value={email}
+                onChangeText={setEmail}
+                placeholder="you@example.com"
+                placeholderTextColor={Colors.textWarmGray}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>{t.auth.passwordLabel}</Text>
+              <TextInput
+                style={styles.input}
+                value={password}
+                onChangeText={setPassword}
+                placeholder="••••••••"
+                placeholderTextColor={Colors.textWarmGray}
+                secureTextEntry
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>{t.auth.confirmPasswordLabel}</Text>
+              <TextInput
+                style={styles.input}
+                value={confirm}
+                onChangeText={setConfirm}
+                placeholder="••••••••"
+                placeholderTextColor={Colors.textWarmGray}
+                secureTextEntry
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+            </View>
 
             <TouchableOpacity
               style={[styles.cta, loading && styles.ctaDisabled]}
@@ -104,7 +127,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
               {loading ? (
                 <ActivityIndicator color={Colors.onPrimary} />
               ) : (
-                <Text style={styles.ctaText}>Register →</Text>
+                <Text style={styles.ctaText}>{t.auth.registerBtn} →</Text>
               )}
             </TouchableOpacity>
 
@@ -113,8 +136,7 @@ const RegisterScreen: React.FC<Props> = ({ navigation }) => {
               style={styles.linkRow}
             >
               <Text style={styles.linkText}>
-                पहले से खाता है? / Already have an account?{' '}
-                <Text style={styles.linkBold}>Login</Text>
+                {t.auth.haveAccount}
               </Text>
             </TouchableOpacity>
           </View>
@@ -140,42 +162,39 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.surfaceContainerLowest,
     borderRadius: BorderRadius.xl,
     padding: Spacing.xl,
+    borderWidth: 1,
+    borderColor: Colors.outlineVariant + '30',
     shadowColor: Colors.onBackground,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 20,
-    elevation: 4,
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+    elevation: 3,
   },
-  title: { ...Typography.headlineSm, color: Colors.onSurface, marginBottom: Spacing.xl },
+  title: { ...Typography.headlineSm, color: Colors.onSurface, marginBottom: Spacing.lg, textAlign: 'center' },
   inputGroup: { marginBottom: Spacing.md },
-  label: { ...Typography.labelLg, color: Colors.onSurfaceVariant, marginBottom: Spacing.xs },
+  label: { ...Typography.labelLg, color: Colors.textWarmGray, marginBottom: Spacing.xs },
   input: {
-    backgroundColor: Colors.surfaceContainerLow,
+    height: 48,
     borderWidth: 1,
     borderColor: Colors.outlineVariant,
     borderRadius: BorderRadius.md,
     paddingHorizontal: Spacing.md,
-    paddingVertical: 14,
     ...Typography.bodyMd,
     color: Colors.onSurface,
+    backgroundColor: Colors.surface,
   },
   cta: {
-    backgroundColor: Colors.secondaryContainer,
+    backgroundColor: Colors.primaryContainer,
     borderRadius: BorderRadius.lg,
     paddingVertical: Spacing.md,
     alignItems: 'center',
-    marginTop: Spacing.md,
-    shadowColor: Colors.secondaryContainer,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 12,
-    elevation: 4,
+    marginTop: Spacing.sm,
+    marginBottom: Spacing.lg,
   },
-  ctaDisabled: { opacity: 0.7 },
-  ctaText: { ...Typography.labelLg, color: Colors.onPrimary, fontSize: 16 },
-  linkRow: { alignItems: 'center', marginTop: Spacing.lg },
-  linkText: { ...Typography.bodyMd, color: Colors.textWarmGray },
-  linkBold: { color: Colors.primaryContainer, fontWeight: '700' },
+  ctaDisabled: { opacity: 0.6 },
+  ctaText: { ...Typography.labelLg, color: Colors.onPrimary, fontWeight: '700' },
+  linkRow: { alignItems: 'center' },
+  linkText: { ...Typography.bodyMd, color: Colors.primaryContainer, fontWeight: '600' },
 });
 
 export default RegisterScreen;

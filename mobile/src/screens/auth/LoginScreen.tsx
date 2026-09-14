@@ -1,5 +1,6 @@
 /**
  * LoginScreen — Simple email + password login with link to Register.
+ * Pure single-language loaded dynamically via useTranslation().
  */
 import React, { useState } from 'react';
 import {
@@ -19,11 +20,13 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { AuthStackParamList } from '../../navigation/AuthNavigator';
 import { useAuth } from '../../context/AuthContext';
 import { Colors, Typography, Spacing, BorderRadius } from '../../theme';
+import { useTranslation } from '../../i18n';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>;
 
 const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const { login } = useAuth();
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -37,7 +40,6 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
     setLoading(true);
     try {
       await login(email.trim(), password);
-      // AuthContext will flip isAuthenticated → RootNavigator shows MainNavigator
     } catch (err: unknown) {
       const errData = (err as { response?: { data?: { detail?: unknown } } })?.response?.data?.detail;
       let msg = 'Login failed. Check your credentials.';
@@ -62,17 +64,15 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
           {/* Header */}
           <View style={styles.header}>
             <Text style={styles.brand}>nitisaathi</Text>
-            <Text style={styles.subtitle}>
-              आपका वित्तीय साथी / Your financial companion
-            </Text>
+            <Text style={styles.subtitle}>{t.welcome.tagline}</Text>
           </View>
 
           {/* Card */}
           <View style={styles.card}>
-            <Text style={styles.title}>लॉग इन करें / Sign In</Text>
+            <Text style={styles.title}>{t.auth.loginTitle}</Text>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>ईमेल / Email</Text>
+              <Text style={styles.label}>{t.auth.emailLabel}</Text>
               <TextInput
                 style={styles.input}
                 value={email}
@@ -86,7 +86,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>पासवर्ड / Password</Text>
+              <Text style={styles.label}>{t.auth.passwordLabel}</Text>
               <View style={styles.passwordRow}>
                 <TextInput
                   style={[styles.input, { flex: 1 }]}
@@ -113,7 +113,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
               {loading ? (
                 <ActivityIndicator color={Colors.onPrimary} />
               ) : (
-                <Text style={styles.ctaText}>लॉग इन / Sign In</Text>
+                <Text style={styles.ctaText}>{t.auth.loginBtn} →</Text>
               )}
             </TouchableOpacity>
 
@@ -122,8 +122,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
               style={styles.linkRow}
             >
               <Text style={styles.linkText}>
-                खाता नहीं है? / No account?{' '}
-                <Text style={styles.linkBold}>Register</Text>
+                {t.auth.noAccount}
               </Text>
             </TouchableOpacity>
           </View>
@@ -149,45 +148,42 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.surfaceContainerLowest,
     borderRadius: BorderRadius.xl,
     padding: Spacing.xl,
+    borderWidth: 1,
+    borderColor: Colors.outlineVariant + '30',
     shadowColor: Colors.onBackground,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 20,
-    elevation: 4,
+    shadowOpacity: 0.06,
+    shadowRadius: 12,
+    elevation: 3,
   },
-  title: { ...Typography.headlineSm, color: Colors.onSurface, marginBottom: Spacing.xl },
+  title: { ...Typography.headlineSm, color: Colors.onSurface, marginBottom: Spacing.lg, textAlign: 'center' },
   inputGroup: { marginBottom: Spacing.md },
-  label: { ...Typography.labelLg, color: Colors.onSurfaceVariant, marginBottom: Spacing.xs },
+  label: { ...Typography.labelLg, color: Colors.textWarmGray, marginBottom: Spacing.xs },
   input: {
-    backgroundColor: Colors.surfaceContainerLow,
+    height: 48,
     borderWidth: 1,
     borderColor: Colors.outlineVariant,
     borderRadius: BorderRadius.md,
     paddingHorizontal: Spacing.md,
-    paddingVertical: 14,
     ...Typography.bodyMd,
     color: Colors.onSurface,
+    backgroundColor: Colors.surface,
   },
-  passwordRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
-  eyeBtn: { paddingHorizontal: 10, paddingVertical: 14 },
+  passwordRow: { flexDirection: 'row', alignItems: 'center', position: 'relative' },
+  eyeBtn: { position: 'absolute', right: Spacing.md, padding: Spacing.xs },
   eyeText: { fontSize: 18 },
   cta: {
-    backgroundColor: Colors.secondaryContainer,
+    backgroundColor: Colors.primaryContainer,
     borderRadius: BorderRadius.lg,
     paddingVertical: Spacing.md,
     alignItems: 'center',
-    marginTop: Spacing.md,
-    shadowColor: Colors.secondaryContainer,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 12,
-    elevation: 4,
+    marginTop: Spacing.sm,
+    marginBottom: Spacing.lg,
   },
-  ctaDisabled: { opacity: 0.7 },
-  ctaText: { ...Typography.labelLg, color: Colors.onPrimary, fontSize: 16 },
-  linkRow: { alignItems: 'center', marginTop: Spacing.lg },
-  linkText: { ...Typography.bodyMd, color: Colors.textWarmGray },
-  linkBold: { color: Colors.primaryContainer, fontWeight: '700' },
+  ctaDisabled: { opacity: 0.6 },
+  ctaText: { ...Typography.labelLg, color: Colors.onPrimary, fontWeight: '700' },
+  linkRow: { alignItems: 'center' },
+  linkText: { ...Typography.bodyMd, color: Colors.primaryContainer, fontWeight: '600' },
 });
 
 export default LoginScreen;

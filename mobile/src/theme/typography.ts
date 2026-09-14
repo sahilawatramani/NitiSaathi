@@ -32,6 +32,11 @@ export const Typography = {
     fontSize: 16,
     lineHeight: 24,
   },
+  bodySm: {
+    fontFamily: 'NotoSans_400Regular',
+    fontSize: 13,
+    lineHeight: 18,
+  },
   labelLg: {
     fontFamily: 'NotoSans_600SemiBold',
     fontSize: 14,

@@ -1,5 +1,6 @@
 /**
  * FraudResultScreen — Result of the fraud analysis.
+ * Pure single-language loaded dynamically via useTranslation().
  */
 import React from 'react';
 import {
@@ -13,11 +14,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { MoreStackParamList } from '../../navigation/MainNavigator';
 import { Colors, Typography, Spacing, BorderRadius } from '../../theme';
+import { useTranslation } from '../../i18n';
 
 type Props = NativeStackScreenProps<MoreStackParamList, 'FraudResult'>;
 
 const FraudResultScreen: React.FC<Props> = ({ route, navigation }) => {
   const { analysis } = route.params;
+  const { t } = useTranslation();
   const isHighRisk = analysis.riskLevel === 'high';
 
   return (
@@ -26,23 +29,18 @@ const FraudResultScreen: React.FC<Props> = ({ route, navigation }) => {
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
           <Text style={styles.backIcon}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.appBarTitle}>परिणाम / Result</Text>
+        <Text style={styles.appBarTitle}>{t.fraud.title}</Text>
       </View>
       <ScrollView contentContainerStyle={styles.container}>
         <View style={[styles.resultCard, isHighRisk ? styles.riskHigh : styles.riskLow]}>
           <Text style={styles.resultIcon}>{isHighRisk ? '⚠️' : '✅'}</Text>
           <Text style={styles.resultTitle}>
-            {isHighRisk ? 'खतरा! (High Risk)' : 'सुरक्षित (Safe)'}
-          </Text>
-          <Text style={styles.resultDesc}>
-            {isHighRisk
-              ? 'यह संदेश धोखाधड़ी हो सकता है। कृपया किसी भी लिंक पर क्लिक न करें या अपनी जानकारी साझा न करें।'
-              : 'यह संदेश सुरक्षित प्रतीत होता है।'}
+            {isHighRisk ? t.fraud.resultScam : t.fraud.resultSafe}
           </Text>
         </View>
 
         <TouchableOpacity style={styles.cta} onPress={() => navigation.goBack()}>
-          <Text style={styles.ctaText}>एक और जाँच करें / Check Another</Text>
+          <Text style={styles.ctaText}>{t.fraud.checkBtn}</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
@@ -63,34 +61,26 @@ const styles = StyleSheet.create({
   backBtn: { padding: Spacing.sm, marginRight: Spacing.sm },
   backIcon: { fontSize: 24, color: Colors.onSurface },
   appBarTitle: { ...Typography.headlineSm, color: Colors.onSurface, flex: 1 },
-  container: { padding: Spacing.lg, paddingBottom: Spacing.xxl, alignItems: 'center' },
+  container: { padding: Spacing.lg, paddingBottom: Spacing.xxl },
   resultCard: {
-    width: '100%',
     padding: Spacing.xl,
     borderRadius: BorderRadius.xl,
-    borderWidth: 2,
+    borderWidth: 1,
     alignItems: 'center',
     marginBottom: Spacing.xl,
+    gap: Spacing.md,
   },
-  riskHigh: {
-    backgroundColor: Colors.errorContainer,
-    borderColor: Colors.error,
-  },
-  riskLow: {
-    backgroundColor: Colors.tertiaryFixed,
-    borderColor: Colors.tertiary,
-  },
-  resultIcon: { fontSize: 48, marginBottom: Spacing.md },
-  resultTitle: { ...Typography.headlineMd, color: Colors.onSurface, marginBottom: Spacing.sm },
-  resultDesc: { ...Typography.bodyMd, color: Colors.onSurfaceVariant, textAlign: 'center' },
+  riskHigh: { backgroundColor: '#FDECEE', borderColor: Colors.error },
+  riskLow: { backgroundColor: '#E8F5E9', borderColor: '#2E7D32' },
+  resultIcon: { fontSize: 48 },
+  resultTitle: { ...Typography.headlineSm, textAlign: 'center', color: Colors.onSurface },
   cta: {
-    width: '100%',
     backgroundColor: Colors.primaryContainer,
-    padding: Spacing.md,
+    paddingVertical: Spacing.md,
     borderRadius: BorderRadius.lg,
     alignItems: 'center',
   },
-  ctaText: { ...Typography.labelLg, color: Colors.onPrimary },
+  ctaText: { ...Typography.labelLg, color: Colors.onPrimary, fontWeight: '700' },
 });
 
 export default FraudResultScreen;

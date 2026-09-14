@@ -1,5 +1,6 @@
 /**
  * ReportsScreen — Download or generate PDF reports.
+ * Pure single-language loaded dynamically via useTranslation().
  */
 import React from 'react';
 import {
@@ -13,27 +14,30 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { MoreStackParamList } from '../../navigation/MainNavigator';
 import { Colors, Typography, Spacing, BorderRadius } from '../../theme';
+import { useTranslation } from '../../i18n';
 
 type Props = NativeStackScreenProps<MoreStackParamList, 'Reports'>;
 
 const ReportsScreen: React.FC<Props> = ({ navigation }) => {
+  const { t } = useTranslation();
+
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <View style={styles.appBar}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
           <Text style={styles.backIcon}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.appBarTitle}>रिपोर्ट / Reports</Text>
+        <Text style={styles.appBarTitle}>{t.reports.title}</Text>
       </View>
       <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.subtitle}>Generate and download your financial summaries.</Text>
+        <Text style={styles.subtitle}>{t.reports.monthlySummary}</Text>
 
         <View style={styles.card}>
           <View style={styles.iconBg}>
             <Text style={styles.icon}>📄</Text>
           </View>
           <View style={styles.content}>
-            <Text style={styles.title}>मासिक सारांश / Monthly Summary</Text>
+            <Text style={styles.title}>{t.reports.monthlySummary}</Text>
             <Text style={styles.desc}>August 2026</Text>
           </View>
           <TouchableOpacity style={styles.btn}>
@@ -46,7 +50,7 @@ const ReportsScreen: React.FC<Props> = ({ navigation }) => {
             <Text style={styles.icon}>📄</Text>
           </View>
           <View style={styles.content}>
-            <Text style={styles.title}>मासिक सारांश / Monthly Summary</Text>
+            <Text style={styles.title}>{t.reports.monthlySummary}</Text>
             <Text style={styles.desc}>July 2026</Text>
           </View>
           <TouchableOpacity style={styles.btn}>

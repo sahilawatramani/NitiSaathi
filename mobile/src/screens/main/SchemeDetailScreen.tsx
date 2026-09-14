@@ -1,5 +1,6 @@
 /**
  * SchemeDetailScreen — Details about a specific scheme.
+ * Pure single-language loaded dynamically via useTranslation().
  */
 import React from 'react';
 import {
@@ -13,11 +14,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { SchemesStackParamList } from '../../navigation/MainNavigator';
 import { Colors, Typography, Spacing, BorderRadius } from '../../theme';
+import { useTranslation } from '../../i18n';
 
 type Props = NativeStackScreenProps<SchemesStackParamList, 'SchemeDetail'>;
 
 const SchemeDetailScreen: React.FC<Props> = ({ route, navigation }) => {
   const { schemeName } = route.params;
+  const { t } = useTranslation();
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -29,20 +32,17 @@ const SchemeDetailScreen: React.FC<Props> = ({ route, navigation }) => {
       </View>
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.card}>
-          <Text style={styles.cardTitle}>What is this scheme?</Text>
+          <Text style={styles.cardTitle}>{t.schemes.title}</Text>
           <Text style={styles.desc}>
-            This is a government-backed scheme designed to provide financial security. Based on your profile, you are eligible to enroll.
+            {t.schemes.budgetGuidance} • {t.schemes.verified}
           </Text>
         </View>
 
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Your Contribution</Text>
-          <Text style={styles.desc}>₹55 / month</Text>
-          <Text style={styles.muted}>This amount will be auto-debited from your bank account.</Text>
-        </View>
-
-        <TouchableOpacity style={styles.cta}>
-          <Text style={styles.ctaText}>साथी से पूछें / Ask Assistant</Text>
+        <TouchableOpacity
+          style={styles.cta}
+          onPress={() => navigation.navigate('Assistant' as any)}
+        >
+          <Text style={styles.ctaText}>{t.schemes.applyNow}</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
@@ -70,19 +70,19 @@ const styles = StyleSheet.create({
     borderRadius: BorderRadius.lg,
     borderWidth: 1,
     borderColor: Colors.outlineVariant,
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.lg,
+    gap: Spacing.sm,
   },
-  cardTitle: { ...Typography.headlineSm, fontSize: 18, color: Colors.onSurface, marginBottom: Spacing.sm },
-  desc: { ...Typography.bodyMd, color: Colors.onSurfaceVariant },
-  muted: { ...Typography.labelSm, color: Colors.textWarmGray, marginTop: Spacing.xs },
+  cardTitle: { ...Typography.headlineSm, color: Colors.onSurface },
+  desc: { ...Typography.bodyMd, color: Colors.textWarmGray, lineHeight: 22 },
   cta: {
     backgroundColor: Colors.primaryContainer,
-    padding: Spacing.md,
+    paddingVertical: Spacing.md,
     borderRadius: BorderRadius.lg,
     alignItems: 'center',
-    marginTop: Spacing.lg,
+    marginTop: Spacing.md,
   },
-  ctaText: { ...Typography.labelLg, color: Colors.onPrimary },
+  ctaText: { ...Typography.labelLg, color: Colors.onPrimary, fontWeight: '700' },
 });
 
 export default SchemeDetailScreen;

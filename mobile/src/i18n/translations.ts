@@ -63,6 +63,17 @@ export interface TranslationSchema {
     getStartedBtn: string;
     footerNote: string;
   };
+  auth: {
+    loginTitle: string;
+    registerTitle: string;
+    emailLabel: string;
+    passwordLabel: string;
+    confirmPasswordLabel: string;
+    loginBtn: string;
+    registerBtn: string;
+    haveAccount: string;
+    noAccount: string;
+  };
   nav: {
     home: string;
     budget: string;
@@ -161,6 +172,61 @@ export interface TranslationSchema {
     voiceGuidance: string;
     highContrast: string;
   };
+  profile: {
+    title: string;
+    edit: string;
+    save: string;
+    setupHint: string;
+    personalSection: string;
+    ageLabel: string;
+    stateLabel: string;
+    financialSection: string;
+    incomeLabel: string;
+    expensesLabel: string;
+    emiLabel: string;
+    savingsLabel: string;
+    riskLabel: string;
+    govSection: string;
+    epfoLabel: string;
+    taxLabel: string;
+    eShramLabel: string;
+    aadhaarLabel: string;
+    bankLabel: string;
+    logoutBtn: string;
+    savedSuccess: string;
+    saveError: string;
+  };
+  more: {
+    title: string;
+    profile: string;
+    seedData: string;
+    fraudCheck: string;
+    nudges: string;
+    reports: string;
+    settings: string;
+  };
+  reports: {
+    title: string;
+    monthlySummary: string;
+    totalEarnings: string;
+    totalExpenses: string;
+    netSavings: string;
+    downloadPdf: string;
+  };
+  transactions: {
+    title: string;
+    searchPlaceholder: string;
+    emptyTitle: string;
+    addTitle: string;
+    expense: string;
+    income: string;
+    descLabel: string;
+    merchantLabel: string;
+    dateLabel: string;
+    categoryLabel: string;
+    recordExpense: string;
+    recordIncome: string;
+  };
 }
 
 export const translations: Record<Language, TranslationSchema> = {
@@ -221,6 +287,17 @@ export const translations: Record<Language, TranslationSchema> = {
       reportDesc: 'आपकी मासिक वित्तीय रिपोर्ट तैयार करने के लिए',
       getStartedBtn: 'शुरू करें',
       footerNote: 'आप बाद में इन्हें सेटिंग्स में बदल सकते हैं',
+    },
+    auth: {
+      loginTitle: 'लॉग इन करें',
+      registerTitle: 'खाता बनाएं',
+      emailLabel: 'ईमेल',
+      passwordLabel: 'पासवर्ड',
+      confirmPasswordLabel: 'पासवर्ड दोहराएं',
+      loginBtn: 'लॉग इन करें',
+      registerBtn: 'रजिस्टर करें',
+      haveAccount: 'पहले से खाता है? लॉग इन करें',
+      noAccount: 'खाता नहीं है? रजिस्टर करें',
     },
     nav: {
       home: 'गृह',
@@ -320,6 +397,61 @@ export const translations: Record<Language, TranslationSchema> = {
       voiceGuidance: 'आवाज मार्गदर्शन (Text-to-Speech)',
       highContrast: 'हाई कंट्रास्ट मोड',
     },
+    profile: {
+      title: 'प्रोफ़ाइल',
+      edit: 'बदलें',
+      save: 'सहेजें',
+      setupHint: '✏️ अपनी प्रोफ़ाइल सेट करने के लिए बदलें पर दबाएं',
+      personalSection: 'व्यक्तिगत जानकारी',
+      ageLabel: 'उम्र',
+      stateLabel: 'राज्य',
+      financialSection: 'वित्तीय जानकारी',
+      incomeLabel: 'मासिक आय (₹)',
+      expensesLabel: 'मासिक खर्च (₹)',
+      emiLabel: 'मासिक EMI (₹)',
+      savingsLabel: 'वर्तमान बचत (₹)',
+      riskLabel: 'जोखिम सहनशीलता',
+      govSection: 'सरकारी योजना पात्रता',
+      epfoLabel: 'EPFO / ESIC पंजीकृत',
+      taxLabel: 'आयकर दाता',
+      eShramLabel: 'ई-श्रम पंजीकृत',
+      aadhaarLabel: 'आधार लिंक्ड बैंक खाता',
+      bankLabel: 'बचत बैंक खाता',
+      logoutBtn: 'लॉग आउट',
+      savedSuccess: 'प्रोफ़ाइल सफलतापूर्वक सहेज ली गई।',
+      saveError: 'प्रोफ़ाइल सहेजने में त्रुटि हुई। कृपया पुनः प्रयास करें।',
+    },
+    more: {
+      title: 'अन्य सुविधाएं',
+      profile: 'प्रोफ़ाइल',
+      seedData: 'टेस्ट डेटा लोड करें',
+      fraudCheck: 'धोखाधड़ी जांच',
+      nudges: 'अलर्ट व सूचनाएं',
+      reports: 'मासिक रिपोर्ट',
+      settings: 'सेटिंग्स',
+    },
+    reports: {
+      title: 'मासिक रिपोर्ट',
+      monthlySummary: 'मासिक सारांश',
+      totalEarnings: 'कुल कमाई',
+      totalExpenses: 'कुल खर्च',
+      netSavings: 'शुद्ध बचत',
+      downloadPdf: 'PDF डाउनलोड करें',
+    },
+    transactions: {
+      title: 'लेन-देन',
+      searchPlaceholder: 'लेन-देन खोजें...',
+      emptyTitle: 'कोई लेन-देन दर्ज नहीं है',
+      addTitle: 'नया लेन-देन जोड़ें',
+      expense: 'खर्च',
+      income: 'आय',
+      descLabel: 'विवरण',
+      merchantLabel: 'व्यापारी / स्रोत (वैकल्पिक)',
+      dateLabel: 'तारीख',
+      categoryLabel: 'श्रेणी',
+      recordExpense: 'खर्च दर्ज करें',
+      recordIncome: 'आय दर्ज करें',
+    },
   },
 
   en: {
@@ -379,6 +511,17 @@ export const translations: Record<Language, TranslationSchema> = {
       reportDesc: 'Generate your monthly financial summary report',
       getStartedBtn: 'Get Started',
       footerNote: 'You can change these anytime in Settings',
+    },
+    auth: {
+      loginTitle: 'Sign In',
+      registerTitle: 'Create Account',
+      emailLabel: 'Email',
+      passwordLabel: 'Password',
+      confirmPasswordLabel: 'Confirm Password',
+      loginBtn: 'Sign In',
+      registerBtn: 'Register',
+      haveAccount: 'Already have an account? Sign In',
+      noAccount: "Don't have an account? Register",
     },
     nav: {
       home: 'Home',
@@ -478,6 +621,61 @@ export const translations: Record<Language, TranslationSchema> = {
       voiceGuidance: 'Voice Guidance (Text-to-Speech)',
       highContrast: 'High Contrast Mode',
     },
+    profile: {
+      title: 'Profile',
+      edit: 'Edit',
+      save: 'Save',
+      setupHint: '✏️ Tap Edit to set up your financial profile',
+      personalSection: 'Personal Information',
+      ageLabel: 'Age',
+      stateLabel: 'State',
+      financialSection: 'Financial Information',
+      incomeLabel: 'Monthly Income (₹)',
+      expensesLabel: 'Monthly Expenses (₹)',
+      emiLabel: 'Monthly EMI (₹)',
+      savingsLabel: 'Current Savings (₹)',
+      riskLabel: 'Risk Tolerance',
+      govSection: 'Government Scheme Eligibility',
+      epfoLabel: 'EPFO / ESIC Registered',
+      taxLabel: 'Income Tax Payer',
+      eShramLabel: 'e-Shram Registered',
+      aadhaarLabel: 'Aadhaar Linked Bank Account',
+      bankLabel: 'Savings Bank Account',
+      logoutBtn: 'Log Out',
+      savedSuccess: 'Profile saved successfully.',
+      saveError: 'Could not save profile. Please try again.',
+    },
+    more: {
+      title: 'More Tools',
+      profile: 'Profile',
+      seedData: 'Load Test Data',
+      fraudCheck: 'Fraud Check',
+      nudges: 'Alerts & Nudges',
+      reports: 'Monthly Reports',
+      settings: 'Settings',
+    },
+    reports: {
+      title: 'Monthly Reports',
+      monthlySummary: 'Monthly Summary',
+      totalEarnings: 'Total Earnings',
+      totalExpenses: 'Total Expenses',
+      netSavings: 'Net Savings',
+      downloadPdf: 'Download PDF',
+    },
+    transactions: {
+      title: 'Transactions',
+      searchPlaceholder: 'Search transactions...',
+      emptyTitle: 'No transactions recorded yet',
+      addTitle: 'Add Transaction',
+      expense: 'Expense',
+      income: 'Income',
+      descLabel: 'Description',
+      merchantLabel: 'Merchant / Source (Optional)',
+      dateLabel: 'Date',
+      categoryLabel: 'Category',
+      recordExpense: 'Record Expense',
+      recordIncome: 'Record Income',
+    },
   },
 
   mr: {
@@ -537,6 +735,17 @@ export const translations: Record<Language, TranslationSchema> = {
       reportDesc: 'तुमचा मासिक आर्थिक अहवाल तयार करण्यासाठी',
       getStartedBtn: 'सुरू करा',
       footerNote: 'तुम्ही हे नंतर सेटिंग्जमध्ये बदलू शकता',
+    },
+    auth: {
+      loginTitle: 'लॉग इन करा',
+      registerTitle: 'खाते तयार करा',
+      emailLabel: 'ईमेल',
+      passwordLabel: 'पासवर्ड',
+      confirmPasswordLabel: 'पासवर्ड पुन्हा टाका',
+      loginBtn: 'लॉग इन करा',
+      registerBtn: 'नोंदणी करा',
+      haveAccount: 'आधीच खाते आहे? लॉग इन करा',
+      noAccount: 'खाते नाही? नोंदणी करा',
     },
     nav: {
       home: 'गृह',
@@ -635,6 +844,61 @@ export const translations: Record<Language, TranslationSchema> = {
       logoutBtn: 'लॉग आउट',
       voiceGuidance: 'आवाज मार्गदर्शन (Text-to-Speech)',
       highContrast: 'हाय कॉन्ट्रास्ट मोड',
+    },
+    profile: {
+      title: 'प्रोफाइल',
+      edit: 'बदला',
+      save: 'जतन करा',
+      setupHint: '✏️ तुमची प्रोफाइल सेट करण्यासाठी बदला वर टॅप करा',
+      personalSection: 'वैयक्तिक माहिती',
+      ageLabel: 'वय',
+      stateLabel: 'राज्य',
+      financialSection: 'आर्थिक माहिती',
+      incomeLabel: 'मासिक उत्पन्न (₹)',
+      expensesLabel: 'मासिक खर्च (₹)',
+      emiLabel: 'मासिक EMI (₹)',
+      savingsLabel: 'सध्याची बचत (₹)',
+      riskLabel: 'जोखीम क्षमता',
+      govSection: 'सरकारी योजना पात्रता',
+      epfoLabel: 'EPFO / ESIC नोंदणीकृत',
+      taxLabel: 'आयकर भरणारे',
+      eShramLabel: 'ई-श्रम नोंदणीकृत',
+      aadhaarLabel: 'आधार लिंक बँक खाते',
+      bankLabel: 'बचत बँक खाते',
+      logoutBtn: 'लॉग आउट',
+      savedSuccess: 'प्रोफाइल यशस्वीरित्या जतन केली.',
+      saveError: 'प्रोफाइल जतन करताना त्रुटी आली. पुन्हा प्रयत्न करा.',
+    },
+    more: {
+      title: 'इतर साधने',
+      profile: 'प्रोफाइल',
+      seedData: 'टेस्ट डेटा लोड करा',
+      fraudCheck: 'फसवणूक तपासणी',
+      nudges: 'अलर्ट आणि सूचना',
+      reports: 'मासिक अहवाल',
+      settings: 'सेटिंग्ज',
+    },
+    reports: {
+      title: 'मासिक अहवाल',
+      monthlySummary: 'मासिक सारांश',
+      totalEarnings: 'एकूण कमाई',
+      totalExpenses: 'एकूण खर्च',
+      netSavings: 'निव्वळ बचत',
+      downloadPdf: 'PDF डाउनलोड करा',
+    },
+    transactions: {
+      title: 'व्यवहार',
+      searchPlaceholder: 'व्यवहार शोधा...',
+      emptyTitle: 'कोणतेही व्यवहार नोंदवलेले नाहीत',
+      addTitle: 'नवीन व्यवहार जोडा',
+      expense: 'खर्च',
+      income: 'उत्पन्न',
+      descLabel: 'तपशील',
+      merchantLabel: 'व्यापारी / स्त्रोत (पर्यायी)',
+      dateLabel: 'तारीख',
+      categoryLabel: 'श्रेणी',
+      recordExpense: 'खर्च नोंदवा',
+      recordIncome: 'उत्पन्न नोंदवा',
     },
   },
 };

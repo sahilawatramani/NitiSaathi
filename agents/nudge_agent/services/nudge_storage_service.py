@@ -196,3 +196,35 @@ def get_all_nudges(limit: int = 100) -> List[NudgeOut]:
         )
     return result
 
+
+def get_outcome_analytics_summary() -> dict:
+    conn = _get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT COUNT(*) FROM nudges")
+    total = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM nudges WHERE outcome_status IN ('positive', 'neutral', 'negative')")
+    evaluated = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM nudges WHERE outcome_status = 'positive'")
+    positive = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM nudges WHERE outcome_status = 'neutral'")
+    neutral = cursor.fetchone()[0]
+
+    cursor.execute("SELECT COUNT(*) FROM nudges WHERE outcome_status = 'negative'")
+    negative = cursor.fetchone()[0]
+    conn.close()
+
+    efficacy_rate = round(positive / evaluated * 100, 1) if evaluated > 0 else 0.0
+
+    return {
+        "total_nudges_recorded": total,
+        "total_outcomes_evaluated": evaluated,
+        "positive_outcomes": positive,
+        "neutral_outcomes": neutral,
+        "negative_outcomes": negative,
+        "efficacy_rate_pct": efficacy_rate,
+        "measured_benefit": "Evaluates PMSBY preservation, buffer maintenance, and goal progression."
+    }
+

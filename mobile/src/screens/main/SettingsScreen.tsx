@@ -35,9 +35,9 @@ const SettingsScreen: React.FC = () => {
   };
 
   const LANGUAGES: { key: Language; label: string }[] = [
-    { key: 'hi', label: 'हिंदी (Hindi)' },
+    { key: 'hi', label: 'हिंदी' },
     { key: 'en', label: 'English' },
-    { key: 'mr', label: 'मराठी (Marathi)' },
+    { key: 'mr', label: 'मराठी' },
   ];
 
   return (
@@ -69,7 +69,7 @@ const SettingsScreen: React.FC = () => {
           >
             <Text style={styles.menuIcon}>🌐</Text>
             <Text style={[styles.menuText, activeTab === 'lang' && styles.menuTextActive]}>
-              {t.settings.languageTitle} ({language.toUpperCase()})
+              {t.settings.languageTitle}
             </Text>
           </TouchableOpacity>
 
