@@ -17,7 +17,7 @@ router = APIRouter(prefix="/literacy", tags=["Literacy Agent"])
 
 
 @router.post("/rewrite", response_model=RewriteResponse)
-async def rewrite_text(request: RewriteRequest) -> RewriteResponse:
+def rewrite_text(request: RewriteRequest) -> RewriteResponse:
     """Rewrite input text for the target literacy level.
 
     This endpoint is the standalone API surface of the Literacy Agent.

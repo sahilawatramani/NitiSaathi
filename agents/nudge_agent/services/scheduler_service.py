@@ -112,7 +112,7 @@ class NudgeSchedulerService:
                     balance = latest_row.get("closing_balance", 0.0)
                     days = int(latest_row.get("days_to_next_pmsby_debit", 0) or 0)
                     raw_msg = f"Your balance is low (₹{balance:,.2f}) and your PMSBY insurance payment is due in {days} days."
-                    msg = simplify_message(raw_msg, literacy_level="medium", language_pref="en")
+                    msg = await asyncio.to_thread(simplify_message, raw_msg, "medium", "en")
                     nudge = NudgeOut(
                         id=str(uuid.uuid4()),
                         user_id=str(user_id),
@@ -128,7 +128,7 @@ class NudgeSchedulerService:
                 elif bool(latest_row.get("low_balance_flag")) and not is_suppressed(str(user_id), "low_balance"):
                     balance = latest_row.get("closing_balance", 0.0)
                     raw_msg = f"Your closing balance is ₹{balance:,.2f}, which is below your safe reserve. Pause discretionary spend."
-                    msg = simplify_message(raw_msg, literacy_level="medium", language_pref="en")
+                    msg = await asyncio.to_thread(simplify_message, raw_msg, "medium", "en")
                     nudge = NudgeOut(
                         id=str(uuid.uuid4()),
                         user_id=str(user_id),

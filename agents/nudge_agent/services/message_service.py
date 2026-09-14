@@ -27,7 +27,7 @@ def simplify_message(raw_message: str, literacy_level: str = "medium", language_
     }
 
     try:
-        response = requests.post(LITERACY_AGENT_URL, json=payload, timeout=2.0)
+        response = requests.post(LITERACY_AGENT_URL, json=payload, timeout=0.8)
         if response.status_code == 200:
             data = response.json()
             return data.get("rewritten_text", raw_message)

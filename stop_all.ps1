@@ -1,5 +1,5 @@
 # stop_all.ps1 — Stop all running NitiSaathi microservices on Windows
-$ports = @(8000, 8001, 8002, 8004, 8005, 8100, 3000)
+$ports = @(8000, 8001, 8002, 8004, 8005, 8100, 3000, 8081)
 
 Write-Host "Stopping NitiSaathi services on ports: $($ports -join ', ')..." -ForegroundColor Yellow
 
