@@ -46,6 +46,50 @@ export interface BudgetState {
   week_start?: string;
 }
 
+export interface MonthlyIncomeHistoryItem {
+  month: string;
+  income: number;
+  source?: string;
+}
+
+export interface BudgetPlannerResponse {
+  history: MonthlyIncomeHistoryItem[];
+  forecast: {
+    month: string;
+    predicted_income: number;
+    upper_bound: number;
+    lower_bound: number;
+    is_forecast: boolean;
+  }[];
+  full_trajectory: {
+    month: string;
+    actual_income: number | null;
+    predicted_income: number | null;
+    upper_bound: number | null;
+    lower_bound: number | null;
+    is_forecast: boolean;
+  }[];
+  wma_income: number;
+  forecasted_monthly_income: number;
+  current_inflation_rate: number;
+  group_label: string;
+  spending_guide: {
+    total_income: number;
+    basic_needs: { name: string; pct: number; amount: number };
+    emergency_savings: { name: string; pct: number; amount: number };
+    future_growth: { name: string; pct: number; amount: number };
+    personal_spending: { name: string; pct: number; amount: number };
+  };
+  purchasing_power_loss_pct: number;
+  inflation_awareness: {
+    current_cost: number;
+    annual_rate: number;
+    cost_5y: number;
+    cost_10y: number;
+    cost_15y: number;
+  };
+}
+
 export const analyticsService = {
   getBudgetState: async (): Promise<BudgetState> => {
     const res = await api.get<BudgetState>('/analytics/budget-state');
@@ -59,6 +103,19 @@ export const analyticsService = {
 
   getForecast: async (months = 3) => {
     const res = await api.get(`/analytics/forecast?months=${months}`);
+    return res.data;
+  },
+
+  getBudgetPlanner: async (currentCost = 1000): Promise<BudgetPlannerResponse> => {
+    const res = await api.get<BudgetPlannerResponse>(`/analytics/budget-planner?current_cost=${currentCost}`);
+    return res.data;
+  },
+
+  updateBudgetPlanner: async (history: MonthlyIncomeHistoryItem[], currentCost = 1000): Promise<BudgetPlannerResponse> => {
+    const res = await api.post<BudgetPlannerResponse>('/analytics/budget-planner', {
+      history,
+      current_cost: currentCost,
+    });
     return res.data;
   },
 };

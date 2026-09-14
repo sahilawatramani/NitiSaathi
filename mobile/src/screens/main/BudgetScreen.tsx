@@ -1,7 +1,7 @@
 /**
  * BudgetScreen — Budgeting and income forecasting screen matching reference design.
- * Renders dynamic WMA forecasted income charts, adaptive savings gauge,
- * and real-time safe-to-spend breakdown.
+ * Renders editable Income History, Time-Series WMA Predictor Chart, 50/10/25/15 Spending Guide,
+ * Purchasing Power Alert, and Inflation Awareness interactive calculator.
  * Pure single-language strings dynamically loaded via useTranslation().
  */
 import React, { useCallback, useEffect, useState } from 'react';
@@ -11,27 +11,40 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
+  TextInput,
   ActivityIndicator,
   RefreshControl,
+  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { Colors, Typography, Spacing, BorderRadius } from '../../theme';
 import { AppHeader } from '../../components/AppHeader';
 import { useTranslation } from '../../i18n';
-import { analyticsService, BudgetState } from '../../services/analyticsService';
+import {
+  analyticsService,
+  BudgetPlannerResponse,
+  MonthlyIncomeHistoryItem,
+} from '../../services/analyticsService';
 
-const BudgetScreen: React.FC = () => {
+const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+export const BudgetScreen: React.FC = () => {
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
-  const [budgetState, setBudgetState] = useState<BudgetState | null>(null);
+  const [planner, setPlanner] = useState<BudgetPlannerResponse | null>(null);
+  const [history, setHistory] = useState<MonthlyIncomeHistoryItem[]>([]);
+  const [currentCost, setCurrentCost] = useState<string>('1000');
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [calculating, setCalculating] = useState(false);
+  const [activeTab, setActiveTab] = useState<'planner' | 'spending' | 'inflation'>('planner');
 
-  const fetchData = useCallback(async () => {
+  const fetchData = useCallback(async (cost = 1000) => {
     try {
-      const bState = await analyticsService.getBudgetState();
-      setBudgetState(bState);
+      const data = await analyticsService.getBudgetPlanner(cost);
+      setPlanner(data);
+      setHistory(data.history || []);
     } catch {
       // Offline fallback
     } finally {
@@ -41,8 +54,46 @@ const BudgetScreen: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    fetchData();
+    fetchData(1000);
   }, [fetchData]);
+
+  const handleRecalculate = async () => {
+    try {
+      setCalculating(true);
+      const costNum = parseFloat(currentCost) || 1000;
+      const res = await analyticsService.updateBudgetPlanner(history, costNum);
+      setPlanner(res);
+    } catch (err) {
+      Alert.alert('Error', 'Failed to recalculate income forecast.');
+    } finally {
+      setCalculating(false);
+    }
+  };
+
+  const handleIncomeChange = (index: number, val: string) => {
+    const num = parseFloat(val) || 0;
+    const updated = [...history];
+    updated[index] = { ...updated[index], income: num };
+    setHistory(updated);
+  };
+
+  const handleAddMonth = () => {
+    const lastMonth = history.length > 0 ? history[history.length - 1].month : 'Jun';
+    const lastIdx = MONTH_NAMES.indexOf(lastMonth);
+    const nextMonth = MONTH_NAMES[(lastIdx + 1) % 12];
+    const lastIncome = history.length > 0 ? history[history.length - 1].income : 25000;
+
+    setHistory([
+      ...history,
+      { month: nextMonth, income: lastIncome, source: 'Primary Income' },
+    ]);
+  };
+
+  const handleDeleteMonth = (index: number) => {
+    if (history.length <= 1) return;
+    const updated = history.filter((_, i) => i !== index);
+    setHistory(updated);
+  };
 
   if (loading) {
     return (
@@ -55,42 +106,29 @@ const BudgetScreen: React.FC = () => {
     );
   }
 
-  const savingsRatePct = Math.round((budgetState?.savings_rate_recommendation ?? 0.1) * 100);
-  const safeToSpend = budgetState?.safe_to_spend_today ?? 450.0;
-  const wmaIncome = budgetState?.income_wma_4w ?? 0;
-  const predictedNextWeek = budgetState?.predicted_next_week_income ?? wmaIncome;
-  const volatilityPct = budgetState?.income_volatility_pct ?? 0;
+  const forecastIncome = planner?.forecasted_monthly_income ?? 25000;
+  const groupLabel = planner?.group_label ?? 'MIDDLE INCOME GROUP';
+  const inflationRate = planner?.current_inflation_rate ?? 5.1;
+  const trajectory = planner?.full_trajectory ?? [];
+  const spendingGuide = planner?.spending_guide;
 
-  // Build trend points
-  const rawWeeks = budgetState?.weekly_features_last4 ?? [];
-  const trendPoints: { label: string; amount: number; isProj?: boolean }[] = [];
+  // Chart max / min values
+  const chartPoints = trajectory.map((t) => ({
+    month: t.month,
+    amount: t.is_forecast ? (t.predicted_income ?? 0) : (t.actual_income ?? 0),
+    isForecast: t.is_forecast,
+  }));
+  const maxAmount = Math.max(...chartPoints.map((p) => p.amount), 1000);
+  const minAmount = Math.min(...chartPoints.map((p) => p.amount), 0);
+  const maxBarHeight = 110;
+  const minBarHeight = 24;
 
-  if (rawWeeks.length > 0) {
-    rawWeeks.slice(-4).forEach((w, i) => {
-      trendPoints.push({
-        label: `W${i + 1}`,
-        amount: w.total_income,
-      });
-    });
-  } else {
-    const base = wmaIncome > 0 ? wmaIncome : 5000;
-    trendPoints.push(
-      { label: 'W1', amount: Math.round(base * 0.9) },
-      { label: 'W2', amount: Math.round(base * 1.05) },
-      { label: 'W3', amount: Math.round(base * 0.95) },
-      { label: 'W4', amount: Math.round(base * 1.1) }
-    );
-  }
-
-  trendPoints.push({
-    label: 'W5*',
-    amount: predictedNextWeek > 0 ? predictedNextWeek : Math.round((trendPoints[trendPoints.length - 1]?.amount ?? 5000) * 1.05),
-    isProj: true,
-  });
-
-  const maxVal = Math.max(...trendPoints.map((p) => p.amount), 1000);
-  const minVal = Math.min(...trendPoints.map((p) => p.amount), 0);
-  const chartHeight = 100;
+  // Dynamic cost projections
+  const costNum = parseFloat(currentCost) || 1000;
+  const cost5y = Math.round(costNum * Math.pow(1.04, 5));
+  const cost10y = Math.round(costNum * Math.pow(1.04, 10));
+  const cost15y = Math.round(costNum * Math.pow(1.04, 15));
+  const purchasingPowerOneYear = Math.round(forecastIncome / (1 + inflationRate / 100));
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -104,376 +142,659 @@ const BudgetScreen: React.FC = () => {
             refreshing={refreshing}
             onRefresh={() => {
               setRefreshing(true);
-              fetchData();
+              fetchData(costNum);
             }}
           />
         }
       >
-        {/* 1. Income Forecast Card */}
+        {/* Header Persona / Group Badge */}
+        <View style={styles.headerRow}>
+          <View style={styles.groupBadge}>
+            <View style={styles.badgeDot} />
+            <Text style={styles.groupBadgeText}>{groupLabel}</Text>
+          </View>
+          <View style={styles.liveRateBadge}>
+            <Text style={styles.liveRateText}>{inflationRate}% Live Inflation</Text>
+          </View>
+        </View>
+
+        {/* 1. Time Series Income Forecast Chart Card */}
         <View style={styles.card}>
           <View style={styles.cardHeader}>
             <View>
-              <Text style={styles.cardTitle}>{t.budget.forecastedIncome}</Text>
+              <Text style={styles.cardTitle}>Income Predictor & Spending Guide</Text>
               <Text style={styles.cardSub}>
-                WMA: ₹{Math.round(wmaIncome).toLocaleString('en-IN')}/wk • {t.budget.volatilityLabel}: {volatilityPct.toFixed(1)}%
+                Weighted moving average with inflation adjustment
               </Text>
             </View>
-            <View style={styles.forecastBadge}>
-              <Text style={styles.forecastBadgeText}>
-                ₹{Math.round(predictedNextWeek).toLocaleString('en-IN')}
+            <View style={styles.forecastPill}>
+              <Text style={styles.forecastPillText}>
+                ₹{Math.round(forecastIncome).toLocaleString('en-IN')}
               </Text>
             </View>
           </View>
 
-          {/* Visual Trend Chart */}
-          <View style={styles.trendChartBox}>
-            <View style={styles.pointsRow}>
-              {trendPoints.map((pt, i) => {
-                const fraction = maxVal > minVal ? (pt.amount - minVal) / (maxVal - minVal) : 0.5;
-                const pointBottom = Math.max(10, Math.round(fraction * (chartHeight - 30)));
+          {/* Dynamic Visual Trajectory Chart */}
+          <View style={styles.chartBox}>
+            <View style={styles.barsRow}>
+              {chartPoints.map((pt, i) => {
+                const fraction = maxAmount > minAmount ? (pt.amount - minAmount) / (maxAmount - minAmount) : 0.5;
+                const barHeight = Math.max(minBarHeight, Math.round(fraction * maxBarHeight));
 
                 return (
-                  <View key={pt.label} style={styles.pointCol}>
-                    <Text style={[styles.pointValText, pt.isProj && styles.pointValTextProj]}>
-                      ₹{(pt.amount / 1000).toFixed(1)}k
+                  <View key={pt.month} style={styles.barCol}>
+                    <Text style={[styles.barValText, pt.isForecast && styles.barValTextProj]}>
+                      ₹{(pt.amount / 1000).toFixed(0)}k
                     </Text>
-                    <View style={styles.pointTrack}>
+                    <View style={styles.barTrack}>
                       <View
                         style={[
-                          styles.trendDot,
-                          { bottom: pointBottom },
-                          pt.isProj && styles.trendDotProj,
+                          styles.barFill,
+                          { height: barHeight },
+                          pt.isForecast ? styles.barFillProj : styles.barFillActual,
                         ]}
                       />
                     </View>
-                    <Text style={[styles.pointLabel, pt.isProj && styles.pointLabelProj]}>
-                      {pt.label}
+                    <Text style={[styles.barMonthText, pt.isForecast && styles.barMonthTextProj]}>
+                      {pt.month}
                     </Text>
                   </View>
                 );
               })}
             </View>
+
+            {/* Legend */}
+            <View style={styles.legendRow}>
+              <View style={styles.legendItem}>
+                <View style={[styles.legendDot, { backgroundColor: '#06b6d4' }]} />
+                <Text style={styles.legendText}>Past Actuals</Text>
+              </View>
+              <View style={styles.legendItem}>
+                <View style={[styles.legendDot, { backgroundColor: '#f59e0b', borderStyle: 'dashed' }]} />
+                <Text style={styles.legendText}>Timeseries Forecast (F)</Text>
+              </View>
+            </View>
+          </View>
+        </View>
+
+        {/* 2. Editable Income History Section */}
+        <View style={styles.card}>
+          <View style={styles.sectionHeaderRow}>
+            <Text style={styles.cardTitle}>Income History</Text>
+            <Text style={styles.historySub}>Edit past months to refine trend</Text>
           </View>
 
-          {/* Steady Income Callout */}
-          <View style={styles.infoCallout}>
-            <View style={styles.infoIconCircle}>
-              <Text style={styles.infoIcon}>ℹ️</Text>
+          <View style={styles.historyTable}>
+            <View style={styles.tableHeaderRow}>
+              <Text style={[styles.tableHeadCol, { flex: 1.2 }]}>Month</Text>
+              <Text style={[styles.tableHeadCol, { flex: 2 }]}>Income (₹)</Text>
+              <Text style={[styles.tableHeadCol, { flex: 0.8, textAlign: 'center' }]}>Del</Text>
             </View>
-            <Text style={styles.infoText}>
-              {volatilityPct > 30
-                ? `${t.budget.steadyIncomeCallout} (${volatilityPct.toFixed(0)}% variation)`
-                : t.budget.steadyIncomeCallout}
+
+            {history.map((row, idx) => (
+              <View key={idx} style={styles.tableRow}>
+                <View style={[styles.tableCell, { flex: 1.2 }]}>
+                  <Text style={styles.monthBadge}>{row.month}</Text>
+                </View>
+
+                <View style={[styles.tableCell, { flex: 2 }]}>
+                  <View style={styles.inputWrapper}>
+                    <Text style={styles.rupeePrefix}>₹</Text>
+                    <TextInput
+                      style={styles.incomeInput}
+                      keyboardType="numeric"
+                      value={row.income.toString()}
+                      onChangeText={(val) => handleIncomeChange(idx, val)}
+                    />
+                  </View>
+                </View>
+
+                <View style={[styles.tableCell, { flex: 0.8, alignItems: 'center' }]}>
+                  <TouchableOpacity
+                    onPress={() => handleDeleteMonth(idx)}
+                    disabled={history.length <= 1}
+                    style={[styles.deleteBtn, history.length <= 1 && styles.deleteBtnDisabled]}
+                  >
+                    <Text style={styles.deleteBtnText}>✕</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ))}
+          </View>
+
+          <TouchableOpacity style={styles.addMonthBtn} onPress={handleAddMonth} activeOpacity={0.8}>
+            <Text style={styles.addMonthText}>+ Add Month</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.recalculateBtn}
+            onPress={handleRecalculate}
+            disabled={calculating}
+            activeOpacity={0.85}
+          >
+            {calculating ? (
+              <ActivityIndicator color="#fff" size="small" />
+            ) : (
+              <Text style={styles.recalculateBtnText}>Calculate Forecast</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+
+        {/* 3. Recommended Spending Guide (50/10/25/15) */}
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <View>
+              <Text style={styles.cardTitle}>Recommended Spending Guide</Text>
+              <Text style={styles.cardSub}>Based on ₹{forecastIncome.toLocaleString('en-IN')} monthly forecast</Text>
+            </View>
+          </View>
+
+          <View style={styles.spendingList}>
+            {/* Basic Needs 50% */}
+            <View style={styles.spendingItem}>
+              <View style={styles.spendingTopRow}>
+                <Text style={styles.spendingCategoryTitle}>Basic Needs (50%)</Text>
+                <Text style={[styles.spendingAmount, { color: '#06b6d4' }]}>
+                  ₹{Math.round(spendingGuide?.basic_needs?.amount ?? forecastIncome * 0.5).toLocaleString('en-IN')}
+                </Text>
+              </View>
+              <Text style={styles.spendingDesc}>Housing, groceries, utilities</Text>
+              <View style={styles.progressTrack}>
+                <View style={[styles.progressBar, { width: '50%', backgroundColor: '#06b6d4' }]} />
+              </View>
+            </View>
+
+            {/* Emergency Savings 10% */}
+            <View style={styles.spendingItem}>
+              <View style={styles.spendingTopRow}>
+                <Text style={styles.spendingCategoryTitle}>Emergency Savings (10%)</Text>
+                <Text style={[styles.spendingAmount, { color: '#10b981' }]}>
+                  ₹{Math.round(spendingGuide?.emergency_savings?.amount ?? forecastIncome * 0.1).toLocaleString('en-IN')}
+                </Text>
+              </View>
+              <Text style={styles.spendingDesc}>Liquid emergency fund</Text>
+              <View style={styles.progressTrack}>
+                <View style={[styles.progressBar, { width: '10%', backgroundColor: '#10b981' }]} />
+              </View>
+            </View>
+
+            {/* Future Growth 25% */}
+            <View style={styles.spendingItem}>
+              <View style={styles.spendingTopRow}>
+                <Text style={styles.spendingCategoryTitle}>Future Growth (25%)</Text>
+                <Text style={[styles.spendingAmount, { color: '#8b5cf6' }]}>
+                  ₹{Math.round(spendingGuide?.future_growth?.amount ?? forecastIncome * 0.25).toLocaleString('en-IN')}
+                </Text>
+              </View>
+              <Text style={styles.spendingDesc}>Investments, debt payoff</Text>
+              <View style={styles.progressTrack}>
+                <View style={[styles.progressBar, { width: '25%', backgroundColor: '#8b5cf6' }]} />
+              </View>
+            </View>
+
+            {/* Personal Spending 15% */}
+            <View style={styles.spendingItem}>
+              <View style={styles.spendingTopRow}>
+                <Text style={styles.spendingCategoryTitle}>Personal Spending (15%)</Text>
+                <Text style={[styles.spendingAmount, { color: '#f59e0b' }]}>
+                  ₹{Math.round(spendingGuide?.personal_spending?.amount ?? forecastIncome * 0.15).toLocaleString('en-IN')}
+                </Text>
+              </View>
+              <Text style={styles.spendingDesc}>Entertainment, dining out</Text>
+              <View style={styles.progressTrack}>
+                <View style={[styles.progressBar, { width: '15%', backgroundColor: '#f59e0b' }]} />
+              </View>
+            </View>
+          </View>
+
+          {/* Inflation Warning Alert Box */}
+          <View style={styles.inflationAlertBox}>
+            <Text style={styles.inflationAlertIcon}>⚠️</Text>
+            <Text style={styles.inflationAlertText}>
+              At {inflationRate}% inflation, ₹{forecastIncome.toLocaleString('en-IN')} will have the purchasing power of approximately ₹{purchasingPowerOneYear.toLocaleString('en-IN')} in one year.
             </Text>
           </View>
         </View>
 
-        {/* 2. Savings Rate Card */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>{t.budget.savingsGoal} ({savingsRatePct}%)</Text>
-
-          <View style={styles.savingsRow}>
-            {/* Radial Gauge Visual */}
-            <View style={styles.gaugeContainer}>
-              <View style={styles.gaugeArc}>
-                <View style={styles.gaugeCenter}>
-                  <Text style={styles.gaugeNumber}>{savingsRatePct}%</Text>
-                </View>
-              </View>
-            </View>
-
-            <View style={styles.savingsDetails}>
-              <Text style={styles.savingsDesc}>{t.dashboard.savingsRate}</Text>
-              <Text style={styles.savingsTargetAmount}>
-                ₹{Math.round(wmaIncome * (savingsRatePct / 100)).toLocaleString('en-IN')}/wk
-              </Text>
-              <Text style={styles.savingsAdviceText}>
-                {volatilityPct < 15
-                  ? 'Stable income → 20% savings target'
-                  : volatilityPct <= 30
-                  ? 'Moderate volatility → 10% target'
-                  : 'High volatility → 5% flexible target'}
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        {/* 3. Safe to Spend Daily */}
+        {/* 4. Inflation Awareness Interactive Projections */}
         <View style={styles.card}>
           <View style={styles.cardHeader}>
             <View>
-              <Text style={styles.cardTitle}>{t.budget.safeToSpend}</Text>
-              <Text style={styles.safeSub}>
-                Available spend capacity calculated by WMA & Debits
-              </Text>
-            </View>
-            <Text style={styles.safeAmount}>₹{safeToSpend.toFixed(2)}/day</Text>
-          </View>
-
-          <View style={styles.safeBreakdownRow}>
-            <View style={styles.safeMetricBox}>
-              <Text style={styles.metricLabel}>Predicted Income</Text>
-              <Text style={styles.metricVal}>₹{Math.round(wmaIncome).toLocaleString('en-IN')}</Text>
-            </View>
-            <View style={styles.safeMetricBox}>
-              <Text style={styles.metricLabel}>Mandatory Debits</Text>
-              <Text style={styles.metricVal}>
-                ₹{budgetState?.upcoming_mandatory_debits?.reduce((acc, d) => acc + d.amount, 0).toLocaleString('en-IN') || '0'}
-              </Text>
-            </View>
-            <View style={styles.safeMetricBox}>
-              <Text style={styles.metricLabel}>Daily Budget</Text>
-              <Text style={[styles.metricVal, { color: Colors.primaryContainer }]}>₹{safeToSpend.toFixed(0)}</Text>
+              <Text style={styles.cardTitle}>Inflation Awareness</Text>
+              <Text style={styles.cardSub}>See how inflation erodes value over time (at 4% annual rate)</Text>
             </View>
           </View>
 
-          <Text style={styles.safeDesc}>{t.budget.causalPlan}</Text>
+          <View style={styles.costInputRow}>
+            <Text style={styles.costInputLabel}>Enter item cost:</Text>
+            <View style={styles.costInputWrapper}>
+              <Text style={styles.costRupeePrefix}>₹</Text>
+              <TextInput
+                style={styles.costInput}
+                keyboardType="numeric"
+                value={currentCost}
+                onChangeText={(val) => {
+                  setCurrentCost(val);
+                }}
+              />
+            </View>
+          </View>
 
-          <View style={styles.actionRow}>
-            <TouchableOpacity
-              style={styles.actionBtnOutline}
-              onPress={() => navigation.navigate('CausalChain')}
-            >
-              <Text style={styles.actionBtnOutlineText}>{t.budget.causal1}</Text>
-            </TouchableOpacity>
+          <View style={styles.projectionGrid}>
+            <View style={styles.projectionCard}>
+              <Text style={styles.projectionCardTitle}>In 5 Years</Text>
+              <Text style={styles.projectionCardVal}>₹{cost5y.toLocaleString('en-IN')}</Text>
+              <Text style={styles.projectionCardPct}>+21.7%</Text>
+            </View>
+
+            <View style={styles.projectionCard}>
+              <Text style={styles.projectionCardTitle}>In 10 Years</Text>
+              <Text style={styles.projectionCardVal}>₹{cost10y.toLocaleString('en-IN')}</Text>
+              <Text style={styles.projectionCardPct}>+48.0%</Text>
+            </View>
+
+            <View style={styles.projectionCard}>
+              <Text style={styles.projectionCardTitle}>In 15 Years</Text>
+              <Text style={styles.projectionCardVal}>₹{cost15y.toLocaleString('en-IN')}</Text>
+              <Text style={[styles.projectionCardPct, { color: '#ef4444' }]}>+80.1%</Text>
+            </View>
           </View>
         </View>
+
       </ScrollView>
     </SafeAreaView>
   );
 };
 
+export default BudgetScreen;
+
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: Colors.backgroundOffWhite },
-  loader: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.backgroundOffWhite },
-  container: { padding: Spacing.md, gap: Spacing.md, paddingBottom: Spacing.xxl },
-  card: {
-    backgroundColor: Colors.surfaceContainerLowest,
-    borderRadius: BorderRadius.xl,
-    padding: Spacing.lg,
+  safeArea: {
+    flex: 1,
+    backgroundColor: Colors.background,
+  },
+  loader: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  container: {
+    padding: Spacing.md,
     gap: Spacing.md,
-    borderWidth: 1,
-    borderColor: Colors.outlineVariant + '40',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: 2,
+    paddingBottom: Spacing.xxl * 2,
   },
-  cardHeader: {
+  headerRow: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
-  cardTitle: {
-    ...Typography.headlineSm,
-    fontSize: 16,
-    fontWeight: '800',
-    color: Colors.onSurface,
-  },
-  cardSub: {
-    ...Typography.bodySm,
-    fontSize: 12,
-    color: Colors.textWarmGray,
-    marginTop: 2,
-  },
-  forecastBadge: {
-    backgroundColor: Colors.primaryContainer + '18',
+  groupBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(6, 182, 212, 0.1)',
+    borderColor: 'rgba(6, 182, 212, 0.3)',
+    borderWidth: 1,
     paddingHorizontal: Spacing.sm + 2,
     paddingVertical: 4,
-    borderRadius: BorderRadius.md,
+    borderRadius: BorderRadius.full,
+    gap: 6,
+  },
+  badgeDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#06b6d4',
+  },
+  groupBadgeText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#06b6d4',
+  },
+  liveRateBadge: {
+    backgroundColor: 'rgba(16, 185, 129, 0.1)',
+    borderColor: 'rgba(16, 185, 129, 0.3)',
     borderWidth: 1,
-    borderColor: Colors.primaryContainer + '40',
+    paddingHorizontal: Spacing.sm + 2,
+    paddingVertical: 4,
+    borderRadius: BorderRadius.full,
   },
-  forecastBadgeText: {
-    ...Typography.labelSm,
-    color: Colors.primaryContainer,
-    fontWeight: '800',
-    fontSize: 13,
+  liveRateText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#10b981',
   },
-  trendChartBox: {
-    backgroundColor: Colors.surface,
+  card: {
+    backgroundColor: Colors.surfaceContainerLowest,
     borderRadius: BorderRadius.lg,
     padding: Spacing.md,
     borderWidth: 1,
-    borderColor: Colors.outlineVariant + '30',
+    borderColor: Colors.outlineVariant,
   },
-  pointsRow: {
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: Spacing.sm,
+  },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: Colors.onSurface,
+  },
+  cardSub: {
+    fontSize: 12,
+    color: Colors.onSurfaceVariant,
+    marginTop: 2,
+  },
+  forecastPill: {
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 4,
+    borderRadius: BorderRadius.sm,
+    borderWidth: 1,
+    borderColor: 'rgba(239, 68, 68, 0.2)',
+  },
+  forecastPillText: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#ef4444',
+  },
+  chartBox: {
+    marginTop: Spacing.sm,
+  },
+  barsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
-    height: 120,
+    height: 140,
+    paddingTop: Spacing.md,
   },
-  pointCol: {
-    flex: 1,
+  barCol: {
     alignItems: 'center',
-    height: '100%',
-    justifyContent: 'space-between',
+    flex: 1,
   },
-  pointValText: {
+  barValText: {
     fontSize: 10,
-    color: Colors.textWarmGray,
+    color: '#06b6d4',
     fontWeight: '600',
+    marginBottom: 4,
   },
-  pointValTextProj: {
-    color: Colors.primaryContainer,
-    fontWeight: '800',
+  barValTextProj: {
+    color: '#f59e0b',
   },
-  pointTrack: {
-    width: '100%',
-    height: 80,
-    alignItems: 'center',
+  barTrack: {
+    width: 14,
+    height: 100,
+    backgroundColor: 'rgba(0,0,0,0.06)',
+    borderRadius: 7,
     justifyContent: 'flex-end',
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.outlineVariant + '30',
+    overflow: 'hidden',
   },
-  trendDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: Colors.primaryContainer,
-    position: 'absolute',
+  barFill: {
+    width: '100%',
+    borderRadius: 7,
   },
-  trendDotProj: {
-    backgroundColor: Colors.primaryContainer + '80',
-    borderWidth: 2,
-    borderColor: Colors.primaryContainer,
+  barFillActual: {
+    backgroundColor: '#06b6d4',
   },
-  pointLabel: {
-    ...Typography.labelSm,
-    fontSize: 11,
-    color: Colors.textWarmGray,
-    marginTop: 4,
+  barFillProj: {
+    backgroundColor: '#f59e0b',
   },
-  pointLabelProj: {
-    color: Colors.primaryContainer,
-    fontWeight: '800',
-  },
-  infoCallout: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.sm,
-    backgroundColor: '#F7F6F3',
-    padding: Spacing.sm + 2,
-    borderRadius: BorderRadius.md,
-  },
-  infoIconCircle: {
-    width: 24,
-    height: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  infoIcon: { fontSize: 14 },
-  infoText: {
-    ...Typography.bodySm,
-    fontSize: 12,
-    color: Colors.textWarmGray,
-    flex: 1,
-  },
-  savingsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: Spacing.lg,
-  },
-  gaugeContainer: {
-    width: 80,
-    height: 80,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  gaugeArc: {
-    width: 76,
-    height: 76,
-    borderRadius: 38,
-    borderWidth: 6,
-    borderColor: Colors.primaryContainer,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  gaugeCenter: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  gaugeNumber: {
-    ...Typography.headlineSm,
-    fontSize: 18,
-    fontWeight: '800',
-    color: Colors.primaryContainer,
-  },
-  savingsDetails: { flex: 1, gap: 2 },
-  savingsDesc: {
-    ...Typography.bodySm,
-    fontSize: 13,
-    color: Colors.textWarmGray,
-  },
-  savingsTargetAmount: {
-    ...Typography.headlineSm,
-    fontSize: 18,
-    fontWeight: '800',
-    color: Colors.onSurface,
-  },
-  savingsAdviceText: {
-    ...Typography.bodySm,
-    fontSize: 11,
-    color: Colors.primaryContainer,
+  barMonthText: {
+    fontSize: 10,
+    color: Colors.onSurfaceVariant,
+    marginTop: 6,
     fontWeight: '600',
   },
-  safeSub: {
-    ...Typography.bodySm,
-    fontSize: 11,
-    color: Colors.textWarmGray,
+  barMonthTextProj: {
+    color: '#f59e0b',
+  },
+  legendRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: Spacing.lg,
+    marginTop: Spacing.md,
+    paddingTop: Spacing.xs,
+    borderTopWidth: 1,
+    borderTopColor: Colors.outlineVariant,
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  legendDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  legendText: {
+    fontSize: 12,
+    color: Colors.onSurfaceVariant,
+  },
+  sectionHeaderRow: {
+    marginBottom: Spacing.sm,
+  },
+  historySub: {
+    fontSize: 12,
+    color: Colors.onSurfaceVariant,
     marginTop: 2,
   },
-  safeAmount: {
-    ...Typography.headlineLg,
-    fontSize: 20,
-    fontWeight: '800',
-    color: Colors.primaryContainer,
+  historyTable: {
+    marginTop: Spacing.xs,
   },
-  safeBreakdownRow: {
+  tableHeaderRow: {
     flexDirection: 'row',
-    gap: Spacing.xs,
-    backgroundColor: Colors.surface,
-    padding: Spacing.sm,
-    borderRadius: BorderRadius.md,
-    borderWidth: 1,
-    borderColor: Colors.outlineVariant + '30',
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.outlineVariant,
+    paddingBottom: Spacing.xs,
+    marginBottom: Spacing.xs,
   },
-  safeMetricBox: {
+  tableHeadCol: {
+    fontSize: 12,
+    color: Colors.onSurfaceVariant,
+    fontWeight: '600',
+  },
+  tableRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 6,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(0,0,0,0.04)',
+  },
+  tableCell: {
+    justifyContent: 'center',
+  },
+  monthBadge: {
+    fontSize: 14,
+    color: Colors.onSurface,
+    fontWeight: '600',
+  },
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.surfaceContainerLow,
+    borderRadius: BorderRadius.sm,
+    borderWidth: 1,
+    borderColor: Colors.outlineVariant,
+    paddingHorizontal: Spacing.xs,
+    height: 36,
+  },
+  rupeePrefix: {
+    fontSize: 12,
+    color: Colors.onSurfaceVariant,
+    marginRight: 2,
+  },
+  incomeInput: {
     flex: 1,
+    fontSize: 14,
+    color: Colors.onSurface,
+    padding: 0,
+    fontWeight: '600',
+  },
+  deleteBtn: {
+    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    justifyContent: 'center',
     alignItems: 'center',
   },
-  metricLabel: {
-    fontSize: 10,
-    color: Colors.textWarmGray,
-    fontWeight: '600',
-    marginBottom: 2,
+  deleteBtnDisabled: {
+    opacity: 0.3,
   },
-  metricVal: {
-    fontSize: 13,
+  deleteBtnText: {
+    color: '#ef4444',
+    fontSize: 12,
+    fontWeight: '700',
+  },
+  addMonthBtn: {
+    marginTop: Spacing.sm,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.sm,
+    borderWidth: 1,
+    borderColor: Colors.outlineVariant,
+    borderStyle: 'dashed',
+    alignItems: 'center',
+  },
+  addMonthText: {
+    fontSize: 14,
+    color: Colors.onSurface,
+    fontWeight: '600',
+  },
+  recalculateBtn: {
+    marginTop: Spacing.sm,
+    backgroundColor: '#ef4444',
+    paddingVertical: Spacing.sm + 2,
+    borderRadius: BorderRadius.sm,
+    alignItems: 'center',
+  },
+  recalculateBtnText: {
+    fontSize: 14,
+    color: '#fff',
+    fontWeight: '700',
+  },
+  spendingList: {
+    gap: Spacing.sm,
+    marginTop: Spacing.xs,
+  },
+  spendingItem: {
+    backgroundColor: Colors.surfaceContainerLow,
+    borderRadius: BorderRadius.sm,
+    padding: Spacing.sm,
+    borderWidth: 1,
+    borderColor: Colors.outlineVariant,
+  },
+  spendingTopRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  spendingCategoryTitle: {
+    fontSize: 14,
     fontWeight: '700',
     color: Colors.onSurface,
   },
-  safeDesc: {
-    ...Typography.bodySm,
-    color: Colors.textWarmGray,
+  spendingAmount: {
+    fontSize: 14,
+    fontWeight: '800',
   },
-  actionRow: { marginTop: Spacing.xs },
-  actionBtnOutline: {
+  spendingDesc: {
+    fontSize: 12,
+    color: Colors.onSurfaceVariant,
+    marginVertical: 4,
+  },
+  progressTrack: {
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: 'rgba(0,0,0,0.08)',
+    overflow: 'hidden',
+  },
+  progressBar: {
+    height: '100%',
+    borderRadius: 3,
+  },
+  inflationAlertBox: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(245, 158, 11, 0.08)',
+    borderColor: 'rgba(245, 158, 11, 0.25)',
     borderWidth: 1,
-    borderColor: Colors.primaryContainer,
-    borderRadius: BorderRadius.md,
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    alignItems: 'center',
-    backgroundColor: Colors.primaryContainer + '10',
+    borderRadius: BorderRadius.sm,
+    padding: Spacing.sm,
+    marginTop: Spacing.sm,
+    gap: Spacing.xs,
+    alignItems: 'flex-start',
   },
-  actionBtnOutlineText: {
-    ...Typography.labelSm,
-    color: Colors.primaryContainer,
+  inflationAlertIcon: {
+    fontSize: 14,
+  },
+  inflationAlertText: {
+    flex: 1,
+    fontSize: 12,
+    color: '#b45309',
+    lineHeight: 18,
+  },
+  costInputRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginVertical: Spacing.xs,
+  },
+  costInputLabel: {
+    fontSize: 14,
+    color: Colors.onSurfaceVariant,
+  },
+  costInputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.surfaceContainerLow,
+    borderRadius: BorderRadius.sm,
+    borderWidth: 1,
+    borderColor: Colors.outlineVariant,
+    paddingHorizontal: Spacing.sm,
+    height: 36,
+    width: 120,
+  },
+  costRupeePrefix: {
+    fontSize: 12,
+    color: Colors.onSurfaceVariant,
+    marginRight: 4,
+  },
+  costInput: {
+    flex: 1,
+    fontSize: 14,
+    color: Colors.onSurface,
     fontWeight: '700',
-    fontSize: 13,
+    padding: 0,
+  },
+  projectionGrid: {
+    flexDirection: 'row',
+    gap: Spacing.xs,
+    marginTop: Spacing.sm,
+  },
+  projectionCard: {
+    flex: 1,
+    backgroundColor: Colors.surfaceContainerLow,
+    borderRadius: BorderRadius.sm,
+    padding: Spacing.xs + 2,
+    borderWidth: 1,
+    borderColor: Colors.outlineVariant,
+    alignItems: 'center',
+  },
+  projectionCardTitle: {
+    fontSize: 10,
+    color: Colors.onSurfaceVariant,
+    marginBottom: 2,
+  },
+  projectionCardVal: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: Colors.onSurface,
+  },
+  projectionCardPct: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#f59e0b',
+    marginTop: 2,
   },
 });
-
-export default BudgetScreen;

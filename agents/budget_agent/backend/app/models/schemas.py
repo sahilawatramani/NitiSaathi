@@ -22,6 +22,8 @@ class User(Base):
     nudge_logs = relationship("NudgeLog", back_populates="owner")
     consents = relationship("UserConsent", back_populates="owner")
     orchestration_checkpoints = relationship("OrchestrationCheckpoint", back_populates="owner")
+    income_history = relationship("MonthlyIncomeHistory", back_populates="owner", cascade="all, delete-orphan")
+
 
 class UserProfile(Base):
     __tablename__ = "user_profiles"
@@ -347,3 +349,19 @@ class NudgeSuppression(Base):
     nudge_type = Column(String, nullable=False, unique=True, index=True)
     suppressed_at = Column(DateTime, default=utcnow, nullable=False)
     reason = Column(String, nullable=True)
+
+
+class MonthlyIncomeHistory(Base):
+    __tablename__ = "monthly_income_history"
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), index=True, nullable=False)
+    month_label = Column(String, nullable=False)  # e.g., 'Jan', 'Feb', 'Mar'
+    year = Column(Integer, nullable=False, default=2026)
+    month_index = Column(Integer, nullable=False, default=1)  # 1 to 12
+    amount = Column(Float, nullable=False, default=0.0)
+    source = Column(String, nullable=False, default="Primary Income")
+    created_at = Column(DateTime, default=utcnow)
+
+    owner = relationship("User", back_populates="income_history")
+

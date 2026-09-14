@@ -20,21 +20,31 @@ import { Colors, Typography, Spacing, BorderRadius } from '../../theme';
 import { AppHeader } from '../../components/AppHeader';
 import { useTranslation } from '../../i18n';
 import { useAuth } from '../../context/AuthContext';
-import { analyticsService, BudgetState } from '../../services/analyticsService';
+import { analyticsService, BudgetState, BudgetPlannerResponse } from '../../services/analyticsService';
 
 const DashboardScreen: React.FC = () => {
   const navigation = useNavigation<any>();
   const { user } = useAuth();
   const { t } = useTranslation();
   const [budgetState, setBudgetState] = useState<BudgetState | null>(null);
+  const [plannerData, setPlannerData] = useState<BudgetPlannerResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [selectedBarIdx, setSelectedBarIdx] = useState<number | null>(4); // default select projected bar
+  const [selectedBarIdx, setSelectedBarIdx] = useState<number | null>(null);
 
   const fetchData = useCallback(async () => {
     try {
-      const bState = await analyticsService.getBudgetState();
-      setBudgetState(bState);
+      const [bState, pData] = await Promise.all([
+        analyticsService.getBudgetState().catch(() => null),
+        analyticsService.getBudgetPlanner().catch(() => null),
+      ]);
+      if (bState) setBudgetState(bState);
+      if (pData) {
+        setPlannerData(pData);
+        if (pData.full_trajectory && pData.full_trajectory.length > 0) {
+          setSelectedBarIdx(pData.full_trajectory.length - 1);
+        }
+      }
     } catch {
       // Offline fallback
     } finally {
@@ -66,39 +76,33 @@ const DashboardScreen: React.FC = () => {
   const balance = budgetState?.closing_balance ?? 0.0;
   const isLowBalance = budgetState?.low_balance_flag ?? (balance < 100);
   const savingsRatePct = Math.round((budgetState?.savings_rate_recommendation ?? 0.1) * 100);
-  const wmaIncome = budgetState?.income_wma_4w ?? 0;
-  const projectedIncome = budgetState?.predicted_next_week_income ?? wmaIncome;
+  const forecastMonthlyIncome = plannerData?.forecasted_monthly_income ?? (budgetState?.income_wma_4w ?? 25000);
   const volatilityPct = budgetState?.income_volatility_pct ?? 0;
 
-  // Build dynamic weekly chart data from weekly_features_last4
-  const rawWeeks = budgetState?.weekly_features_last4 ?? [];
+  // Build dynamic monthly chart data from planner trajectory or fallback
   const chartBars: { label: string; amount: number; isProj?: boolean; date?: string }[] = [];
 
-  if (rawWeeks.length > 0) {
-    rawWeeks.slice(-4).forEach((w, i) => {
+  if (plannerData?.full_trajectory && plannerData.full_trajectory.length > 0) {
+    plannerData.full_trajectory.forEach((t) => {
       chartBars.push({
-        label: `W${i + 1}`,
-        amount: w.total_income,
-        date: w.week_start,
+        label: t.month,
+        amount: t.is_forecast ? (t.predicted_income ?? 0) : (t.actual_income ?? 0),
+        isProj: t.is_forecast,
       });
     });
   } else {
-    // Default baseline points from WMA / profile
-    const base = wmaIncome > 0 ? wmaIncome : 5000;
+    // Default baseline points from user income
+    const base = forecastMonthlyIncome > 0 ? forecastMonthlyIncome : 25000;
     chartBars.push(
-      { label: 'W1', amount: Math.round(base * 0.9) },
-      { label: 'W2', amount: Math.round(base * 1.05) },
-      { label: 'W3', amount: Math.round(base * 0.95) },
-      { label: 'W4', amount: Math.round(base * 1.1) }
+      { label: 'Jan', amount: Math.round(base * 0.92) },
+      { label: 'Feb', amount: Math.round(base * 0.96) },
+      { label: 'Mar', amount: Math.round(base * 0.94) },
+      { label: 'Apr', amount: Math.round(base * 1.02) },
+      { label: 'May', amount: Math.round(base * 0.98) },
+      { label: 'Jun', amount: Math.round(base * 1.04) },
+      { label: 'Jul (F)', amount: Math.round(base * 1.05), isProj: true }
     );
   }
-
-  // Append Projected Week (W5)
-  chartBars.push({
-    label: 'W5',
-    amount: projectedIncome > 0 ? projectedIncome : Math.round((chartBars[chartBars.length - 1]?.amount ?? 5000) * 1.05),
-    isProj: true,
-  });
 
   const maxAmount = Math.max(...chartBars.map((b) => b.amount), 1000);
   const maxBarHeight = 120;
@@ -178,7 +182,7 @@ const DashboardScreen: React.FC = () => {
             <Text style={styles.balanceAmount}>₹{balance.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</Text>
             <View style={styles.savingsPill}>
               <Text style={styles.savingsPillText}>
-                🎯 {savingsRatePct}% {t.dashboard.savingsRate} (₹{Math.round(wmaIncome * (savingsRatePct / 100))}/wk)
+                🎯 {savingsRatePct}% {t.dashboard.savingsRate} (₹{Math.round(forecastMonthlyIncome * (savingsRatePct / 100)).toLocaleString('en-IN')}/mo)
               </Text>
             </View>
           </View>
@@ -187,13 +191,13 @@ const DashboardScreen: React.FC = () => {
           </View>
         </View>
 
-        {/* 3. Income Forecast Chart Card (Dynamic WMA Bar Visualizer) */}
+        {/* 3. Income Forecast Chart Card (Dynamic Monthly Timeseries Visualizer) */}
         <View style={styles.forecastCard}>
           <View style={styles.forecastHeader}>
             <View>
               <Text style={styles.forecastTitle}>{t.dashboard.weeklyTrend}</Text>
               <Text style={styles.forecastSub}>
-                WMA: ₹{Math.round(wmaIncome).toLocaleString('en-IN')} • {t.budget.volatilityLabel}: {volatilityPct.toFixed(1)}%
+                Forecast: ₹{Math.round(forecastMonthlyIncome).toLocaleString('en-IN')}/mo • {t.budget.volatilityLabel}: {volatilityPct.toFixed(1)}%
               </Text>
             </View>
             <TouchableOpacity

@@ -123,4 +123,10 @@ export const createRecurringDebit = (data) => api.post('/recurring-debits/', dat
 export const updateRecurringDebit = (id, data) => api.put(`/recurring-debits/${id}`, data);
 export const deleteRecurringDebit = (id) => api.delete(`/recurring-debits/${id}`);
 
+// ── Budget Agent: Budget Planner (Time-Series Forecast & Inflation) ──
+export const getBudgetPlanner = (currentCost = 1000) =>
+  api.get(`/analytics/budget-planner?current_cost=${currentCost}`);
+export const updateBudgetPlanner = (history, currentCost = 1000) =>
+  api.post('/analytics/budget-planner', { history, current_cost: currentCost });
+
 export default api;

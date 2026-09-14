@@ -1,16 +1,31 @@
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
+from pydantic import BaseModel
+from typing import List, Optional
 
 from app.models.database import get_db
-from app.models.schemas import Transaction, User
+from app.models.schemas import Transaction, User, UserProfile, MonthlyIncomeHistory
 from app.services.auth_service import get_current_user
 from app.agents.insight_agent import analyze_spending_trends
-from app.services.forecast_service import forecast_spending, compare_periods, calculate_savings_potential
+from app.services.forecast_service import (
+    forecast_spending,
+    compare_periods,
+    calculate_savings_potential,
+    forecast_monthly_income_and_budget_plan,
+)
 from app.services.planner_service import calculate_health_score
 from app.services.state_bridge_service import get_finassist_data
-from app.models.schemas import UserProfile
 
 router = APIRouter()
+
+class IncomeHistoryItem(BaseModel):
+    month: str
+    income: float
+    source: Optional[str] = "Primary Income"
+
+class BudgetPlannerUpdateRequest(BaseModel):
+    history: List[IncomeHistoryItem]
+    current_cost: Optional[float] = 1000.0
 
 def _get_txn_dicts(db, current_user):
     """Helper to fetch and convert user transactions to dicts."""
@@ -91,18 +106,110 @@ def get_savings_potential(
     _, txn_dicts = _get_txn_dicts(db, current_user)
     return calculate_savings_potential(txn_dicts, monthly_income)
 
-
-
 @router.get("/budget-state")
 def get_budget_state(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
     """
     Return WMA-computed budget state from the state bridge service.
-
-    Unlike /analytics/ which recomputes from raw transactions, this endpoint
-    reads pre-computed weekly features (income_wma_4w, low_balance_flag,
-    savings_rate_recommendation, closing_balance) plus active goals and
-    the income forecast — matching the data the LangGraph orchestrator uses.
-
-    The budget dashboard should prefer this endpoint for its core metrics.
     """
     return get_finassist_data(current_user.id, db)
+
+@router.get("/budget-planner")
+def get_budget_planner(
+    current_cost: float = Query(default=1000.0, description="Interactive cost for inflation projections"),
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Get the monthly income history, time-series forecast, spending guide (50/10/25/15),
+    and inflation awareness analysis matching the reference video design.
+    """
+    records = (
+        db.query(MonthlyIncomeHistory)
+        .filter(MonthlyIncomeHistory.user_id == current_user.id)
+        .order_by(MonthlyIncomeHistory.id.asc())
+        .all()
+    )
+    profile = db.query(UserProfile).filter(UserProfile.user_id == current_user.id).first()
+    fallback_income = profile.monthly_income if (profile and profile.monthly_income and profile.monthly_income > 0) else 50000.0
+
+    if not records:
+        if fallback_income == 50000.0:
+            seed_data = [
+                ("Jan", 50000.0, "Primary Income"),
+                ("Feb", 52000.0, "Primary Income"),
+                ("Mar", 48000.0, "Primary Income"),
+                ("Apr", 55000.0, "Primary Income"),
+                ("May", 53000.0, "Primary Income"),
+                ("Jun", 58000.0, "Primary Income"),
+            ]
+        else:
+            seed_data = [
+                ("Jan", round(fallback_income * 0.92, 0), "Primary Income"),
+                ("Feb", round(fallback_income * 0.96, 0), "Primary Income"),
+                ("Mar", round(fallback_income * 0.94, 0), "Primary Income"),
+                ("Apr", round(fallback_income * 1.02, 0), "Primary Income"),
+                ("May", round(fallback_income * 0.98, 0), "Primary Income"),
+                ("Jun", round(fallback_income * 1.04, 0), "Primary Income"),
+            ]
+        created_records = []
+        for idx, (m, inc, src) in enumerate(seed_data):
+            rec = MonthlyIncomeHistory(
+                user_id=current_user.id,
+                month_label=m,
+                month_index=idx + 1,
+                amount=inc,
+                source=src,
+            )
+            db.add(rec)
+            created_records.append({"month": m, "income": inc, "source": src})
+        db.commit()
+        history_dicts = created_records
+    else:
+        history_dicts = [
+            {"month": r.month_label, "income": r.amount, "source": r.source}
+            for r in records
+        ]
+
+    return forecast_monthly_income_and_budget_plan(
+        history_records=history_dicts,
+        user_monthly_income_fallback=fallback_income,
+        current_cost_item=current_cost,
+    )
+
+@router.post("/budget-planner")
+def update_budget_planner(
+    payload: BudgetPlannerUpdateRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    """
+    Save edited monthly income history entries and recalculate time-series forecast,
+    recommended spending guide, and inflation awareness.
+    """
+    db.query(MonthlyIncomeHistory).filter(MonthlyIncomeHistory.user_id == current_user.id).delete()
+    
+    history_dicts = []
+    for idx, item in enumerate(payload.history):
+        rec = MonthlyIncomeHistory(
+            user_id=current_user.id,
+            month_label=item.month,
+            month_index=idx + 1,
+            amount=item.income,
+            source=item.source or "Primary Income",
+        )
+        db.add(rec)
+        history_dicts.append({
+            "month": item.month,
+            "income": item.income,
+            "source": item.source or "Primary Income",
+        })
+    db.commit()
+
+    profile = db.query(UserProfile).filter(UserProfile.user_id == current_user.id).first()
+    fallback_income = profile.monthly_income if (profile and profile.monthly_income and profile.monthly_income > 0) else 50000.0
+
+    return forecast_monthly_income_and_budget_plan(
+        history_records=history_dicts,
+        user_monthly_income_fallback=fallback_income,
+        current_cost_item=payload.current_cost or 1000.0,
+    )
