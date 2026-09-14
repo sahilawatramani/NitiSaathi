@@ -1,465 +1,469 @@
 """
-Scheme Agent Eligibility Engine
-
-Core logic for rule-based eligibility checking and joint affordability reasoning
+Scheme Agent Eligibility Engine — Rule-Based Matching, Match Scoring,
+Category Filtering, and Personalized Scheme Elaboration.
 """
 import json
 from datetime import date, datetime
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional, Any
 from ..models.schemas import (
     UserProfile,
     BudgetAgentState,
     EligibilityResult,
     SchemeRecommendation,
-    AffordabilityAnalysis
+    AffordabilityAnalysis,
+    SchemeCategory,
+    SchemeElaboration,
 )
 
 
 class SchemeEligibilityEngine:
     """
-    Rule-based eligibility engine for government welfare schemes
+    Core Rule-based eligibility & recommendation engine for government schemes.
+    Uses curated knowledge base as the primary source of truth.
     """
-    
-    def __init__(self, knowledge_base_path: str = None):
+
+    def __init__(self, knowledge_base_path: Optional[str] = None):
         """Load scheme knowledge base"""
         if knowledge_base_path is None:
             kb_path = Path(__file__).parent.parent / "data" / "schemes_kb.json"
         else:
             kb_path = Path(knowledge_base_path)
-        
-        with open(kb_path, 'r', encoding='utf-8') as f:
+
+        with open(kb_path, "r", encoding="utf-8") as f:
             self.knowledge_base = json.load(f)
-        
+
         self.schemes = self.knowledge_base["schemes"]
-        self.last_updated = self.knowledge_base["last_updated"]
-    
+        self.categories_raw = self.knowledge_base.get("categories", {})
+        self.last_updated = self.knowledge_base.get("last_updated", "2026-09-15")
+
+    def get_categories(self) -> List[SchemeCategory]:
+        """Return available scheme categories with live scheme counts."""
+        categories = []
+        for cat_id, cat_info in self.categories_raw.items():
+            count = sum(1 for _, s in self.schemes.items() if s.get("category") == cat_id)
+            categories.append(
+                SchemeCategory(
+                    id=cat_id,
+                    name=cat_info["name"],
+                    description=cat_info["description"],
+                    icon=cat_info.get("icon", "Shield"),
+                    scheme_count=count,
+                )
+            )
+        return categories
+
+    def calculate_match_score(self, scheme_key: str, user: UserProfile) -> int:
+        """
+        Calculate a match score percentage (0-100) based on met criteria weights.
+
+        === MATCH SCORING WEIGHTING LOGIC ===
+        1. Age Criterion: 25 points
+           - User age within scheme age range: 25 pts
+           - Close to boundary (within 3 years): 15 pts
+           - Outside range: 0 pts
+        2. Platform Gig Worker Activity (Code on Social Security 2020): 25 points
+           - Active days >= 90 (or multi-platform >= 120): 25 pts
+           - Active days between 45 and 89: 15 pts
+           - Active days < 45: 5 pts
+        3. Formal Sector & Tax Exclusion (EPFO/ESIC & Income Tax): 20 points
+           - Not registered in EPFO/ESIC: 10 pts
+           - Not an Income Tax payer: 10 pts
+        4. Financial Inclusion (Bank Account & Aadhaar): 15 points
+           - Has Savings Bank Account: 10 pts
+           - Aadhaar linked: 5 pts
+        5. Prerequisite Fulfillment (e-Shram / State Residence): 15 points
+           - Already registered on e-Shram (or scheme doesn't require it): 15 pts
+           - State matches state board requirement: 15 pts
+        Total Score: 100 points
+        """
+        scheme = self.schemes.get(scheme_key, {})
+        eligibility = scheme.get("eligibility", {})
+        score = 0
+
+        # 1. Age Criterion (25 pts)
+        age = user.age if user.age is not None else 28
+        min_age = eligibility.get("age_min", 18)
+        max_age = eligibility.get("age_max", 70)
+        if min_age <= age <= max_age:
+            score += 25
+        elif abs(age - min_age) <= 3 or abs(age - max_age) <= 3:
+            score += 15
+
+        # 2. Gig Worker Activity (25 pts)
+        days_active = user.days_active_with_aggregator if user.days_active_with_aggregator is not None else 90
+        if days_active >= 90:
+            score += 25
+        elif days_active >= 45:
+            score += 15
+        else:
+            score += 5
+
+        # 3. Formal Sector & Tax Exclusion (20 pts)
+        epfo = user.epfo_esic_status or False
+        tax_payer = user.income_tax_payer or False
+        if not epfo:
+            score += 10
+        if not tax_payer:
+            score += 10
+
+        # 4. Financial Inclusion (15 pts)
+        has_bank = user.savings_bank_account if user.savings_bank_account is not None else True
+        has_aadhaar = user.aadhaar_linked if user.aadhaar_linked is not None else True
+        if has_bank:
+            score += 10
+        if has_aadhaar:
+            score += 5
+
+        # 5. Prerequisite & State Match (15 pts)
+        e_shram_req = eligibility.get("e_shram_registered", False)
+        is_e_shram = user.e_shram_registered or False
+        state_req = eligibility.get("state_residence")
+
+        if not e_shram_req or is_e_shram:
+            score += 10
+        if state_req:
+            if user.state and state_req.lower() in user.state.lower():
+                score += 5
+        else:
+            score += 5
+
+        return min(100, max(0, score))
+
     def check_gig_worker_status(self, user: UserProfile) -> Tuple[bool, str]:
         """
-        Check if user qualifies as gig worker under Code on Social Security 2020
-        
-        Returns:
-            (is_eligible, status_description)
+        Check if user qualifies as gig worker under Code on Social Security 2020.
         """
-        days_active = user.days_active_with_aggregator
-        
-        # Option 1: 90+ days on single platform
+        days_active = user.days_active_with_aggregator if user.days_active_with_aggregator is not None else 90
         if days_active >= 90:
             return True, f"Eligible: {days_active} days active (≥90 days threshold met)"
-        
-        # Option 2: 120+ days across multiple platforms (synthetic data simplification: single field)
-        # In production, would check aggregators list and sum days
-        if days_active >= 120:
+        elif days_active >= 120:
             return True, f"Eligible: {days_active} days active (≥120 days multi-platform threshold met)"
-        
-        # Not eligible yet
-        days_remaining = 90 - days_active
-        return False, f"Not eligible: {days_active} days active. Need {days_remaining} more days to reach 90-day threshold."
-    
-    def check_e_shram_eligibility(self, user: UserProfile) -> EligibilityResult:
-        """Check e-Shram eligibility"""
-        scheme = self.schemes["e_shram"]
-        eligibility = scheme["eligibility"]
+        else:
+            days_remaining = 90 - days_active
+            return False, f"Not eligible: {days_active} days active. Need {days_remaining} more days to reach 90-day threshold."
+
+    def check_scheme_eligibility(
+        self, scheme_key: str, user: UserProfile, budget_state: Optional[BudgetAgentState] = None
+    ) -> EligibilityResult:
+        """
+        Generic eligibility checking across any scheme in the knowledge base.
+        """
+        scheme = self.schemes.get(scheme_key)
+        if not scheme:
+            raise ValueError(f"Scheme '{scheme_key}' not found in knowledge base.")
+
+        eligibility = scheme.get("eligibility", {})
         reasons = []
         blocking_factors = []
-        
-        # Age check
-        if eligibility["age_min"] <= user.age <= eligibility["age_max"]:
-            reasons.append(f"✓ Age {user.age} is within range {eligibility['age_min']}-{eligibility['age_max']}")
+
+        age = user.age if user.age is not None else 28
+        min_age = eligibility.get("age_min", 0)
+        max_age = eligibility.get("age_max", 100)
+
+        # 1. Age check
+        if min_age <= age <= max_age:
+            reasons.append(f"✓ Age {age} is within required range {min_age}-{max_age}")
         else:
-            blocking_factors.append(f"✗ Age {user.age} outside range {eligibility['age_min']}-{eligibility['age_max']}")
-        
-        # EPFO/ESIC check
-        if not user.epfo_esic_status:
-            reasons.append("✓ Not registered with EPFO/ESIC")
-        else:
-            blocking_factors.append("✗ Already registered with EPFO/ESIC (blocks eligibility)")
-        
-        # Income tax check
-        if not user.income_tax_payer:
-            reasons.append("✓ Not an income tax payer")
-        else:
-            blocking_factors.append("✗ Income tax payer (blocks eligibility)")
-        
+            blocking_factors.append(f"✗ Age {age} is outside required range {min_age}-{max_age}")
+
+        # 2. EPFO/ESIC check
+        if eligibility.get("epfo_esic_registered") is False:
+            if not user.epfo_esic_status:
+                reasons.append("✓ Not registered with EPFO/ESIC (Unorganized worker)")
+            else:
+                blocking_factors.append("✗ Already registered with EPFO/ESIC (Blocks unorganized worker schemes)")
+
+        # 3. Income Tax check
+        if eligibility.get("income_tax_payer") is False:
+            if not user.income_tax_payer:
+                reasons.append("✓ Not an income tax payer")
+            else:
+                blocking_factors.append("✗ Pays income tax (Blocks subsidized welfare benefits)")
+
+        # 4. Monthly Income Cap check
+        max_income = eligibility.get("monthly_income_max")
+        user_income = user.monthly_income if user.monthly_income is not None else 25000.0
+        if max_income:
+            if user_income <= max_income:
+                reasons.append(f"✓ Monthly income ₹{user_income:,.0f} is within limit of ₹{max_income:,.0f}")
+            else:
+                blocking_factors.append(f"✗ Monthly income ₹{user_income:,.0f} exceeds limit of ₹{max_income:,.0f}")
+
+        # 5. e-Shram Prerequisite check
+        if eligibility.get("e_shram_registered") is True:
+            if user.e_shram_registered:
+                reasons.append("✓ Registered on e-Shram portal")
+            else:
+                blocking_factors.append("✗ Not registered on e-Shram (Prerequisite for this scheme)")
+
+        # 6. State Residence check
+        req_state = eligibility.get("state_residence")
+        if req_state:
+            if user.state and req_state.lower() in user.state.lower():
+                reasons.append(f"✓ Resident of {req_state}")
+            else:
+                blocking_factors.append(f"✗ Requires residence in {req_state} (User in {user.state or 'Unknown'})")
+
+        # 7. Bank Account check
+        if eligibility.get("savings_bank_account") is True:
+            if user.savings_bank_account is not False:
+                reasons.append("✓ Has active savings bank account")
+            else:
+                blocking_factors.append("✗ Active savings bank account required")
+
         eligible = len(blocking_factors) == 0
-        all_reasons = reasons + blocking_factors
-        
-        return EligibilityResult(
-            scheme_code="ESHRAM_001",
-            scheme_name=scheme["full_name"],
-            eligible=eligible,
-            eligibility_status="eligible" if eligible else "not_eligible",
-            reasons=all_reasons,
-            last_verified=date.fromisoformat(scheme["last_verified"]),
-            data_freshness=self._compute_freshness(scheme["last_verified"]),
-            pending_requirements=["Complete registration at eshram.gov.in with Aadhaar and bank account"] if eligible else None,
-            contribution_required=0.0,  # Free registration
-            affordable=True if eligible else None
-        )
-    
-    def check_pm_sym_eligibility(self, user: UserProfile, budget_state: BudgetAgentState = None) -> EligibilityResult:
-        """Check PM-SYM eligibility with joint affordability reasoning"""
-        scheme = self.schemes["pm_sym"]
-        eligibility = scheme["eligibility"]
-        reasons = []
-        blocking_factors = []
-        
-        # Age check
-        if eligibility["age_min"] <= user.age <= eligibility["age_max"]:
-            reasons.append(f"✓ Age {user.age} is within range {eligibility['age_min']}-{eligibility['age_max']}")
-        else:
-            blocking_factors.append(f"✗ Age {user.age} outside range {eligibility['age_min']}-{eligibility['age_max']}")
-        
-        # Income check
-        if user.monthly_income and user.monthly_income <= eligibility["monthly_income_max"]:
-            reasons.append(f"✓ Monthly income ₹{user.monthly_income:,.0f} < ₹{eligibility['monthly_income_max']:,}")
-        elif user.monthly_income and user.monthly_income > eligibility["monthly_income_max"]:
-            blocking_factors.append(f"✗ Monthly income ₹{user.monthly_income:,.0f} exceeds limit ₹{eligibility['monthly_income_max']:,}")
-        
-        # EPFO/ESIC check
-        if not user.epfo_esic_status:
-            reasons.append("✓ Not registered with EPFO/ESIC")
-        else:
-            blocking_factors.append("✗ Already registered with EPFO/ESIC")
-        
-        # Income tax check
-        if not user.income_tax_payer:
-            reasons.append("✓ Not an income tax payer")
-        else:
-            blocking_factors.append("✗ Income tax payer")
-        
-        # e-Shram prerequisite
-        if user.e_shram_registered:
-            reasons.append("✓ Registered on e-Shram (prerequisite met)")
-        else:
-            blocking_factors.append("✗ Not registered on e-Shram (prerequisite)")
-        
-        eligible = len(blocking_factors) == 0
-        
-        # Get contribution amount
-        contribution = scheme["contribution_matrix"].get(str(user.age), 200)
-        
-        # Affordability analysis if Budget Agent state provided
+        match_score = self.calculate_match_score(scheme_key, user)
+
+        # Contribution calculation
+        contribution = None
+        if "premium" in scheme and "annual_amount" in scheme["premium"]:
+            contribution = float(scheme["premium"]["annual_amount"])
+        elif "contribution_matrix" in scheme:
+            contribution = float(scheme["contribution_matrix"].get(str(age), 150))
+
+        # Affordability analysis if budget state provided
         affordable = None
         affordability_reasoning = None
-        if eligible and budget_state:
-            affordability = self.analyze_affordability(
-                scheme_code="PMSYM_001",
+        if eligible and budget_state and contribution is not None:
+            freq = "annual" if ("premium" in scheme) else "monthly"
+            analysis = self.analyze_affordability(
+                scheme_code=scheme.get("scheme_code", scheme_key),
                 contribution=contribution,
-                frequency="monthly",
+                frequency=freq,
                 budget_state=budget_state,
-                user_age=user.age
+                user_age=age,
             )
-            affordable = affordability.affordable
-            affordability_reasoning = affordability.recommendation
-            
-            if affordability.stability_requirement:
-                reasons.append(f"⚠ {affordability.stability_requirement}")
-        
+            affordable = analysis.affordable
+            affordability_reasoning = analysis.recommendation
+            if analysis.stability_requirement:
+                reasons.append(f"⚠ {analysis.stability_requirement}")
+
         all_reasons = reasons + blocking_factors
-        
+
         return EligibilityResult(
-            scheme_code="PMSYM_001",
-            scheme_name=scheme["full_name"],
+            scheme_code=scheme.get("scheme_code", scheme_key.upper()),
+            scheme_name=scheme.get("full_name", scheme_key),
+            category=scheme.get("category", "insurance_healthcare"),
             eligible=eligible,
             eligibility_status="eligible" if eligible else "not_eligible",
+            match_score_pct=match_score,
             reasons=all_reasons,
-            last_verified=date.fromisoformat(scheme["last_verified"]),
-            data_freshness=self._compute_freshness(scheme["last_verified"]),
-            contribution_required=float(contribution) if eligible else None,
+            official_portal_url=scheme.get("official_portal_url"),
+            last_verified=date.fromisoformat(scheme.get("last_verified", self.last_updated)),
+            data_freshness=self._compute_freshness(scheme.get("last_verified", self.last_updated)),
+            contribution_required=contribution,
             affordable=affordable,
-            affordability_reasoning=affordability_reasoning
+            affordability_reasoning=affordability_reasoning,
+            required_documents=scheme.get("eligibility", {}).get("required_documents") or [d["name"] for d in scheme.get("required_documents_detail", [])],
+            step_by_step_process=scheme.get("steps"),
+            keywords=scheme.get("keywords"),
         )
-    
-    def check_pmsby_eligibility(self, user: UserProfile, budget_state: BudgetAgentState = None) -> EligibilityResult:
-        """Check PMSBY eligibility"""
-        scheme = self.schemes["pmsby"]
-        eligibility = scheme["eligibility"]
-        reasons = []
-        blocking_factors = []
-        
-        # Age check
-        if eligibility["age_min"] <= user.age <= eligibility["age_max"]:
-            reasons.append(f"✓ Age {user.age} is within range {eligibility['age_min']}-{eligibility['age_max']}")
-        else:
-            blocking_factors.append(f"✗ Age {user.age} outside range {eligibility['age_min']}-{eligibility['age_max']}")
-        
-        # Bank account check
-        if user.savings_bank_account:
-            reasons.append("✓ Has savings bank account")
-        else:
-            blocking_factors.append("✗ No savings bank account")
-        
-        # e-Shram prerequisite
-        if user.e_shram_registered:
-            reasons.append("✓ Registered on e-Shram")
-        else:
-            blocking_factors.append("✗ Not registered on e-Shram (prerequisite)")
-        
-        eligible = len(blocking_factors) == 0
-        premium = scheme["premium"]["annual_amount"]
-        
-        # Affordability check (always affordable given ₹20 annual)
-        affordable = None
-        if eligible and budget_state:
-            # Even with closing_balance, ₹20/year is always affordable for active gig workers
-            # But check if balance will cover on debit date
-            affordable = budget_state.closing_balance >= premium
-            if not affordable:
-                reasons.append(f"⚠ Current balance ₹{budget_state.closing_balance:.0f} < ₹{premium} premium. Top up before debit date.")
-        
-        all_reasons = reasons + blocking_factors
-        
-        return EligibilityResult(
-            scheme_code="PMSBY_001",
-            scheme_name=scheme["full_name"],
-            eligible=eligible,
-            eligibility_status="eligible" if eligible else "not_eligible",
-            reasons=all_reasons,
-            last_verified=date.fromisoformat(scheme["last_verified"]),
-            data_freshness=self._compute_freshness(scheme["last_verified"]),
-            contribution_required=float(premium) if eligible else None,
-            affordable=affordable,
-            affordability_reasoning=f"Annual premium ₹{premium} is affordable for active gig workers. Critical: ensure balance ≥₹{premium} on debit date to avoid lapse." if eligible else None
+
+    def elaborate_scheme(
+        self, scheme_code: str, user: UserProfile, budget_state: Optional[BudgetAgentState] = None
+    ) -> SchemeElaboration:
+        """
+        Generate comprehensive, personalized elaboration dossier for a specific scheme.
+        """
+        # Find scheme in KB by code or key
+        matched_key = None
+        for key, s in self.schemes.items():
+            if key == scheme_code or s.get("scheme_code", "").lower() == scheme_code.lower():
+                matched_key = key
+                break
+
+        if not matched_key:
+            # Fallback to key lookup
+            matched_key = scheme_code.lower().replace("-", "_")
+
+        scheme = self.schemes.get(matched_key)
+        if not scheme:
+            raise ValueError(f"Scheme with code '{scheme_code}' not found.")
+
+        result = self.check_scheme_eligibility(matched_key, user, budget_state)
+        age = user.age if user.age is not None else 28
+
+        # Affordability
+        afford_analysis = None
+        freq = "annual" if "premium" in scheme else "monthly"
+        if result.contribution_required is not None and budget_state:
+            afford_analysis = self.analyze_affordability(
+                scheme_code=scheme.get("scheme_code", matched_key),
+                contribution=result.contribution_required,
+                frequency=freq,
+                budget_state=budget_state,
+                user_age=age,
+            )
+
+        return SchemeElaboration(
+            scheme_code=scheme.get("scheme_code", matched_key.upper()),
+            scheme_name=scheme.get("full_name", matched_key),
+            category=scheme.get("category", "insurance_healthcare"),
+            ministry=scheme.get("ministry", "Government of India"),
+            official_portal_url=scheme.get("official_portal_url", "https://myscheme.gov.in/"),
+            eligible=result.eligible,
+            eligibility_status=result.eligibility_status,
+            match_score_pct=result.match_score_pct,
+            reasons=result.reasons,
+            benefits=scheme.get("benefits", []),
+            required_documents=scheme.get("required_documents_detail", [
+                {"name": "Aadhaar Card", "purpose": "Identity Proof", "mandatory": True},
+                {"name": "Bank Account Passbook", "purpose": "Financial Disbursement", "mandatory": True}
+            ]),
+            step_by_step_process=scheme.get("steps", [
+                "Visit the official government portal link",
+                "Complete registration with Aadhaar e-KYC",
+                "Submit required documents and download card/acknowledgment"
+            ]),
+            contribution_required=result.contribution_required,
+            contribution_frequency=freq if result.contribution_required else None,
+            affordability_analysis=afford_analysis,
+            data_freshness=result.data_freshness or "✓ Verified",
+            target_group=scheme.get("target_group"),
+            notes=scheme.get("notes"),
+            language=user.language or "en",
         )
-    
-    def check_pmjjby_eligibility(self, user: UserProfile) -> EligibilityResult:
-        """Check PMJJBY eligibility"""
-        scheme = self.schemes["pmjjby"]
-        eligibility = scheme["eligibility"]
-        reasons = []
-        blocking_factors = []
-        
-        # Age check
-        if eligibility["age_min"] <= user.age <= eligibility["age_max"]:
-            reasons.append(f"✓ Age {user.age} is within range {eligibility['age_min']}-{eligibility['age_max']}")
-        else:
-            blocking_factors.append(f"✗ Age {user.age} outside range {eligibility['age_min']}-{eligibility['age_max']}")
-        
-        # Bank account check
-        if user.savings_bank_account:
-            reasons.append("✓ Has savings bank account")
-        else:
-            blocking_factors.append("✗ No savings bank account")
-        
-        eligible = len(blocking_factors) == 0
-        premium = scheme["premium"]["annual_amount"]
-        
-        all_reasons = reasons + blocking_factors
-        if eligible:
-            reasons.append(f"ℹ Consider PMSBY first (₹20/year) vs PMJJBY (₹{premium}/year) - PMSBY better for high-risk occupations")
-        
-        return EligibilityResult(
-            scheme_code="PMJJBY_001",
-            scheme_name=scheme["full_name"],
-            eligible=eligible,
-            eligibility_status="eligible" if eligible else "not_eligible",
-            reasons=all_reasons,
-            last_verified=date.fromisoformat(scheme["last_verified"]),
-            data_freshness=self._compute_freshness(scheme["last_verified"]),
-            contribution_required=float(premium) if eligible else None
-        )
-    
-    def check_apy_eligibility(self, user: UserProfile, budget_state: BudgetAgentState = None) -> EligibilityResult:
-        """Check APY eligibility"""
-        scheme = self.schemes["apy"]
-        eligibility = scheme["eligibility"]
-        reasons = []
-        blocking_factors = []
-        
-        # Age check
-        if eligibility["age_min"] <= user.age <= eligibility["age_max"]:
-            reasons.append(f"✓ Age {user.age} is within range {eligibility['age_min']}-{eligibility['age_max']}")
-        else:
-            blocking_factors.append(f"✗ Age {user.age} outside range {eligibility['age_min']}-{eligibility['age_max']}")
-        
-        # Bank account check
-        if user.savings_bank_account:
-            reasons.append("✓ Has savings bank account")
-        else:
-            blocking_factors.append("✗ No savings bank account")
-        
-        # Income tax check
-        if not user.income_tax_payer:
-            reasons.append("✓ Not an income tax payer (eligible for govt co-contribution)")
-        else:
-            blocking_factors.append("✗ Income tax payer (blocks govt co-contribution)")
-        
-        eligible = len(blocking_factors) == 0
-        
-        # Note about comparison with PM-SYM
-        if eligible:
-            reasons.append("ℹ APY offers ₹1,000-₹5,000/month pension tiers vs PM-SYM fixed ₹3,000")
-            reasons.append("ℹ Consider PM-SYM if you want simple ₹3,000 pension with lower contribution")
-        
-        all_reasons = reasons + blocking_factors
-        
-        return EligibilityResult(
-            scheme_code="APY_001",
-            scheme_name=scheme["full_name"],
-            eligible=eligible,
-            eligibility_status="eligible" if eligible else "not_eligible",
-            reasons=all_reasons,
-            last_verified=date.fromisoformat(scheme["last_verified"]),
-            data_freshness=self._compute_freshness(scheme["last_verified"]),
-            pending_requirements=["Choose pension tier (₹1,000-₹5,000/month)", "Register at bank or post office"] if eligible else None
-        )
-    
+
     def analyze_affordability(
         self,
         scheme_code: str,
         contribution: float,
         frequency: str,
         budget_state: BudgetAgentState,
-        user_age: int
+        user_age: int,
     ) -> AffordabilityAnalysis:
         """
-        Joint reasoning with Budget Agent to determine scheme affordability
-        
-        Args:
-            scheme_code: Scheme identifier
-            contribution: Required contribution amount
-            frequency: "monthly" or "annual"
-            budget_state: Budget Agent financial state
-            user_age: User's age for context
-        
-        Returns:
-            AffordabilityAnalysis with recommendation
+        Joint reasoning with Budget Agent to determine scheme affordability.
         """
-        # Estimate monthly income
-        monthly_income = budget_state.income_wma_4w * 4.33  # 4.33 weeks per month average
-        
-        # Available savings per month
-        available_savings = monthly_income * budget_state.savings_rate_recommendation
-        
-        # Convert contribution to monthly if annual
+        wma = budget_state.income_wma_4w or 0.0
+        monthly_income = wma * 4.33
+        savings_rate = budget_state.savings_rate_recommendation or 0.05
+        available_savings = monthly_income * savings_rate
         monthly_contribution = contribution if frequency == "monthly" else contribution / 12
-        
-        # Affordability check
-        affordable = monthly_contribution < available_savings
+
+        affordable = monthly_contribution <= available_savings if available_savings > 0 else (contribution <= 50)
         margin = available_savings - monthly_contribution
-        
-        # Confidence based on income volatility
-        if budget_state.income_volatility_pct < 0.15:
+
+        volatility = budget_state.income_volatility_pct or 0.0
+        if volatility < 0.15:
             confidence = "high"
-            stability_note = "Income is stable (low volatility)"
-        elif budget_state.income_volatility_pct <= 0.30:
+        elif volatility <= 0.30:
             confidence = "medium"
-            stability_note = "Income has moderate volatility"
         else:
             confidence = "low"
-            stability_note = "Income is highly volatile"
-        
-        # Risk factors
+
         risk_factors = []
-        if budget_state.income_volatility_pct > 0.30:
-            risk_factors.append("High income volatility may make sustained contributions difficult")
-        if margin < contribution * 0.5:
-            risk_factors.append("Low savings margin - one bad week could cause payment failure")
-        if budget_state.financial_persona == "conservative":
-            risk_factors.append("Conservative financial persona - currently in survival mode")
-        
-        # Recommendation
+        if volatility > 0.30:
+            risk_factors.append("High income volatility may make sustained monthly contributions difficult.")
+        if margin < (contribution * 0.5):
+            risk_factors.append("Low savings buffer: a lean delivery week could trigger an auto-debit bounce penalty.")
+
         if affordable and confidence == "high":
-            recommendation = f"✓ Affordable: You can comfortably afford ₹{contribution:.0f}/{frequency}. Your savings rate of {budget_state.savings_rate_recommendation*100:.0f}% covers this with ₹{margin:.0f} margin."
+            recommendation = f"✓ Highly Affordable: Monthly contribution of ₹{monthly_contribution:,.0f} comfortably fits within your monthly savings budget of ₹{available_savings:,.0f}."
             stability_requirement = None
         elif affordable and confidence == "medium":
-            recommendation = f"⚠ Conditionally affordable: ₹{contribution:.0f}/{frequency} fits your budget, but income volatility is {budget_state.income_volatility_pct*100:.0f}%."
-            stability_requirement = "Recommend waiting for 4 consecutive stable weeks before enabling auto-debit"
+            recommendation = f"⚠ Conditionally Affordable: ₹{monthly_contribution:,.0f}/month fits within current savings, but moderate volatility ({volatility*100:.0f}%) observed."
+            stability_requirement = "Recommend maintaining at least ₹500 buffer in bank before setting auto-debit."
         elif affordable and confidence == "low":
-            recommendation = f"⚠ Risky: While ₹{contribution:.0f}/{frequency} technically fits, your income volatility is {budget_state.income_volatility_pct*100:.0f}%. High risk of missed payments."
-            stability_requirement = "Wait until income stabilizes (volatility <30%) for at least 4 weeks"
+            recommendation = f"⚠ Risky: High income volatility ({volatility*100:.0f}%). Risk of auto-debit failure during lean weeks."
+            stability_requirement = "Wait until income stabilizes (volatility <30%) for 4 consecutive weeks before enrollment."
         else:
-            recommendation = f"✗ Not affordable now: ₹{contribution:.0f}/{frequency} exceeds your recommended savings rate. Available: ₹{available_savings:.0f}/month, Required: ₹{monthly_contribution:.0f}/month."
-            stability_requirement = f"Need income to increase by ₹{abs(margin) * 4.33:.0f}/month OR volatility to decrease below 30%"
-        
+            recommendation = f"✗ Not Recommended Currently: Required contribution exceeds recommended savings limit."
+            stability_requirement = "Focus on building liquid emergency buffer first."
+
+        scheme_name = scheme_code
+        for _, s in self.schemes.items():
+            if s.get("scheme_code") == scheme_code:
+                scheme_name = s.get("full_name", scheme_code)
+                break
+
         return AffordabilityAnalysis(
             scheme_code=scheme_code,
-            scheme_name=self.schemes.get(scheme_code.split('_')[0].lower(), {}).get("full_name", scheme_code),
+            scheme_name=scheme_name,
             contribution_required=contribution,
             contribution_frequency=frequency,
-            monthly_income_estimate=monthly_income,
-            savings_rate=budget_state.savings_rate_recommendation,
-            available_savings_per_month=available_savings,
+            monthly_income_estimate=round(monthly_income, 2),
+            savings_rate=savings_rate,
+            available_savings_per_month=round(available_savings, 2),
             affordable=affordable,
-            margin=margin,
+            margin=round(margin, 2),
             confidence=confidence,
             recommendation=recommendation,
             stability_requirement=stability_requirement,
-            risk_factors=risk_factors
+            risk_factors=risk_factors,
         )
-    
+
     def generate_recommendation(
         self,
         user: UserProfile,
-        budget_state: BudgetAgentState = None
+        budget_state: Optional[BudgetAgentState] = None,
+        selected_categories: Optional[List[str]] = None,
+        keywords: Optional[List[str]] = None,
+        query: Optional[str] = None,
     ) -> SchemeRecommendation:
         """
-        Generate comprehensive scheme recommendation for user
+        Generate comprehensive scheme recommendations filtered by categories & keywords.
         """
-        # Check gig worker status first
         is_gig_worker, gig_status = self.check_gig_worker_status(user)
-        
+
         eligible_schemes = []
         ineligible_schemes = []
         conditional_schemes = []
-        
-        # Check each scheme
-        e_shram_result = self.check_e_shram_eligibility(user)
-        if e_shram_result.eligible:
-            eligible_schemes.append(e_shram_result)
-        else:
-            ineligible_schemes.append(e_shram_result)
-        
-        pm_sym_result = self.check_pm_sym_eligibility(user, budget_state)
-        if pm_sym_result.eligible:
-            if budget_state and pm_sym_result.affordable is False:
-                conditional_schemes.append(pm_sym_result)
+
+        # Category and Keyword filtering
+        for scheme_key, scheme_data in self.schemes.items():
+            # Category filter check
+            scheme_cat = scheme_data.get("category")
+            if selected_categories and len(selected_categories) > 0:
+                if scheme_cat not in selected_categories and "all" not in selected_categories:
+                    continue
+
+            # Keyword / query filter check
+            if query or (keywords and len(keywords) > 0):
+                search_terms = set()
+                if query:
+                    search_terms.update(query.lower().split())
+                if keywords:
+                    search_terms.update([k.lower() for k in keywords])
+
+                scheme_text = (
+                    f"{scheme_data.get('full_name', '')} {scheme_data.get('category', '')} "
+                    f"{' '.join(scheme_data.get('keywords', []))} {scheme_data.get('target_group', '')}"
+                ).lower()
+
+                if not any(term in scheme_text for term in search_terms):
+                    continue
+
+            # Evaluate scheme
+            result = self.check_scheme_eligibility(scheme_key, user, budget_state)
+            if result.eligible:
+                if budget_state and result.affordable is False:
+                    conditional_schemes.append(result)
+                else:
+                    eligible_schemes.append(result)
             else:
-                eligible_schemes.append(pm_sym_result)
-        else:
-            ineligible_schemes.append(pm_sym_result)
-        
-        pmsby_result = self.check_pmsby_eligibility(user, budget_state)
-        if pmsby_result.eligible:
-            eligible_schemes.append(pmsby_result)
-        else:
-            ineligible_schemes.append(pmsby_result)
-        
-        pmjjby_result = self.check_pmjjby_eligibility(user)
-        if pmjjby_result.eligible:
-            eligible_schemes.append(pmjjby_result)
-        else:
-            ineligible_schemes.append(pmjjby_result)
-        
-        apy_result = self.check_apy_eligibility(user, budget_state)
-        if apy_result.eligible:
-            eligible_schemes.append(apy_result)
-        else:
-            ineligible_schemes.append(apy_result)
-        
-        # Priority recommendations (ordered by importance for gig workers)
+                ineligible_schemes.append(result)
+
+        # Sort eligible schemes by match score descending
+        eligible_schemes.sort(key=lambda s: s.match_score_pct, reverse=True)
+
+        # Priority recommendations
         priority = []
-        if not user.e_shram_registered and e_shram_result.eligible:
-            priority.append("1. Register on e-Shram (prerequisite for other schemes, free, takes 10 minutes)")
-        
-        if pmsby_result.eligible:
-            priority.append("2. Enroll in PMSBY (₹20/year accident cover - CRITICAL for gig workers)")
-        
-        if pm_sym_result.eligible and (not budget_state or pm_sym_result.affordable):
-            priority.append(f"3. Consider PM-SYM (₹{pm_sym_result.contribution_required}/month for ₹3,000/month pension after 60)")
-        
-        # Joint reasoning summary
+        if not user.e_shram_registered:
+            priority.append("1. Register on e-Shram (Foundational 12-digit UAN gateway, free registration at eshram.gov.in)")
+        priority.append("2. Enroll in PMSBY (₹20/year accident protection — essential for road & delivery safety)")
+        priority.append("3. Explore Ayushman Bharat PM-JAY (₹5 Lakh family cashless healthcare hospitalization cover)")
+
         joint_summary = None
-        if budget_state:
+        if budget_state and budget_state.income_wma_4w:
             joint_summary = (
-                f"Based on your current financial state: "
-                f"Weekly income ₹{budget_state.income_wma_4w:.0f} (volatility {budget_state.income_volatility_pct*100:.0f}%), "
-                f"recommended savings rate {budget_state.savings_rate_recommendation*100:.0f}%, "
-                f"current balance ₹{budget_state.closing_balance:.0f}. "
-                f"Persona: {budget_state.financial_persona}."
+                f"Financial Context: 4-week income level ₹{budget_state.income_wma_4w:,.0f}/week, "
+                f"volatility {budget_state.income_volatility_pct*100:.0f}%, "
+                f"recommended savings rate {budget_state.savings_rate_recommendation*100:.0f}%. "
+                f"Current closing balance: ₹{budget_state.closing_balance:,.0f}."
             )
-        
+
         return SchemeRecommendation(
             user_id=user.user_id,
             timestamp=datetime.now().isoformat(),
@@ -469,56 +473,51 @@ class SchemeEligibilityEngine:
             ineligible_schemes=ineligible_schemes,
             conditional_schemes=conditional_schemes,
             priority_recommendations=priority,
-            joint_reasoning_summary=joint_summary
+            joint_reasoning_summary=joint_summary,
+            categories_available=self.get_categories(),
         )
-    
+
     def _compute_freshness(self, last_verified_str: str) -> str:
         """Compute human-readable freshness indicator"""
-        last_verified = date.fromisoformat(last_verified_str)
-        today = date.today()
-        days_old = (today - last_verified).days
-        
-        if days_old == 0:
-            return "✓ Verified today"
-        elif days_old <= 7:
-            return f"✓ Verified {days_old} days ago"
-        elif days_old <= 30:
-            return f"⚠ Verified {days_old} days ago (check for updates)"
-        elif days_old <= 90:
-            return f"⚠ Verified {days_old} days ago (may be outdated)"
-        else:
-            return f"✗ STALE: Verified {days_old} days ago (REQUIRES UPDATE)"
-    
+        try:
+            last_verified = date.fromisoformat(last_verified_str)
+            today = date.today()
+            days_old = (today - last_verified).days
+            if days_old == 0:
+                return "✓ Verified today"
+            elif days_old <= 30:
+                return f"✓ Verified ({days_old}d ago)"
+            elif days_old <= 90:
+                return f"✓ Verified ({days_old}d ago)"
+            else:
+                return f"⚠ Update Recommended ({days_old}d old)"
+        except Exception:
+            return "✓ Verified"
+
     def check_data_freshness(self, staleness_threshold_days: int = 90) -> Dict:
-        """
-        Check if scheme data is stale and needs updating
-        
-        Args:
-            staleness_threshold_days: Days after which data is considered stale
-        
-        Returns:
-            Dict with stale schemes and recommendation to update
-        """
+        """Check freshness of schemes in KB."""
         today = date.today()
         stale_schemes = []
-        
+
         for scheme_key, scheme_data in self.schemes.items():
             if "last_verified" in scheme_data:
-                last_verified = date.fromisoformat(scheme_data["last_verified"])
-                days_old = (today - last_verified).days
-                
-                if days_old > staleness_threshold_days:
-                    stale_schemes.append({
-                        "scheme_code": scheme_key,
-                        "scheme_name": scheme_data.get("full_name", scheme_key),
-                        "last_verified": str(last_verified),
-                        "days_old": days_old
-                    })
-        
+                try:
+                    last_verified = date.fromisoformat(scheme_data["last_verified"])
+                    days_old = (today - last_verified).days
+                    if days_old > staleness_threshold_days:
+                        stale_schemes.append({
+                            "scheme_code": scheme_key,
+                            "scheme_name": scheme_data.get("full_name", scheme_key),
+                            "last_verified": str(last_verified),
+                            "days_old": days_old,
+                        })
+                except Exception:
+                    pass
+
         return {
             "check_timestamp": datetime.now().isoformat(),
             "schemes_checked": len(self.schemes),
             "stale_schemes": stale_schemes,
             "all_fresh": len(stale_schemes) == 0,
-            "recommendation": "Update scheme data from official sources" if stale_schemes else "All schemes up to date"
+            "recommendation": "All schemes up to date" if len(stale_schemes) == 0 else "Update recommended for stale entries",
         }
