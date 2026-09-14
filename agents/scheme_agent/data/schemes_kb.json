@@ -1,44 +1,189 @@
 {
-  "last_updated": "2026-08-20",
+  "last_updated": "2026-09-15",
   "data_sources": [
-    "https://www.eshram.gov.in/social-security-welfare-schemes",
-    "https://economictimes.indiatimes.com/wealth/save/pradhan-mantri-shram-yogi-maandhan-pm-sym-pension-yojana",
-    "https://static.pib.gov.in/WriteReadData/specificdocs/documents/2025/may/doc202558551401.pdf"
+    "https://myscheme.gov.in/",
+    "https://www.eshram.gov.in/",
+    "https://jansuraksha.gov.in/",
+    "https://maandhan.in/",
+    "https://pmjay.gov.in/",
+    "https://pmsvanidhi.mohua.gov.in/",
+    "https://labour.gov.in/code-on-social-security-2020"
   ],
+  "categories": {
+    "insurance_healthcare": {
+      "id": "insurance_healthcare",
+      "name": "Insurance & Healthcare",
+      "description": "Accident cover, life insurance, and hospital cash assistance",
+      "icon": "Shield"
+    },
+    "pension_retirement": {
+      "id": "pension_retirement",
+      "name": "Pension & Retirement",
+      "description": "Guaranteed monthly lifetime pension for post-60 security",
+      "icon": "TrendingUp"
+    },
+    "credit_loan": {
+      "id": "credit_loan",
+      "name": "Credit & Micro-Loans",
+      "description": "Collateral-free working capital and low-interest business loans",
+      "icon": "CreditCard"
+    },
+    "state_welfare_board": {
+      "id": "state_welfare_board",
+      "name": "State Gig Worker Funds",
+      "description": "State-specific welfare funds, cess-backed benefits and grants",
+      "icon": "Building"
+    },
+    "skill_education": {
+      "id": "skill_education",
+      "name": "Skill & Education",
+      "description": "Skill certification, family education grants, and training",
+      "icon": "BookOpen"
+    },
+    "identity": {
+      "id": "identity",
+      "name": "Identity & Gateway",
+      "description": "National unorganized worker registration (UAN) unlocking all schemes",
+      "icon": "IdCard"
+    }
+  },
   "schemes": {
     "e_shram": {
       "full_name": "e-Shram National Database of Unorganized Workers",
-      "last_verified": "2026-08-20",
+      "last_verified": "2026-09-15",
       "scheme_code": "ESHRAM_001",
+      "category": "identity",
       "ministry": "Ministry of Labour and Employment",
+      "official_portal_url": "https://eshram.gov.in/",
+      "keywords": ["eshram", "uan", "unorganized", "registration", "gateway", "database", "gig", "delivery", "swiggy", "zomato", "uber"],
       "eligibility": {
         "age_min": 16,
         "age_max": 59,
         "epfo_esic_registered": false,
         "income_tax_payer": false,
-        "required_documents": ["aadhaar", "bank_account", "mobile_number"]
+        "required_documents": ["Aadhaar Card", "Bank Account Passbook", "Aadhaar-linked Mobile Number"]
       },
       "benefits": [
-        "Accident cover up to ₹2 lakh via linkage",
-        "Gateway to other welfare schemes (PMSBY, PM-SYM)",
-        "Priority during government welfare distributions",
-        "Job notifications and skill development opportunities"
+        "12-digit Universal Account Number (UAN) valid for life across India",
+        "Direct linkage to PMSBY accidental cover up to ₹2 Lakh",
+        "Mandatory foundational gateway for accessing state gig boards & PM-SYM pension",
+        "Direct cash benefit transfers during economic or national emergencies"
       ],
       "registration": {
         "fee": 0,
-        "process": "Online at eshram.gov.in or via Common Service Centre",
+        "process": "Self-enroll online at eshram.gov.in or visit any Common Service Centre (CSC)",
         "validity": "Lifetime",
         "uan_issued": true
       },
-      "target_group": "Unorganized workers including gig workers, platform workers, construction workers, domestic workers, agricultural workers",
-      "current_enrollment": "31.82 crore workers as of August 2026",
-      "notes": "Mandatory prerequisite for accessing other gig worker welfare schemes"
+      "steps": [
+        "Visit https://eshram.gov.in and click 'Register on e-Shram'",
+        "Enter your Aadhaar-linked mobile number and captcha code",
+        "Authenticate using the 6-digit Aadhaar OTP",
+        "Fill in occupation details as 'Gig/Platform Worker' or 'Delivery Driver'",
+        "Confirm your bank account details for direct benefit transfers",
+        "Download your e-Shram UAN Card instantly"
+      ],
+      "required_documents_detail": [
+        {"name": "Aadhaar Card", "purpose": "Identity verification and OTP authentication", "mandatory": true},
+        {"name": "Bank Passbook / Details", "purpose": "DBT bank account linking", "mandatory": true},
+        {"name": "Mobile Number", "purpose": "Aadhaar OTP verification", "mandatory": true}
+      ],
+      "target_group": "Gig workers, platform workers, delivery partners, drivers, construction and agricultural unorganized workers",
+      "notes": "Prerequisite for accessing PMSBY, PM-SYM, and State Gig Worker Welfare Funds"
+    },
+    "pmsby": {
+      "full_name": "Pradhan Mantri Suraksha Bima Yojana (PMSBY)",
+      "last_verified": "2026-09-15",
+      "scheme_code": "PMSBY_001",
+      "category": "insurance_healthcare",
+      "ministry": "Department of Financial Services, Ministry of Finance",
+      "official_portal_url": "https://jansuraksha.gov.in/",
+      "keywords": ["pmsby", "accident", "insurance", "disability", "death cover", "gig protection", "jansuraksha"],
+      "eligibility": {
+        "age_min": 18,
+        "age_max": 70,
+        "savings_bank_account": true,
+        "e_shram_registered": true,
+        "auto_debit_consent": true
+      },
+      "benefits": [
+        "₹2,00,000 cover for accidental death",
+        "₹2,00,000 cover for total permanent disability (loss of both eyes or limbs)",
+        "₹1,00,000 cover for partial permanent disability (loss of one eye or limb)",
+        "Lowest annual premium in India at just ₹20/year"
+      ],
+      "premium": {
+        "annual_amount": 20,
+        "debit_frequency": "Annually on registration anniversary",
+        "auto_debit_required": true
+      },
+      "steps": [
+        "Open your net banking/mobile banking app or visit your bank branch",
+        "Navigate to 'Government Social Security Schemes' or 'Jan Suraksha'",
+        "Select 'Pradhan Mantri Suraksha Bima Yojana (PMSBY)'",
+        "Provide auto-debit consent for ₹20/year from your savings bank account",
+        "Enter nominee details (Spouse, Child, or Parent)",
+        "Download the policy confirmation certificate"
+      ],
+      "required_documents_detail": [
+        {"name": "Savings Bank Account", "purpose": "Annual auto-debit of ₹20 premium", "mandatory": true},
+        {"name": "Aadhaar Card", "purpose": "KYC and claim verification", "mandatory": true},
+        {"name": "Nominee KYC", "purpose": "Nominee ID and relationship proof", "mandatory": true}
+      ],
+      "critical_alerts": [
+        "Coverage lapses for FULL YEAR if account balance is below ₹20 on debit date",
+        "Re-enrollment requires fresh auto-debit consent"
+      ],
+      "target_group": "All gig workers and bank account holders aged 18-70 with road/occupational accident exposure",
+      "notes": "TOP PRIORITY for delivery partners and cab drivers due to high road exposure"
+    },
+    "pmjjby": {
+      "full_name": "Pradhan Mantri Jeevan Jyoti Bima Yojana (PMJJBY)",
+      "last_verified": "2026-09-15",
+      "scheme_code": "PMJJBY_001",
+      "category": "insurance_healthcare",
+      "ministry": "Department of Financial Services, Ministry of Finance",
+      "official_portal_url": "https://jansuraksha.gov.in/",
+      "keywords": ["pmjjby", "life insurance", "term life", "family protection", "death cover", "jansuraksha"],
+      "eligibility": {
+        "age_min": 18,
+        "age_max": 50,
+        "savings_bank_account": true,
+        "auto_debit_consent": true
+      },
+      "benefits": [
+        "₹2,00,000 pure life insurance cover for death due to ANY cause (natural or accidental)",
+        "Nominee receives full sum assured without complex medical examination",
+        "Renewable annually up to age 55"
+      ],
+      "premium": {
+        "annual_amount": 436,
+        "debit_date": "June 1st every year (or pro-rata at enrollment)",
+        "auto_debit_required": true
+      },
+      "steps": [
+        "Visit your savings bank branch or login via Net Banking / UPI Bank portal",
+        "Search for 'Jan Suraksha PMJJBY Enrollment'",
+        "Fill the simple declaration of good health form",
+        "Authorize annual auto-debit of ₹436 from your linked bank account",
+        "Submit nominee details and receive policy acknowledgment"
+      ],
+      "required_documents_detail": [
+        {"name": "Savings Bank Account", "purpose": "Annual auto-debit of ₹436", "mandatory": true},
+        {"name": "Aadhaar Card", "purpose": "KYC verification", "mandatory": true},
+        {"name": "Self-Declaration of Health", "purpose": "Good health confirmation", "mandatory": true}
+      ],
+      "target_group": "Primary breadwinners aged 18-50 with dependent family members",
+      "notes": "Complements PMSBY by providing all-cause death cover for family security"
     },
     "pm_sym": {
-      "full_name": "Pradhan Mantri Shram Yogi Maan-Dhan",
-      "last_verified": "2026-08-20",
+      "full_name": "Pradhan Mantri Shram Yogi Maan-Dhan (PM-SYM)",
+      "last_verified": "2026-09-15",
       "scheme_code": "PMSYM_001",
+      "category": "pension_retirement",
       "ministry": "Ministry of Labour and Employment",
+      "official_portal_url": "https://maandhan.in/",
+      "keywords": ["pmsym", "pension", "retirement", "maan-dhan", "social security", "3000 pension", "unorganized"],
       "eligibility": {
         "age_min": 18,
         "age_max": 40,
@@ -49,130 +194,42 @@
         "e_shram_registered": true
       },
       "benefits": [
-        "Guaranteed minimum pension of ₹3,000/month after age 60",
-        "Government matching contribution (1:1)",
-        "Family pension (50% to spouse in case of death)",
-        "Voluntary exit with interest on contribution"
+        "Guaranteed monthly pension of ₹3,000/month for life after age 60",
+        "100% Matching Central Government co-contribution (50:50 ratio)",
+        "Family pension: Spouse receives 50% (₹1,500/month) upon beneficiary's death",
+        "Voluntary exit anytime with return of subscriber contribution plus bank interest"
       ],
       "contribution_matrix": {
-        "18": 55,
-        "19": 58,
-        "20": 61,
-        "21": 64,
-        "22": 68,
-        "23": 72,
-        "24": 76,
-        "25": 80,
-        "26": 85,
-        "27": 90,
-        "28": 95,
-        "29": 100,
-        "30": 105,
-        "31": 110,
-        "32": 120,
-        "33": 130,
-        "34": 140,
-        "35": 150,
-        "36": 160,
-        "37": 170,
-        "38": 180,
-        "39": 190,
-        "40": 200
+        "18": 55, "19": 58, "20": 61, "21": 64, "22": 68,
+        "23": 72, "24": 76, "25": 80, "26": 85, "27": 90,
+        "28": 95, "29": 100, "30": 105, "31": 110, "32": 120,
+        "33": 130, "34": 140, "35": 150, "36": 160, "37": 170,
+        "38": 180, "39": 190, "40": 200
       },
-      "registration": {
-        "fee": 0,
-        "process": "Online via Jan Suraksha Portal or Common Service Centre",
-        "auto_debit_required": true,
-        "enrollment_deadline": "Before age 40"
-      },
-      "target_group": "Unorganized workers with monthly income below ₹15,000",
-      "risk_factors": [
-        "Auto-debit failure leads to contribution lapse",
-        "Cannot enroll after age 40",
-        "Requires sustained monthly contribution for full benefit"
+      "steps": [
+        "Visit your nearest Common Service Centre (CSC) or maandhan.in portal",
+        "Provide your e-Shram UAN number, Aadhaar number, and Savings Bank Account details",
+        "System calculates your monthly contribution (₹55 - ₹200 based on your age)",
+        "Pay first month's contribution in cash (at CSC) or via online net banking",
+        "Sign the auto-debit mandate form for automated monthly deduction",
+        "Receive your Shram Yogi Pension Card with unique Pension Account Number"
       ],
-      "notes": "Joint reasoning with Budget Agent required: Check if user's savings_rate_recommendation can sustain monthly contribution for minimum 4 stable weeks"
-    },
-    "pmsby": {
-      "full_name": "Pradhan Mantri Suraksha Bima Yojana",
-      "last_verified": "2026-08-20",
-      "scheme_code": "PMSBY_001",
-      "ministry": "Department of Financial Services, Ministry of Finance",
-      "eligibility": {
-        "age_min": 18,
-        "age_max": 70,
-        "savings_bank_account": true,
-        "e_shram_registered": true,
-        "auto_debit_consent": true
-      },
-      "benefits": [
-        "Accidental death cover: ₹2 lakh",
-        "Total and permanent disability: ₹2 lakh",
-        "Partial permanent disability: ₹1 lakh"
+      "required_documents_detail": [
+        {"name": "e-Shram UAN Card", "purpose": "Proof of unorganized gig worker status", "mandatory": true},
+        {"name": "Aadhaar Card", "purpose": "Biometric e-KYC", "mandatory": true},
+        {"name": "Savings Bank Passbook / Cheque", "purpose": "Monthly auto-debit setup", "mandatory": true}
       ],
-      "premium": {
-        "annual_amount": 20,
-        "debit_frequency": "Annually on registration anniversary",
-        "auto_debit_required": true
-      },
-      "critical_alerts": [
-        "Coverage lapses for FULL YEAR if balance insufficient on debit date",
-        "Re-enrollment possible but requires fresh consent",
-        "No refund for partial year coverage"
-      ],
-      "nudge_trigger": {
-        "days_before_debit": 14,
-        "minimum_balance_required": 20,
-        "recommended_buffer": 50
-      },
-      "registration": {
-        "fee": 0,
-        "process": "Through bank or via e-Shram linkage",
-        "renewal": "Auto-renewal if balance sufficient"
-      },
-      "target_group": "Bank account holders aged 18-70",
-      "claim_process": "Through nominated bank with death/disability certificate",
-      "notes": "HIGH PRIORITY for gig workers due to occupation risk. Proactive nudge 14 days before debit is CRITICAL."
-    },
-    "pmjjby": {
-      "full_name": "Pradhan Mantri Jeevan Jyoti Bima Yojana",
-      "last_verified": "2026-08-20",
-      "scheme_code": "PMJJBY_001",
-      "ministry": "Department of Financial Services, Ministry of Finance",
-      "eligibility": {
-        "age_min": 18,
-        "age_max": 50,
-        "savings_bank_account": true,
-        "auto_debit_consent": true
-      },
-      "benefits": [
-        "Life insurance cover: ₹2 lakh",
-        "Nominee receives sum on death from any cause",
-        "Renewable annually till age 55"
-      ],
-      "premium": {
-        "annual_amount": 436,
-        "debit_date": "June 1st every year",
-        "auto_debit_required": true
-      },
-      "critical_alerts": [
-        "Coverage lapses if balance insufficient on June 1st",
-        "Higher premium compared to PMSBY (₹436 vs ₹20)",
-        "Cannot enroll after age 50 (but can continue till 55 if already enrolled)"
-      ],
-      "registration": {
-        "fee": 0,
-        "process": "Through bank branch or online banking",
-        "renewal": "Auto-renewal if balance sufficient on June 1st"
-      },
-      "target_group": "Bank account holders aged 18-50",
-      "notes": "Consider PMSBY first for gig workers due to lower premium and higher occupation risk. PMJJBY provides all-cause death cover."
+      "target_group": "Young unorganized gig workers aged 18-40 earning up to ₹15,000/month",
+      "notes": "Joint reasoning with Budget Agent: Ensure savings rate and cashflow stability before auto-debit"
     },
     "apy": {
-      "full_name": "Atal Pension Yojana",
-      "last_verified": "2026-08-20",
+      "full_name": "Atal Pension Yojana (APY)",
+      "last_verified": "2026-09-15",
       "scheme_code": "APY_001",
-      "ministry": "Department of Financial Services, Ministry of Finance",
+      "category": "pension_retirement",
+      "ministry": "Department of Financial Services, Ministry of Finance (PFRDA)",
+      "official_portal_url": "https://npscra.nsdl.co.in/atal-pension.php",
+      "keywords": ["apy", "atal pension", "pfrda", "pension tiers", "5000 pension", "retirement", "social security"],
       "eligibility": {
         "age_min": 18,
         "age_max": 40,
@@ -181,203 +238,207 @@
         "aadhaar_required": true
       },
       "benefits": [
-        "Guaranteed minimum pension: ₹1,000 to ₹5,000/month (subscriber choice)",
-        "Spouse receives same pension amount after subscriber's death",
-        "Nominee receives corpus if both die",
-        "Government co-contribution: 50% of contribution or ₹1,000/year (whichever is lower) for 5 years"
+        "Guaranteed monthly pension tiers: ₹1,000, ₹2,000, ₹3,000, ₹4,000, or ₹5,000/month",
+        "Same pension amount continues to spouse upon death of subscriber",
+        "Return of full accumulated pension wealth to nominee after demise of both subscriber and spouse",
+        "Regulated and guaranteed by Pension Fund Regulatory and Development Authority (PFRDA)"
       ],
-      "pension_tiers": [
-        {"pension_amount": 1000, "description": "Minimum pension tier"},
-        {"pension_amount": 2000, "description": "Low pension tier"},
-        {"pension_amount": 3000, "description": "Medium pension tier (matches PM-SYM)"},
-        {"pension_amount": 4000, "description": "High pension tier"},
-        {"pension_amount": 5000, "description": "Maximum pension tier"}
+      "steps": [
+        "Login to your bank's mobile app / NetBanking or visit your bank branch",
+        "Navigate to APY (Atal Pension Yojana) section",
+        "Select your desired monthly pension amount (₹1,000 to ₹5,000)",
+        "Choose monthly, quarterly, or half-yearly auto-debit contribution frequency",
+        "Provide nominee and spouse details",
+        "Download your APY PRAN (Permanent Retirement Account Number) e-Card"
       ],
-      "contribution": {
-        "note": "Age-dependent and pension-tier-dependent",
-        "example_age_18_pension_1000": "42/month",
-        "example_age_18_pension_5000": "210/month",
-        "example_age_40_pension_5000": "902/month",
-        "frequency": "Monthly auto-debit"
-      },
-      "registration": {
-        "fee": 0,
-        "process": "Through bank or post office",
-        "enrollment_deadline": "Before age 40"
-      },
-      "government_co_contribution": {
-        "eligibility": "Non-income-tax payers only",
-        "amount": "50% of contribution OR ₹1,000/year, whichever is lower",
-        "duration": "5 years from enrollment",
-        "discontinued_after": "FY 2021-22 for new enrollments (verify current status)"
-      },
-      "target_group": "Young workers aged 18-40 who are not income tax payers",
-      "comparison_with_pm_sym": "APY offers flexible pension amounts (₹1,000-₹5,000) vs PM-SYM fixed ₹3,000; APY may have higher contribution",
-      "notes": "Better suited for younger gig workers with stable income. Joint reasoning with Budget Agent: Check if volatility allows sustained monthly commitment."
+      "required_documents_detail": [
+        {"name": "Savings Bank Account", "purpose": "Scheduled auto-debit of pension contribution", "mandatory": true},
+        {"name": "Aadhaar Card", "purpose": "KYC authentication", "mandatory": true},
+        {"name": "Nominee Details", "purpose": "Spouse / Nominee linkage", "mandatory": true}
+      ],
+      "target_group": "All citizens aged 18-40 seeking flexible pension choices from ₹1,000 to ₹5,000/month",
+      "notes": "Offers higher pension choices than PM-SYM (up to ₹5,000/month)"
     },
-    "state_welfare_boards": {
-      "full_name": "State-Level Gig Worker Welfare Boards",
-      "last_verified": "2026-08-20",
-      "scheme_code": "STATE_WELFARE_BOARDS",
-      "states_with_active_boards": {
-        "rajasthan": {
-          "status": "Active since 2023",
-          "welfare_cess": "Platform-level cess on aggregator transactions",
-          "registration": "State labour portal",
-          "benefits": [
-            "Healthcare support",
-            "Education assistance for children",
-            "Emergency financial aid",
-            "Maternity benefits"
-          ]
-        },
-        "karnataka": {
-          "status": "Active since August 2025",
-          "welfare_cess": "1-2% cess on platform transactions",
-          "registration": "Karnataka Gig Workers Welfare Board portal",
-          "benefits": [
-            "Accident insurance",
-            "Healthcare benefits",
-            "Skill development programs",
-            "Social security schemes"
-          ]
-        },
-        "bihar": {
-          "status": "Active since August 2025",
-          "registration": "State labor portal",
-          "benefits": [
-            "Registration as gig worker",
-            "Access to state welfare schemes"
-          ]
-        },
-        "jharkhand": {
-          "status": "Active since August 2025",
-          "registration": "State welfare portal",
-          "benefits": [
-            "State-level welfare schemes",
-            "Social security benefits"
-          ]
-        },
-        "telangana": {
-          "status": "Active since 2026",
-          "registration": "State labour department portal",
-          "benefits": [
-            "Welfare fund access",
-            "Healthcare schemes"
-          ]
-        }
-      },
+    "pm_jay": {
+      "full_name": "Ayushman Bharat - Pradhan Mantri Jan Arogya Yojana (PM-JAY)",
+      "last_verified": "2026-09-15",
+      "scheme_code": "PMJAY_001",
+      "category": "insurance_healthcare",
+      "ministry": "National Health Authority (NHA), Ministry of Health & Family Welfare",
+      "official_portal_url": "https://pmjay.gov.in/",
+      "keywords": ["pmjay", "ayushman", "health cover", "hospitalization", "5 lakh", "free treatment", "cashless", "medical"],
       "eligibility": {
-        "gig_worker_status": true,
-        "state_residence_proof": true,
-        "platform_registration_proof": true
+        "age_min": 0,
+        "age_max": 100,
+        "income_tax_payer": false,
+        "e_shram_registered": true,
+        "secc_bpl_or_unorganized": true
       },
-      "notes": "State-specific schemes vary. User must be queried for current state of residence. Cess is typically deducted at platform level (user may not notice)."
-    },
-    "code_on_social_security_2020": {
-      "full_name": "Code on Social Security, 2020 - Gig Worker Classification",
-      "last_verified": "2026-08-20",
-      "effective_date": "2025-11-01",
-      "classification_criteria": {
-        "gig_worker_definition": "Person performing work or services outside traditional employer-employee relationship",
-        "eligibility_threshold_option_1": {
-          "days_active_single_platform": 90,
-          "description": "90 days active with ONE aggregator platform"
-        },
-        "eligibility_threshold_option_2": {
-          "days_active_multi_platform": 120,
-          "description": "120 days cumulative across MULTIPLE platforms"
-        }
-      },
-      "benefits_unlocked": [
-        "Access to state welfare boards",
-        "Social security scheme eligibility",
-        "Formal gig worker status",
-        "Legal protection as gig worker"
+      "benefits": [
+        "₹5,00,000 cashless family hospitalization cover per year",
+        "Covers secondary and tertiary healthcare across 27,000+ empanelled public and private hospitals",
+        "No restrictions on family size, age, or gender",
+        "Includes 3 days pre-hospitalization and 15 days post-hospitalization expenses including medicines"
       ],
-      "verification": {
-        "required_proof": "Platform registration certificate or payout statements",
-        "aggregators_covered": "Swiggy, Zomato, Uber, Ola, Urban Company, Dunzo, others"
-      },
-      "boundary_test_cases": {
-        "89_days_single": "NOT eligible (just below threshold)",
-        "90_days_single": "ELIGIBLE (meets threshold)",
-        "119_days_multi": "NOT eligible (just below threshold)",
-        "120_days_multi": "ELIGIBLE (meets threshold)"
-      },
-      "notes": "CRITICAL for scheme eligibility. Synthetic data includes boundary test users (user_0001 to user_0012) specifically for this criteria."
-    }
-  },
-  "eligibility_decision_tree": {
-    "description": "Sequential eligibility check flow for Scheme Agent",
-    "steps": [
-      {
-        "step": 1,
-        "check": "Is user aged 16-59?",
-        "if_no": "Not eligible for e-Shram (foundational scheme)",
-        "if_yes": "Proceed to step 2"
-      },
-      {
-        "step": 2,
-        "check": "Is user EPFO/ESIC registered?",
-        "if_yes": "Not eligible for most gig worker schemes",
-        "if_no": "Proceed to step 3"
-      },
-      {
-        "step": 3,
-        "check": "Is user an income tax payer?",
-        "if_yes": "Not eligible for most gig worker schemes",
-        "if_no": "Proceed to step 4"
-      },
-      {
-        "step": 4,
-        "check": "Has user completed 90 days (single platform) OR 120 days (multi-platform)?",
-        "if_no": "Not classified as gig worker under Code 2020; wait until threshold met",
-        "if_yes": "User is eligible gig worker. Proceed to scheme-specific checks."
-      },
-      {
-        "step": 5,
-        "check": "Is user e-Shram registered?",
-        "if_no": "RECOMMEND e-Shram registration first (gateway to other schemes)",
-        "if_yes": "User can access PM-SYM, PMSBY, state boards"
-      },
-      {
-        "step": 6,
-        "check": "Check age-specific eligibility for each scheme",
-        "pm_sym": "Age 18-40, income <₹15k/month",
-        "pmsby": "Age 18-70, bank account with auto-debit",
-        "pmjjby": "Age 18-50, bank account with auto-debit",
-        "apy": "Age 18-40, non-tax-payer"
-      }
-    ]
-  },
-  "affordability_joint_reasoning_logic": {
-    "description": "How Scheme Agent collaborates with Budget Agent to determine affordability",
-    "inputs_from_budget_agent": [
-      "income_wma_4w",
-      "income_volatility_pct",
-      "savings_rate_recommendation",
-      "closing_balance",
-      "financial_persona"
-    ],
-    "calculation": {
-      "monthly_income_estimate": "income_wma_4w * 4.33",
-      "available_savings_per_month": "monthly_income * savings_rate_recommendation",
-      "scheme_contribution_required": "From contribution_matrix based on age",
-      "affordability_check": "scheme_contribution < available_savings",
-      "stability_requirement": "Income should be stable (volatility < 30%) for at least 4 weeks before auto-debit enrollment"
+      "steps": [
+        "Visit https://beneficiary.nha.gov.in/ or download the 'Ayushman App'",
+        "Enter your mobile number and authenticate via OTP",
+        "Search your family record using Aadhaar number, Ration Card, or PMJAY Family ID",
+        "Complete instant e-KYC using Aadhaar Face Auth or OTP",
+        "Download your digital Ayushman Golden Card immediately",
+        "Show card at any empanelled hospital for cashless treatment"
+      ],
+      "required_documents_detail": [
+        {"name": "Aadhaar Card", "purpose": "Beneficiary e-KYC", "mandatory": true},
+        {"name": "Ration Card / Family Proof", "purpose": "Family member verification", "mandatory": true},
+        {"name": "Mobile Number", "purpose": "OTP verification", "mandatory": true}
+      ],
+      "target_group": "Low-income gig workers, unorganized workers, and vulnerable families",
+      "notes": "Completely free healthcare protection that protects gig workers from medical debt"
     },
-    "example": {
-      "user_age": 28,
-      "income_wma_4w": 2800,
-      "income_volatility_pct": 0.22,
-      "savings_rate_recommendation": 0.10,
-      "pm_sym_contribution_required": 95,
-      "monthly_income_estimate": "2800 * 4.33 = 12,124",
-      "available_savings": "12,124 * 0.10 = 1,212",
-      "affordability": "95 < 1,212 → AFFORDABLE",
-      "stability_check": "volatility 22% (moderate) → RECOMMEND waiting for 4 stable weeks before enrollment",
-      "final_recommendation": "Eligible and affordable, but defer enrollment until income stabilizes"
+    "pm_svanidhi": {
+      "full_name": "PM Street Vendor's AtmaNirbhar Nidhi (PM SVANidhi)",
+      "last_verified": "2026-09-15",
+      "scheme_code": "PMSVANIDHI_001",
+      "category": "credit_loan",
+      "ministry": "Ministry of Housing and Urban Affairs (MoHUA)",
+      "official_portal_url": "https://pmsvanidhi.mohua.gov.in/",
+      "keywords": ["svanidhi", "micro loan", "working capital", "collateral free", "cashback", "subsidy", "delivery", "vendor"],
+      "eligibility": {
+        "age_min": 18,
+        "age_max": 65,
+        "savings_bank_account": true,
+        "gig_or_vendor_status": true
+      },
+      "benefits": [
+        "1st Tranche: ₹10,000 collateral-free working capital loan (1 year tenure)",
+        "2nd Tranche: ₹20,000 on timely repayment of 1st loan",
+        "3rd Tranche: ₹50,000 on timely repayment of 2nd loan",
+        "7% per annum interest subsidy credited directly to bank account on regular repayment",
+        "Cashback of up to ₹1,200 per year on digital UPI transactions"
+      ],
+      "steps": [
+        "Visit https://pmsvanidhi.mohua.gov.in/ or visit nearest commercial bank / microfinance branch",
+        "Click 'Apply for Loan' and login with your mobile number",
+        "Upload proof of platform active work (Swiggy/Zomato/Dunzo/Uber active dashboard screenshot or letter)",
+        "Link your Aadhaar-linked savings bank account for direct disbursement",
+        "Bank verifies and disburses loan amount directly within 7 to 10 working days",
+        "Repay via monthly UPI EMIs to unlock next loan tranche and 7% interest subsidy"
+      ],
+      "required_documents_detail": [
+        {"name": "Aadhaar Card", "purpose": "Identity and KYC verification", "mandatory": true},
+        {"name": "Bank Account Details", "purpose": "Loan disbursement and subsidy credit", "mandatory": true},
+        {"name": "Platform Work Proof", "purpose": "Delivery partner ID card or payout slip", "mandatory": true}
+      ],
+      "target_group": "Delivery partners, self-employed gig couriers, urban street vendors needing working capital",
+      "notes": "Excellent for purchasing electric bikes, smartphones, or working capital without loan sharks"
+    },
+    "state_gig_karnataka": {
+      "full_name": "Karnataka Platform-Based Gig Workers Social Security Scheme",
+      "last_verified": "2026-09-15",
+      "scheme_code": "KARNATAKA_GIG_001",
+      "category": "state_welfare_board",
+      "ministry": "Karnataka Labour Department / Gig Workers Welfare Board",
+      "official_portal_url": "https://kswfc.karnataka.gov.in/",
+      "keywords": ["karnataka", "bengaluru", "gig welfare board", "cess", "swiggy", "zomato", "dunzo", "4 lakh insurance"],
+      "eligibility": {
+        "age_min": 18,
+        "age_max": 60,
+        "state_residence": "Karnataka",
+        "days_active_with_aggregator": 90,
+        "e_shram_registered": true
+      },
+      "benefits": [
+        "₹4,00,000 total accident insurance (₹2L accidental death + ₹2L permanent disability)",
+        "₹1,00,000 hospital expense reimbursement for on-duty injuries",
+        "Welfare cess fund backed by platform aggregators (1-2% cess on ride/food orders)",
+        "Grievance redressal mechanism against arbitrary platform deactivations"
+      ],
+      "steps": [
+        "Visit the Karnataka Seva Sindhu / Labour Department Gig Portal",
+        "Enter your Aadhaar number and Karnataka resident address",
+        "Select your aggregator platforms (Swiggy, Zomato, Uber, Ola, Zepto, Blinkit)",
+        "Upload your platform onboarding ID or last 3 months payout statements",
+        "Submit for automated digital validation with aggregator database",
+        "Receive your official Karnataka Gig Worker Digital ID Card"
+      ],
+      "required_documents_detail": [
+        {"name": "Karnataka Residence Proof / Address", "purpose": "State jurisdiction eligibility", "mandatory": true},
+        {"name": "Platform Partner ID / Statements", "purpose": "Proof of 90+ active days on aggregator", "mandatory": true},
+        {"name": "Aadhaar Card", "purpose": "KYC authentication", "mandatory": true}
+      ],
+      "target_group": "All delivery partners, drivers, and platform gig workers operating in Karnataka",
+      "notes": "Funded directly through platform aggregator welfare cess"
+    },
+    "state_gig_rajasthan": {
+      "full_name": "Rajasthan Platform Based Gig Workers Welfare Board",
+      "last_verified": "2026-09-15",
+      "scheme_code": "RAJASTHAN_GIG_001",
+      "category": "state_welfare_board",
+      "ministry": "Rajasthan Labour Department",
+      "official_portal_url": "https://labour.rajasthan.gov.in/",
+      "keywords": ["rajasthan", "jaipur", "gig workers act", "welfare board", "jan aadhaar", "emergency grant"],
+      "eligibility": {
+        "age_min": 18,
+        "age_max": 60,
+        "state_residence": "Rajasthan",
+        "days_active_with_aggregator": 90,
+        "jan_aadhaar_linked": true
+      },
+      "benefits": [
+        "Statutory social security fund created under Rajasthan Platform-Based Gig Workers Act",
+        "Welfare fee deducted at platform transaction level (user contributes nothing out of pocket)",
+        "Emergency health and accidental financial assistance",
+        "Protection against unfair terminations via tripartite welfare board"
+      ],
+      "steps": [
+        "Visit the Rajasthan Single Sign-On (SSO) or Labour Department portal",
+        "Login with Jan Aadhaar / SSO ID",
+        "Navigate to 'Platform-Based Gig Worker Registration'",
+        "Link your active aggregator accounts (Uber, Ola, Swiggy, Zomato)",
+        "Generate your unique Gig Worker Registration Number"
+      ],
+      "required_documents_detail": [
+        {"name": "Jan Aadhaar / Rajasthan Resident ID", "purpose": "State verification", "mandatory": true},
+        {"name": "Aggregator Onboarding Proof", "purpose": "Gig worker verification", "mandatory": true},
+        {"name": "Bank Account Details", "purpose": "Direct grant disbursement", "mandatory": true}
+      ],
+      "target_group": "Platform gig workers operating in Rajasthan",
+      "notes": "India's first statutory gig workers welfare law"
+    },
+    "state_gig_telangana": {
+      "full_name": "Telangana Gig & Platform Workers Social Security Scheme",
+      "last_verified": "2026-09-15",
+      "scheme_code": "TELANGANA_GIG_001",
+      "category": "state_welfare_board",
+      "ministry": "Telangana Labour Department",
+      "official_portal_url": "https://labour.telangana.gov.in/",
+      "keywords": ["telangana", "hyderabad", "gig worker fund", "5 lakh insurance", "delivery partner", "cab driver"],
+      "eligibility": {
+        "age_min": 18,
+        "age_max": 60,
+        "state_residence": "Telangana",
+        "days_active_with_aggregator": 90,
+        "e_shram_registered": true
+      },
+      "benefits": [
+        "₹5,00,000 accidental insurance coverage for food delivery and cab workers",
+        "₹10,000 immediate medical financial assistance for on-duty injuries",
+        "Free skill development and electric vehicle transition subsidies"
+      ],
+      "steps": [
+        "Visit https://labour.telangana.gov.in/ and select 'Gig Worker Registration'",
+        "Enter Aadhaar and Telangana mobile number",
+        "Upload platform ID card or recent payout statement",
+        "Receive registration confirmation and insurance policy linkage"
+      ],
+      "required_documents_detail": [
+        {"name": "Telangana Address Proof", "purpose": "State eligibility check", "mandatory": true},
+        {"name": "Aggregator ID / Work Proof", "purpose": "Active gig worker status", "mandatory": true},
+        {"name": "Aadhaar Card", "purpose": "e-KYC verification", "mandatory": true}
+      ],
+      "target_group": "Food delivery partners, ride-hailing drivers, and platform couriers in Telangana",
+      "notes": "Includes free ₹5L accident policy sponsored by the State Government"
     }
   }
 }
