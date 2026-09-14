@@ -4,7 +4,7 @@
  * Purchasing Power Alert, and Inflation Awareness interactive calculator.
  * Pure single-language strings dynamically loaded via useTranslation().
  */
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -29,22 +29,117 @@ import {
 
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
+const SEASONALITY_PRIORS: Record<string, number> = {
+  Jan: 0.98, Feb: 0.96, Mar: 1.02,
+  Apr: 1.01, May: 0.99, Jun: 0.97,
+  Jul: 0.95, Aug: 0.98, Sep: 1.05,
+  Oct: 1.12, Nov: 1.10, Dec: 1.08,
+};
+
+const DEFAULT_SEED_HISTORY: MonthlyIncomeHistoryItem[] = [
+  { month: 'Jan', income: 23000, source: 'Primary Income' },
+  { month: 'Feb', income: 24000, source: 'Primary Income' },
+  { month: 'Mar', income: 25500, source: 'Primary Income' },
+  { month: 'Apr', income: 25000, source: 'Primary Income' },
+  { month: 'May', income: 24500, source: 'Primary Income' },
+  { month: 'Jun', income: 26000, source: 'Primary Income' },
+];
+
+function computeClientTimeSeries(history: MonthlyIncomeHistoryItem[], inflationRate = 0.051) {
+  const items = history && history.length > 0 ? history : DEFAULT_SEED_HISTORY;
+  const values = items.map((h) => Number(h.income) || 0);
+  const n = values.length;
+
+  let wma = 25000;
+  let slope = 0;
+  if (n >= 2) {
+    const weights = values.map((_, i) => i + 1);
+    const weightSum = weights.reduce((a, b) => a + b, 0);
+    wma = values.reduce((sum, v, i) => sum + v * weights[i], 0) / weightSum;
+
+    const xMean = (n - 1) / 2;
+    const yMean = values.reduce((a, b) => a + b, 0) / n;
+    let num = 0;
+    let den = 0;
+    for (let i = 0; i < n; i++) {
+      num += (i - xMean) * (values[i] - yMean);
+      den += (i - xMean) * (i - xMean);
+    }
+    slope = den !== 0 ? num / den : 0;
+  } else if (n === 1) {
+    wma = values[0];
+  }
+
+  const lastMonth = items[items.length - 1]?.month || 'Jun';
+  let lastIdx = MONTH_NAMES.indexOf(lastMonth);
+  if (lastIdx < 0) lastIdx = 5;
+
+  const lastSeasonPrior = SEASONALITY_PRIORS[lastMonth] || 1.0;
+  const forecastMonths = [];
+
+  for (let i = 1; i <= 3; i++) {
+    const nextIdx = (lastIdx + i) % 12;
+    const monthName = MONTH_NAMES[nextIdx];
+    const targetSeasonPrior = SEASONALITY_PRIORS[monthName] || 1.0;
+    const seasonalMult = lastSeasonPrior > 0 ? targetSeasonPrior / lastSeasonPrior : 1.0;
+    const inflationGrowth = 1 + inflationRate * (i / 12);
+    const predicted = Math.max(1000, Math.round((wma + slope * 0.8 * i) * seasonalMult * inflationGrowth));
+
+    forecastMonths.push({
+      month: `${monthName} (F)`,
+      predicted_income: predicted,
+      is_forecast: true,
+    });
+  }
+
+  const trajectory: any[] = [];
+  items.forEach((h, i) => {
+    const isLast = i === items.length - 1;
+    trajectory.push({
+      month: h.month,
+      actual_income: h.income,
+      predicted_income: isLast ? h.income : null,
+      is_forecast: false,
+    });
+  });
+
+  forecastMonths.forEach((f) => {
+    trajectory.push({
+      month: f.month,
+      actual_income: null,
+      predicted_income: f.predicted_income,
+      is_forecast: true,
+    });
+  });
+
+  const forecastedIncome = forecastMonths[0]?.predicted_income || Math.round(wma);
+
+  return {
+    trajectory,
+    forecastedIncome,
+    wmaIncome: Math.round(wma),
+  };
+}
+
 export const BudgetScreen: React.FC = () => {
   const navigation = useNavigation<any>();
   const { t } = useTranslation();
   const [planner, setPlanner] = useState<BudgetPlannerResponse | null>(null);
-  const [history, setHistory] = useState<MonthlyIncomeHistoryItem[]>([]);
+  const [history, setHistory] = useState<MonthlyIncomeHistoryItem[]>(DEFAULT_SEED_HISTORY);
   const [currentCost, setCurrentCost] = useState<string>('1000');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [calculating, setCalculating] = useState(false);
-  const [activeTab, setActiveTab] = useState<'planner' | 'spending' | 'inflation'>('planner');
 
   const fetchData = useCallback(async (cost = 1000) => {
     try {
       const data = await analyticsService.getBudgetPlanner(cost);
-      setPlanner(data);
-      setHistory(data.history || []);
+      if (data) {
+        setPlanner(data);
+        if (data.history && data.history.length > 0) {
+          setHistory(data.history);
+        }
+      }
     } catch {
       // Offline fallback
     } finally {
@@ -62,9 +157,11 @@ export const BudgetScreen: React.FC = () => {
       setCalculating(true);
       const costNum = parseFloat(currentCost) || 1000;
       const res = await analyticsService.updateBudgetPlanner(history, costNum);
-      setPlanner(res);
+      if (res) {
+        setPlanner(res);
+      }
     } catch (err) {
-      Alert.alert('Error', 'Failed to recalculate income forecast.');
+      // Offline local computation fallback
     } finally {
       setCalculating(false);
     }
@@ -95,6 +192,48 @@ export const BudgetScreen: React.FC = () => {
     setHistory(updated);
   };
 
+  const inflationRate = planner?.current_inflation_rate ?? 5.1;
+  const clientComputed = useMemo(() => {
+    return computeClientTimeSeries(history, inflationRate / 100);
+  }, [history, inflationRate]);
+
+  const trajectory = (planner?.full_trajectory && planner.full_trajectory.length > 0)
+    ? planner.full_trajectory
+    : clientComputed.trajectory;
+
+  const forecastIncome = planner?.forecasted_monthly_income ?? clientComputed.forecastedIncome;
+  const groupLabel = planner?.group_label ?? (
+    forecastIncome < 20000 ? 'ESSENTIAL EARNER GROUP' :
+    forecastIncome <= 60000 ? 'MIDDLE INCOME GROUP' : 'GROWTH INCOME GROUP'
+  );
+
+  const spendingGuide = planner?.spending_guide ?? {
+    total_income: forecastIncome,
+    basic_needs: { name: 'Basic Needs (50%)', pct: 50, amount: Math.round(forecastIncome * 0.5) },
+    emergency_savings: { name: 'Emergency Savings (10%)', pct: 10, amount: Math.round(forecastIncome * 0.1) },
+    future_growth: { name: 'Future Growth (25%)', pct: 25, amount: Math.round(forecastIncome * 0.25) },
+    personal_spending: { name: 'Personal Spending (15%)', pct: 15, amount: Math.round(forecastIncome * 0.15) },
+  };
+
+  // Chart max / min values
+  const chartPoints = trajectory.map((tr) => ({
+    month: tr.month,
+    amount: tr.is_forecast ? (tr.predicted_income ?? 0) : (tr.actual_income ?? 0),
+    isForecast: tr.is_forecast,
+  }));
+  const amounts = chartPoints.map((p) => p.amount).filter((a) => a > 0);
+  const maxAmount = amounts.length > 0 ? Math.max(...amounts) : 30000;
+  const minAmount = amounts.length > 0 ? Math.min(...amounts) * 0.8 : 0;
+  const maxBarHeight = 110;
+  const minBarHeight = 24;
+
+  // Dynamic cost projections
+  const costNum = parseFloat(currentCost) || 1000;
+  const cost5y = Math.round(costNum * Math.pow(1.04, 5));
+  const cost10y = Math.round(costNum * Math.pow(1.04, 10));
+  const cost15y = Math.round(costNum * Math.pow(1.04, 15));
+  const purchasingPowerOneYear = Math.round(forecastIncome / (1 + inflationRate / 100));
+
   if (loading) {
     return (
       <SafeAreaView style={styles.safeArea}>
@@ -105,30 +244,6 @@ export const BudgetScreen: React.FC = () => {
       </SafeAreaView>
     );
   }
-
-  const forecastIncome = planner?.forecasted_monthly_income ?? 25000;
-  const groupLabel = planner?.group_label ?? 'MIDDLE INCOME GROUP';
-  const inflationRate = planner?.current_inflation_rate ?? 5.1;
-  const trajectory = planner?.full_trajectory ?? [];
-  const spendingGuide = planner?.spending_guide;
-
-  // Chart max / min values
-  const chartPoints = trajectory.map((t) => ({
-    month: t.month,
-    amount: t.is_forecast ? (t.predicted_income ?? 0) : (t.actual_income ?? 0),
-    isForecast: t.is_forecast,
-  }));
-  const maxAmount = Math.max(...chartPoints.map((p) => p.amount), 1000);
-  const minAmount = Math.min(...chartPoints.map((p) => p.amount), 0);
-  const maxBarHeight = 110;
-  const minBarHeight = 24;
-
-  // Dynamic cost projections
-  const costNum = parseFloat(currentCost) || 1000;
-  const cost5y = Math.round(costNum * Math.pow(1.04, 5));
-  const cost10y = Math.round(costNum * Math.pow(1.04, 10));
-  const cost15y = Math.round(costNum * Math.pow(1.04, 15));
-  const purchasingPowerOneYear = Math.round(forecastIncome / (1 + inflationRate / 100));
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>

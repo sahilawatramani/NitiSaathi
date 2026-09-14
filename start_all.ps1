@@ -36,9 +36,14 @@ Start-Process python -ArgumentList "-m", "uvicorn", "agents.nudge_agent.main:app
 # 6. Budget API Gateway (Port 8000)
 Write-Host "Starting Budget API Gateway on port 8000..." -ForegroundColor Yellow
 $BudgetBackend = Join-Path $RepoRoot "agents\budget_agent\backend"
-Start-Process python -ArgumentList "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000" -WorkingDirectory $BudgetBackend -WindowStyle Hidden -RedirectStandardOutput "$LogDir\budget_api.log" -RedirectStandardError "$LogDir\budget_api_err.log"
+Start-Process python -ArgumentList "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload" -WorkingDirectory $BudgetBackend -WindowStyle Hidden -RedirectStandardOutput "$LogDir\budget_api.log" -RedirectStandardError "$LogDir\budget_api_err.log"
 
-# 7. Mobile App / Web (Port 8081)
+# 7. Budget Agent Web Frontend (Port 3000)
+Write-Host "Starting Budget Agent Web Frontend on port 3000..." -ForegroundColor Yellow
+$BudgetFrontend = Join-Path $RepoRoot "agents\budget_agent\frontend"
+Start-Process cmd.exe -ArgumentList "/c", "npm", "run", "dev" -WorkingDirectory $BudgetFrontend -WindowStyle Hidden -RedirectStandardOutput "$LogDir\budget_frontend.log" -RedirectStandardError "$LogDir\budget_frontend_err.log"
+
+# 8. Mobile App / Web (Port 8081)
 Write-Host "Starting NitiSaathi Mobile (Web) on port 8081..." -ForegroundColor Yellow
 $MobileApp = Join-Path $RepoRoot "mobile"
 Start-Process cmd.exe -ArgumentList "/c", "npx", "expo", "start", "--web", "--port", "8081" -WorkingDirectory $MobileApp -WindowStyle Hidden -RedirectStandardOutput "$LogDir\mobile_app.log" -RedirectStandardError "$LogDir\mobile_app_err.log"
@@ -54,6 +59,7 @@ $endpoints = @(
     @{ Name = "Accessibility Agent (8005)"; Url = "http://localhost:8005/api/v1/accessibility/health" },
     @{ Name = "Nudge Agent (8004)"; Url = "http://localhost:8004/nudges/health" },
     @{ Name = "Budget API Gateway (8000)"; Url = "http://localhost:8000/api/health" },
+    @{ Name = "Budget Web (3000)"; Url = "http://localhost:3000" },
     @{ Name = "NitiSaathi App (8081)"; Url = "http://localhost:8081" }
 )
 
