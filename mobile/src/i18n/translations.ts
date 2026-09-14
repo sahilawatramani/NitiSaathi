@@ -174,24 +174,42 @@ export interface TranslationSchema {
   };
   profile: {
     title: string;
+    subtitle: string;
     edit: string;
     save: string;
+    saving: string;
+    saveBtn: string;
     setupHint: string;
     personalSection: string;
+    personalDesc: string;
     ageLabel: string;
     stateLabel: string;
+    aggregatorLabel: string;
+    retirementLabel: string;
     financialSection: string;
+    financialDesc: string;
     incomeLabel: string;
     expensesLabel: string;
     emiLabel: string;
     savingsLabel: string;
     riskLabel: string;
+    lowRisk: string;
+    medRisk: string;
+    highRisk: string;
     govSection: string;
+    govDesc: string;
     epfoLabel: string;
     taxLabel: string;
     eShramLabel: string;
     aadhaarLabel: string;
     bankLabel: string;
+    healthInsLabel: string;
+    extraNotesLabel: string;
+    extraNotesDesc: string;
+    extraNotesPlaceholder: string;
+    languageSection: string;
+    yes: string;
+    no: string;
     logoutBtn: string;
     savedSuccess: string;
     saveError: string;
@@ -399,26 +417,44 @@ export const translations: Record<Language, TranslationSchema> = {
     },
     profile: {
       title: 'प्रोफ़ाइल',
+      subtitle: 'आपकी वित्तीय व सरकारी योजना प्रोफाइल',
       edit: 'बदलें',
       save: 'सहेजें',
-      setupHint: '✏️ अपनी प्रोफ़ाइल सेट करने के लिए बदलें पर दबाएं',
-      personalSection: 'व्यक्तिगत जानकारी',
-      ageLabel: 'उम्र',
-      stateLabel: 'राज्य',
-      financialSection: 'वित्तीय जानकारी',
+      saving: 'सहेजा जा रहा है...',
+      saveBtn: 'प्रोफ़ाइल सहेजें',
+      setupHint: '✏️ अपनी प्रोफ़ाइल में जानकारी दर्ज करें और सहेजें',
+      personalSection: '1. व्यक्तिगत जानकारी',
+      personalDesc: 'अपनी बुनियादी जानकारी यहाँ दर्ज करें',
+      ageLabel: 'आपकी उम्र (वर्ष)',
+      stateLabel: 'राज्य (उदा. महाराष्ट्र / दिल्ली)',
+      aggregatorLabel: 'प्लेटफ़ॉर्म पर सक्रिय दिन',
+      retirementLabel: 'लक्षित सेवानिवृत्ति आयु (वर्ष)',
+      financialSection: '2. वित्तीय विवरण',
+      financialDesc: 'अपनी मासिक कमाई, खर्च व बचत दर्ज करें',
       incomeLabel: 'मासिक आय (₹)',
       expensesLabel: 'मासिक खर्च (₹)',
       emiLabel: 'मासिक EMI (₹)',
       savingsLabel: 'वर्तमान बचत (₹)',
-      riskLabel: 'जोखिम सहनशीलता',
-      govSection: 'सरकारी योजना पात्रता',
+      riskLabel: 'जोखिम उठाने की क्षमता',
+      lowRisk: 'कम जोखिम',
+      medRisk: 'मध्यम जोखिम',
+      highRisk: 'उच्च जोखिम',
+      govSection: '3. सरकारी योजना पात्रता व स्थिति',
+      govDesc: 'सरकारी योजनाओं के लिए अपनी पात्रता स्थिति चुनें',
       epfoLabel: 'EPFO / ESIC पंजीकृत',
       taxLabel: 'आयकर दाता',
       eShramLabel: 'ई-श्रम पंजीकृत',
       aadhaarLabel: 'आधार लिंक्ड बैंक खाता',
-      bankLabel: 'बचत बैंक खाता',
+      bankLabel: 'सक्रिय बचत बैंक खाता',
+      healthInsLabel: 'स्वास्थ्य बीमा उपलब्ध',
+      extraNotesLabel: '4. अतिरिक्त विवरण / नोट्स',
+      extraNotesDesc: 'अन्य कोई विशेष टिप्पणी या जानकारी दर्ज करें',
+      extraNotesPlaceholder: 'कोई अन्य विवरण या योजना से जुड़ा नोट यहाँ लिखें...',
+      languageSection: 'ऐप की भाषा',
+      yes: 'हाँ',
+      no: 'नहीं',
       logoutBtn: 'लॉग आउट',
-      savedSuccess: 'प्रोफ़ाइल सफलतापूर्वक सहेज ली गई।',
+      savedSuccess: 'प्रोफ़ाइल सफलतापूर्वक डेटाबेस में सहेज ली गई।',
       saveError: 'प्रोफ़ाइल सहेजने में त्रुटि हुई। कृपया पुनः प्रयास करें।',
     },
     more: {
@@ -623,26 +659,44 @@ export const translations: Record<Language, TranslationSchema> = {
     },
     profile: {
       title: 'Profile',
+      subtitle: 'Your Financial & Government Scheme Profile',
       edit: 'Edit',
       save: 'Save',
-      setupHint: '✏️ Tap Edit to set up your financial profile',
-      personalSection: 'Personal Information',
-      ageLabel: 'Age',
-      stateLabel: 'State',
-      financialSection: 'Financial Information',
+      saving: 'Saving...',
+      saveBtn: 'Save Profile',
+      setupHint: '✏️ Enter your profile information and save',
+      personalSection: '1. Personal Information',
+      personalDesc: 'Enter your basic profile information',
+      ageLabel: 'Your Age (Years)',
+      stateLabel: 'State (e.g., Maharashtra / Delhi)',
+      aggregatorLabel: 'Days Active on Platform',
+      retirementLabel: 'Target Retirement Age (Years)',
+      financialSection: '2. Financial Details',
+      financialDesc: 'Enter your monthly earnings, spend, and savings',
       incomeLabel: 'Monthly Income (₹)',
       expensesLabel: 'Monthly Expenses (₹)',
       emiLabel: 'Monthly EMI (₹)',
       savingsLabel: 'Current Savings (₹)',
       riskLabel: 'Risk Tolerance',
-      govSection: 'Government Scheme Eligibility',
+      lowRisk: 'Low Risk',
+      medRisk: 'Moderate Risk',
+      highRisk: 'High Risk',
+      govSection: '3. Scheme Eligibility & Status',
+      govDesc: 'Select your eligibility status for government schemes',
       epfoLabel: 'EPFO / ESIC Registered',
       taxLabel: 'Income Tax Payer',
       eShramLabel: 'e-Shram Registered',
       aadhaarLabel: 'Aadhaar Linked Bank Account',
-      bankLabel: 'Savings Bank Account',
+      bankLabel: 'Active Savings Bank Account',
+      healthInsLabel: 'Health Insurance Active',
+      extraNotesLabel: '4. Additional Notes / Details',
+      extraNotesDesc: 'Enter any additional details or scheme notes',
+      extraNotesPlaceholder: 'Add any specific notes or scheme details...',
+      languageSection: 'App Language',
+      yes: 'Yes',
+      no: 'No',
       logoutBtn: 'Log Out',
-      savedSuccess: 'Profile saved successfully.',
+      savedSuccess: 'Profile saved successfully to database.',
       saveError: 'Could not save profile. Please try again.',
     },
     more: {
@@ -847,26 +901,44 @@ export const translations: Record<Language, TranslationSchema> = {
     },
     profile: {
       title: 'प्रोफाइल',
+      subtitle: 'तुमची आर्थिक व सरकारी योजना प्रोफाइल',
       edit: 'बदला',
       save: 'जतन करा',
-      setupHint: '✏️ तुमची प्रोफाइल सेट करण्यासाठी बदला वर टॅप करा',
-      personalSection: 'वैयक्तिक माहिती',
-      ageLabel: 'वय',
-      stateLabel: 'राज्य',
-      financialSection: 'आर्थिक माहिती',
+      saving: 'जतन करत आहे...',
+      saveBtn: 'प्रोफाइल जतन करा',
+      setupHint: '✏️ तुमच्या प्रोफाइलमध्ये माहिती भरा आणि जतन करा',
+      personalSection: '1. वैयक्तिक माहिती',
+      personalDesc: 'तुमची मूलभूत माहिती येथे प्रविष्ट करा',
+      ageLabel: 'तुमचे वय (वर्षे)',
+      stateLabel: 'राज्य (उदा. महाराष्ट्र / दिल्ली)',
+      aggregatorLabel: 'प्लॅटफॉर्मवर सक्रिय दिवस',
+      retirementLabel: 'लक्षित निवृत्ती वय (वर्षे)',
+      financialSection: '2. आर्थिक तपशील',
+      financialDesc: 'तुमची मासिक कमाई, खर्च आणि बचत प्रविष्ट करा',
       incomeLabel: 'मासिक उत्पन्न (₹)',
       expensesLabel: 'मासिक खर्च (₹)',
       emiLabel: 'मासिक EMI (₹)',
       savingsLabel: 'सध्याची बचत (₹)',
       riskLabel: 'जोखीम क्षमता',
-      govSection: 'सरकारी योजना पात्रता',
+      lowRisk: 'कमी जोखीम',
+      medRisk: 'मध्यम जोखीम',
+      highRisk: 'उच्च जोखीम',
+      govSection: '3. सरकारी योजना पात्रता व स्थिती',
+      govDesc: 'सरकारी योजनांसाठी तुमची पात्रता स्थिती निवडा',
       epfoLabel: 'EPFO / ESIC नोंदणीकृत',
       taxLabel: 'आयकर भरणारे',
       eShramLabel: 'ई-श्रम नोंदणीकृत',
       aadhaarLabel: 'आधार लिंक बँक खाते',
-      bankLabel: 'बचत बँक खाते',
+      bankLabel: 'सक्रिय बचत बँक खाते',
+      healthInsLabel: 'आरोग्य विमा उपलब्ध',
+      extraNotesLabel: '4. अतिरिक्त नोंदी / तपशील',
+      extraNotesDesc: 'इतर काही विशेष माहिती किंवा नोंद प्रविष्ट करा',
+      extraNotesPlaceholder: 'इतर काही विशेष तपशील किंवा योजना नोंद येथे लिहा...',
+      languageSection: 'अॅपची भाषा',
+      yes: 'होय',
+      no: 'नाही',
       logoutBtn: 'लॉग आउट',
-      savedSuccess: 'प्रोफाइल यशस्वीरित्या जतन केली.',
+      savedSuccess: 'प्रोफाइल यशस्वीरित्या डेटाबेसमध्ये जतन केली.',
       saveError: 'प्रोफाइल जतन करताना त्रुटी आली. पुन्हा प्रयत्न करा.',
     },
     more: {

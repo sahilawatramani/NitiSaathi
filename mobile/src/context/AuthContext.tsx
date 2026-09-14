@@ -12,8 +12,11 @@ import React, {
   useState,
 } from 'react';
 import { authService, UserMe } from '../services/authService';
+import { secureStorage } from '../services/secureStorage';
 
 type Language = 'hi' | 'en' | 'mr';
+
+const LANGUAGE_STORAGE_KEY = 'preferred_app_language';
 
 interface AuthState {
   isLoading: boolean;
@@ -44,9 +47,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     language: 'hi',
   });
 
-  // On mount — check for existing session
+  // On mount — check for existing session and preferred language
   useEffect(() => {
     const bootstrap = async () => {
+      let initialLanguage: Language = 'hi';
+      try {
+        const savedLang = await secureStorage.getItem(LANGUAGE_STORAGE_KEY);
+        if (savedLang === 'hi' || savedLang === 'en' || savedLang === 'mr') {
+          initialLanguage = savedLang;
+        }
+      } catch {}
+
       try {
         const savedToken = await authService.getToken();
         if (savedToken) {
@@ -57,6 +68,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
               isAuthenticated: true,
               user,
               token: savedToken,
+              language: initialLanguage,
             }));
           } catch {
             // Keep user session active even if offline
@@ -65,11 +77,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
               isAuthenticated: true,
               user: { id: 1, email: 'rajesh@nitisaathi.in' },
               token: savedToken,
+              language: initialLanguage,
             }));
           }
+        } else {
+          setState((s) => ({ ...s, language: initialLanguage }));
         }
       } catch {
         await authService.clearToken();
+        setState((s) => ({ ...s, language: initialLanguage }));
       } finally {
         setState((s) => ({ ...s, isLoading: false }));
       }
@@ -173,6 +189,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const setLanguage = useCallback((lang: Language) => {
     setState((s) => ({ ...s, language: lang }));
+    secureStorage.setItem(LANGUAGE_STORAGE_KEY, lang).catch(() => {});
   }, []);
 
   return (
