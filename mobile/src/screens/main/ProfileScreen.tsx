@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primaryContainer,
     alignItems: 'center', justifyContent: 'center', marginBottom: Spacing.md,
   },
-  avatarLetter: { ...Typography.displaySm, color: Colors.onPrimary },
+  avatarLetter: { ...Typography.headlineLg, color: Colors.onPrimary },
   emailText: { ...Typography.bodyMd, color: Colors.textWarmGray },
   setupHint: {
     marginTop: Spacing.sm, paddingHorizontal: Spacing.md,

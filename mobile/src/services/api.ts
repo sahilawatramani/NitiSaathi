@@ -6,15 +6,19 @@
  * e.g. http://192.168.1.x:8000
  */
 import axios from 'axios';
+import { Platform } from 'react-native';
 import { secureStorage } from './secureStorage';
 
-// ngrok tunnel — works from any device/network without firewall changes
-export const API_BASE_URL = 'https://confidant-dehydrate-sublime.ngrok-free.dev/api';
-// export const API_BASE_URL = 'http://192.168.1.6:8000/api'; // LAN (same WiFi only)
-// export const API_BASE_URL = 'http://10.0.2.2:8000/api';    // Android emulator only
-// export const API_BASE_URL = 'http://localhost:8000/api';    // Web / iOS sim
-
 export const TOKEN_KEY = 'nitisaathi_token';
+
+const getBaseUrl = () => {
+  if (Platform.OS === 'android') {
+    return 'http://10.0.2.2:8000/api';
+  }
+  return 'http://localhost:8000/api';
+};
+
+export const API_BASE_URL = getBaseUrl();
 
 const api = axios.create({
   baseURL: API_BASE_URL,

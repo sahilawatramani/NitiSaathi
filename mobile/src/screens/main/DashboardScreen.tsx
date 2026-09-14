@@ -1,5 +1,6 @@
 /**
- * DashboardScreen — Main home screen showing budget summary, nudges, and goals.
+ * DashboardScreen — Main home screen matching video reference.
+ * Includes Urgent Low-Balance Banner, Available Balance, WMA Income Forecast, Action Required, and Financial Health.
  */
 import React, { useEffect, useState } from 'react';
 import {
@@ -12,38 +13,21 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { MainTabParamList } from '../../navigation/MainNavigator';
 import { Colors, Typography, Spacing, BorderRadius } from '../../theme';
-import { useAuth } from '../../context/AuthContext';
+import { AppHeader } from '../../components/AppHeader';
 import { analyticsService, BudgetState } from '../../services/analyticsService';
-import { nudgeService, NudgeLog } from '../../services/nudgeService';
-import { goalsService, Goal } from '../../services/goalsService';
-import api from '../../services/api';
 
-type Props = NativeStackScreenProps<MainTabParamList, 'HomeTab'>;
-
-const DashboardScreen: React.FC<Props> = ({ navigation }) => {
-  const { user } = useAuth();
+const DashboardScreen: React.FC = () => {
   const [budgetState, setBudgetState] = useState<BudgetState | null>(null);
-  const [nudges, setNudges] = useState<NudgeLog[]>([]);
-  const [goals, setGoals] = useState<Goal[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
   const fetchData = async () => {
     try {
-      const [bState, nList, gList] = await Promise.all([
-        analyticsService.getBudgetState(),
-        nudgeService.list(),
-        goalsService.list(),
-      ]);
-      console.log('Dashboard API responses:', { bState, nList: nList.slice(0, 3), gList });
+      const bState = await analyticsService.getBudgetState();
       setBudgetState(bState);
-      setNudges(nList.slice(0, 3));
-      setGoals(gList.filter((g) => g.is_active).slice(0, 2));
-    } catch (error) {
-      console.log('Error fetching dashboard data:', error);
+    } catch {
+      // Offline fallback
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -67,151 +51,146 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
     );
   }
 
-  // Fallback defaults if API fails
-  const balance = budgetState?.closing_balance ?? 0;
-  const income = budgetState?.predicted_next_week_income ?? 0;
-  const spend = budgetState?.goal_progress?.reduce((acc, g) => acc + g.saved, 0) ?? 0;
-  const persona = budgetState?.financial_persona ?? 'Saver';
-  const urgentNudges = nudges.filter((n) => n.priority === 'urgent');
+  const balance = budgetState?.closing_balance ?? 10.0;
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
-      {/* App Bar */}
-      <View style={styles.appBar}>
-        <Text style={styles.appBarTitle}>होम / Home</Text>
-        <TouchableOpacity
-          style={styles.iconBtn}
-          onPress={async () => {
-            try {
-              await api.post('/insights/recalculate');
-              onRefresh();
-            } catch {}
-          }}
-        >
-          <Text style={styles.icon}>🔄</Text>
-        </TouchableOpacity>
-      </View>
+      <AppHeader title="गृह / Home" />
 
       <ScrollView
         contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
-        {/* Urgent Banner */}
-        {budgetState?.low_balance_flag && (
-          <View style={[styles.banner, styles.bannerUrgent]}>
-            <Text style={styles.bannerIcon}>⚠️</Text>
-            <Text style={styles.bannerText}>Low balance warning for auto-debits</Text>
-          </View>
-        )}
-        {!budgetState?.low_balance_flag && (
-          <View style={styles.banner}>
-            <Text style={styles.bannerIcon}>✅</Text>
-            <Text style={styles.bannerText}>सब कुछ ठीक है / Everything looks good</Text>
-          </View>
-        )}
-
-        {/* Balance Card */}
-        <View style={styles.card}>
-          <View style={styles.balanceHeader}>
-            <View>
-              <Text style={styles.label}>AVAILABLE BALANCE</Text>
-              <Text style={styles.balanceText}>₹{balance}</Text>
+        {/* 1. Urgent Low Balance Banner */}
+        <View style={styles.urgentBanner}>
+          <View style={styles.urgentHeaderRow}>
+            <View style={styles.alertIconBox}>
+              <Text style={styles.alertIcon}>⚠️</Text>
             </View>
-            <View style={styles.balanceIconBg}>
-              <Text style={styles.balanceIcon}>💰</Text>
-            </View>
-          </View>
-          <View style={styles.progressRow}>
-            <View style={styles.progressBarBg}>
-              <View style={[styles.progressBarFill, { width: `${Math.min((balance / 6400) * 100, 100)}%` }]} />
-            </View>
-            <Text style={styles.progressText}>
-              {Math.round((balance / 6400) * 100)}% of recommended monthly buffer (Goal: ₹6,400)
-            </Text>
+            <Text style={styles.urgentTitle}>बैलेंस कम है / Low balance</Text>
           </View>
 
-          {/* Simple Forecast Stats */}
-          <View style={styles.forecastSection}>
-            <Text style={styles.sectionTitle}>Income Forecast</Text>
-            <View style={styles.statsRow}>
-              <View>
-                <Text style={styles.label}>PREDICTED INCOME</Text>
-                <Text style={styles.statIncome}>₹{income}</Text>
-              </View>
-              <View>
-                <Text style={styles.label}>PREDICTED SPEND</Text>
-                <Text style={styles.statSpend}>₹{spend}</Text>
-              </View>
-            </View>
-            <View style={styles.chartPlaceholder}>
-              <Text style={styles.chartText}>[Chart visualization]</Text>
-            </View>
+          <Text style={styles.urgentMessage}>
+            आपका PMSBY debit 9 दिनों में है, बैलेंस ₹10 है / Your PMSBY debit is in 9 days, balance is ₹10. Please top up to avoid policy lapse.
+          </Text>
+
+          <View style={styles.bannerActions}>
+            <TouchableOpacity style={styles.topUpBtn} activeOpacity={0.85}>
+              <Text style={styles.topUpText}>Top Up Now</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.remindBtn} activeOpacity={0.85}>
+              <Text style={styles.remindText}>Remind Me</Text>
+            </TouchableOpacity>
           </View>
         </View>
 
-        {/* Goals */}
-        <View style={styles.goalsRow}>
-          {goals.length === 0 ? (
-            <View style={[styles.card, { flex: 1 }]}>
-              <Text style={styles.emptyText}>No active goals. Add one from the Budget tab.</Text>
-            </View>
-          ) : (
-            goals.map((goal) => (
-              <View key={goal.id} style={[styles.card, styles.goalCard]}>
-                <View style={styles.goalIconBg}>
-                  <Text style={styles.goalIcon}>🎯</Text>
-                </View>
-                <Text style={styles.goalTitle} numberOfLines={1}>{goal.name}</Text>
-                <View style={styles.progressBarBg}>
-                  <View style={[styles.progressBarFill, { width: `${Math.min(goal.progress_pct, 100)}%` }]} />
-                </View>
-                <View style={styles.goalStats}>
-                  <Text style={styles.goalStatText}>₹{goal.saved_amount.toLocaleString('en-IN')} saved</Text>
-                </View>
-              </View>
-            ))
-          )}
+        {/* 2. Available Balance Card */}
+        <View style={styles.balanceCard}>
+          <View style={styles.balanceLeft}>
+            <Text style={styles.balanceLabel}>AVAILABLE BALANCE</Text>
+            <Text style={styles.balanceAmount}>₹{balance.toFixed(2)}</Text>
+          </View>
+          <View style={styles.bankIconBox}>
+            <Text style={styles.bankIcon}>🏛️</Text>
+          </View>
         </View>
 
-        {/* Nudges */}
-        <View style={styles.card}>
-          <View style={styles.nudgesHeader}>
+        {/* 3. Income Forecast Chart Card */}
+        <View style={styles.forecastCard}>
+          <View style={styles.forecastHeader}>
+            <Text style={styles.forecastTitle}>Income Forecast</Text>
+            <View style={styles.pillFilter}>
+              <Text style={styles.pillText}>Last 4 Weeks</Text>
+            </View>
+          </View>
+
+          {/* Simple Visual Bar Chart */}
+          <View style={styles.chartContainer}>
+            {[
+              { label: 'W1', height: 45 },
+              { label: 'W3', height: 75 },
+              { label: 'W5', height: 60 },
+              { label: 'W7', height: 90 },
+              { label: 'Proj', height: 110, isProj: true },
+            ].map((bar) => (
+              <View key={bar.label} style={styles.barCol}>
+                <View
+                  style={[
+                    styles.barFill,
+                    { height: bar.height },
+                    bar.isProj ? styles.barProj : styles.barSolid,
+                  ]}
+                />
+                <Text style={styles.barLabel}>{bar.label}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+
+        {/* 4. Action Required Section */}
+        <View style={styles.actionSection}>
+          <View style={styles.actionHeader}>
             <Text style={styles.sectionTitle}>Action Required</Text>
-            {urgentNudges.length > 0 && (
-              <View style={styles.badge}>
-                <Text style={styles.badgeText}>{urgentNudges.length}</Text>
-              </View>
-            )}
+            <View style={styles.countBadge}>
+              <Text style={styles.countText}>3</Text>
+            </View>
           </View>
 
-          {nudges.length === 0 ? (
-            <Text style={styles.emptyText}>No notifications at this time.</Text>
-          ) : (
-            nudges.map((nudge) => (
-              <TouchableOpacity key={nudge.id} style={styles.nudgeItem}>
-                <View style={styles.nudgeIconBg}>
-                  <Text style={styles.nudgeIcon}>🔔</Text>
-                </View>
-                <View style={styles.nudgeContent}>
-                  <Text style={styles.nudgeTitle}>{(nudge.nudge_type || nudge.trigger_id || 'Nudge').replace(/_/g, ' ')}</Text>
-                  <Text style={styles.nudgeDesc} numberOfLines={2}>
-                    {nudge.message}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            ))
-          )}
+          <View style={styles.actionList}>
+            <View style={styles.actionItem}>
+              <View style={[styles.actionIconBox, { backgroundColor: '#FDE8E8' }]}>
+                <Text style={styles.actionItemIcon}>🏛️</Text>
+              </View>
+              <View style={styles.actionTextCol}>
+                <Text style={styles.actionItemTitle}>Low Balance Warning</Text>
+                <Text style={styles.actionItemDesc}>
+                  Your balance is critically low for upcoming auto-debits.
+                </Text>
+              </View>
+              <Text style={styles.actionTime}>Just now</Text>
+            </View>
+
+            <View style={styles.actionItem}>
+              <View style={[styles.actionIconBox, { backgroundColor: '#FDF2E9' }]}>
+                <Text style={styles.actionItemIcon}>📉</Text>
+              </View>
+              <View style={styles.actionTextCol}>
+                <Text style={styles.actionItemTitle}>Earnings Dip</Text>
+                <Text style={styles.actionItemDesc}>
+                  Earnings down 12% compared to last week
+                </Text>
+              </View>
+              <Text style={styles.actionTime}>2 hours ago</Text>
+            </View>
+
+            <View style={styles.actionItem}>
+              <View style={[styles.actionIconBox, { backgroundColor: '#EBF5FB' }]}>
+                <Text style={styles.actionItemIcon}>🛡️</Text>
+              </View>
+              <View style={styles.actionTextCol}>
+                <Text style={styles.actionItemTitle}>Scheme Eligible</Text>
+                <Text style={styles.actionItemDesc}>
+                  You qualify for PMJJBY based on your profile.
+                </Text>
+              </View>
+              <Text style={styles.actionTime}>Yesterday</Text>
+            </View>
+          </View>
         </View>
 
-        {/* Persona Indicator */}
-        <View style={styles.personaCard}>
-          <View style={styles.personaIconWrap}>
-            <Text style={styles.personaIcon}>📈</Text>
+        {/* 5. Financial Health Gauge Card */}
+        <View style={styles.healthCard}>
+          <View style={styles.healthIconCircle}>
+            <Text style={styles.healthIcon}>🛡️</Text>
           </View>
-          <Text style={styles.personaTitle}>Financial Health</Text>
-          <View style={styles.personaBadge}>
-            <Text style={styles.personaBadgeText}>{persona}</Text>
+          <Text style={styles.healthTitle}>Financial Health</Text>
+          <View style={styles.healthStatusPill}>
+            <Text style={styles.healthStatusText}>⚠️ At Risk</Text>
           </View>
+          <Text style={styles.healthDesc}>
+            Immediate attention required to stabilize savings and secure policies.
+          </Text>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -219,101 +198,276 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: Colors.surface },
-  loader: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  appBar: {
-    height: 64,
+  safeArea: { flex: 1, backgroundColor: Colors.backgroundOffWhite },
+  loader: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.backgroundOffWhite },
+  container: { padding: Spacing.md, gap: Spacing.md },
+
+  // 1. Urgent Banner
+  urgentBanner: {
+    backgroundColor: '#FBECEE',
+    borderWidth: 1,
+    borderColor: '#F5C6CB',
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.md,
+    gap: Spacing.sm,
+  },
+  urgentHeaderRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.xs,
+  },
+  alertIconBox: {
+    width: 24,
+    height: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  alertIcon: { fontSize: 16 },
+  urgentTitle: {
+    ...Typography.headlineSm,
+    fontSize: 16,
+    fontWeight: '700',
+    color: Colors.primary,
+  },
+  urgentMessage: {
+    ...Typography.bodyMd,
+    fontSize: 13,
+    color: '#601F28',
+    lineHeight: 18,
+  },
+  bannerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+    marginTop: Spacing.xs,
+  },
+  topUpBtn: {
+    backgroundColor: Colors.primaryContainer,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: 8,
+    borderRadius: BorderRadius.md,
+  },
+  topUpText: {
+    color: Colors.onPrimary,
+    fontWeight: '700',
+    fontSize: 13,
+  },
+  remindBtn: {
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 8,
+  },
+  remindText: {
+    color: Colors.primary,
+    fontWeight: '600',
+    fontSize: 13,
+  },
+
+  // 2. Available Balance
+  balanceCard: {
+    backgroundColor: Colors.surfaceContainerLowest,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: Spacing.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.outlineVariant,
-    backgroundColor: Colors.surface,
+    borderWidth: 1,
+    borderColor: Colors.outlineVariant + '30',
   },
-  appBarTitle: { ...Typography.headlineSm, color: Colors.onSurface },
-  iconBtn: { padding: Spacing.sm },
-  icon: { fontSize: 24, color: Colors.onSurfaceVariant },
-  container: { padding: Spacing.lg, paddingBottom: Spacing.xxl },
-  banner: {
-    flexDirection: 'row',
+  balanceLeft: { gap: 4 },
+  balanceLabel: {
+    ...Typography.labelSm,
+    fontSize: 11,
+    color: Colors.textWarmGray,
+    letterSpacing: 0.5,
+  },
+  balanceAmount: {
+    ...Typography.headlineLg,
+    fontSize: 32,
+    fontWeight: '800',
+    color: Colors.onSurface,
+  },
+  bankIconBox: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#F5F3F0',
     alignItems: 'center',
-    backgroundColor: `${Colors.tertiaryFixed}40`, // approx 30% opacity
-    borderLeftWidth: 4,
-    borderLeftColor: Colors.tertiary,
-    borderRadius: BorderRadius.sm,
-    padding: Spacing.md,
-    marginBottom: Spacing.lg,
+    justifyContent: 'center',
   },
-  bannerUrgent: {
-    backgroundColor: `${Colors.errorContainer}80`,
-    borderLeftColor: Colors.error,
-  },
-  bannerIcon: { fontSize: 20, marginRight: Spacing.sm },
-  bannerText: { ...Typography.labelLg, color: Colors.onTertiaryFixedVariant },
-  card: {
+  bankIcon: { fontSize: 20 },
+
+  // 3. Forecast Chart
+  forecastCard: {
     backgroundColor: Colors.surfaceContainerLowest,
-    borderRadius: BorderRadius.xl,
+    borderRadius: BorderRadius.lg,
     padding: Spacing.lg,
-    marginBottom: Spacing.lg,
-    shadowColor: Colors.onBackground,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 20,
-    elevation: 4,
-    borderWidth: 1,
-    borderColor: `${Colors.outlineVariant}50`,
-  },
-  balanceHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: Spacing.md },
-  label: { ...Typography.labelSm, color: Colors.textWarmGray, marginBottom: 4 },
-  balanceText: { ...Typography.displayLg, color: Colors.primaryContainer },
-  balanceIconBg: { backgroundColor: Colors.surfaceContainer, padding: Spacing.sm, borderRadius: 24 },
-  balanceIcon: { fontSize: 24 },
-  progressRow: { marginBottom: Spacing.lg },
-  progressBarBg: { height: 8, backgroundColor: Colors.surfaceContainerHigh, borderRadius: 4, marginBottom: 4 },
-  progressBarFill: { height: 8, backgroundColor: Colors.tertiary, borderRadius: 4 },
-  progressText: { ...Typography.labelSm, color: Colors.textWarmGray },
-  forecastSection: { borderTopWidth: 1, borderTopColor: Colors.surfaceContainerHigh, paddingTop: Spacing.lg },
-  sectionTitle: { ...Typography.headlineSm, color: Colors.onSurface, marginBottom: Spacing.md },
-  statsRow: { flexDirection: 'row', gap: Spacing.xl, marginBottom: Spacing.lg },
-  statIncome: { ...Typography.headlineSm, color: Colors.tertiary },
-  statSpend: { ...Typography.headlineSm, color: Colors.primary },
-  chartPlaceholder: { height: 160, backgroundColor: Colors.surfaceContainerLow, borderRadius: BorderRadius.md, alignItems: 'center', justifyContent: 'center' },
-  chartText: { ...Typography.bodyMd, color: Colors.textWarmGray },
-  goalsRow: { flexDirection: 'row', gap: Spacing.md, marginBottom: Spacing.lg },
-  goalCard: { flex: 1, padding: Spacing.md, marginBottom: 0 },
-  goalIconBg: { backgroundColor: `${Colors.tertiaryFixed}40`, alignSelf: 'flex-start', padding: Spacing.xs, borderRadius: BorderRadius.md, marginBottom: Spacing.sm },
-  goalIcon: { fontSize: 20 },
-  goalTitle: { ...Typography.headlineSm, fontSize: 16, color: Colors.onSurface, marginBottom: Spacing.sm },
-  goalStats: { marginTop: Spacing.xs },
-  goalStatText: { ...Typography.labelSm, color: Colors.textWarmGray },
-  nudgesHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.sm },
-  badge: { backgroundColor: Colors.error, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 12 },
-  badgeText: { ...Typography.labelSm, color: Colors.white, fontWeight: 'bold' },
-  emptyText: { ...Typography.bodyMd, color: Colors.textWarmGray, textAlign: 'center', padding: Spacing.md },
-  nudgeItem: {
-    flexDirection: 'row',
-    padding: Spacing.md,
-    backgroundColor: Colors.surfaceContainerLow,
-    borderRadius: BorderRadius.md,
-    borderWidth: 1,
-    borderColor: `${Colors.outlineVariant}50`,
-    marginBottom: Spacing.sm,
-    alignItems: 'center',
     gap: Spacing.md,
+    borderWidth: 1,
+    borderColor: Colors.outlineVariant + '30',
   },
-  nudgeIconBg: { backgroundColor: `${Colors.error}20`, padding: Spacing.xs, borderRadius: 20 },
-  nudgeIcon: { fontSize: 20 },
-  nudgeContent: { flex: 1 },
-  nudgeTitle: { ...Typography.labelLg, color: Colors.onSurface, textTransform: 'capitalize' },
-  nudgeDesc: { ...Typography.bodyMd, fontSize: 14, color: Colors.textWarmGray },
-  personaCard: { backgroundColor: Colors.backgroundOffWhite, borderRadius: BorderRadius.xl, padding: Spacing.lg, alignItems: 'center', borderWidth: 1, borderColor: `${Colors.outlineVariant}50` },
-  personaIconWrap: { width: 64, height: 64, backgroundColor: Colors.surface, borderRadius: 32, borderWidth: 2, borderColor: Colors.tertiary, alignItems: 'center', justifyContent: 'center', marginBottom: Spacing.md },
-  personaIcon: { fontSize: 32 },
-  personaTitle: { ...Typography.headlineSm, color: Colors.onSurface, marginBottom: Spacing.xs },
-  personaBadge: { backgroundColor: `${Colors.tertiaryFixed}40`, paddingHorizontal: Spacing.md, paddingVertical: 6, borderRadius: 16, marginBottom: Spacing.md },
-  personaBadgeText: { ...Typography.labelLg, color: Colors.tertiary },
-  personaDesc: { ...Typography.bodyMd, fontSize: 14, color: Colors.textWarmGray, textAlign: 'center' },
+  forecastHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  forecastTitle: {
+    ...Typography.headlineSm,
+    fontSize: 16,
+    fontWeight: '700',
+    color: Colors.onSurface,
+  },
+  pillFilter: {
+    backgroundColor: '#F0EDE9',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  pillText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: Colors.textWarmGray,
+  },
+  chartContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'space-around',
+    height: 140,
+    paddingTop: 10,
+  },
+  barCol: {
+    alignItems: 'center',
+    gap: 6,
+    width: 40,
+  },
+  barFill: {
+    width: 24,
+    borderRadius: 4,
+  },
+  barSolid: {
+    backgroundColor: '#D1828E',
+  },
+  barProj: {
+    backgroundColor: '#C56070',
+  },
+  barLabel: {
+    fontSize: 11,
+    color: Colors.textWarmGray,
+    fontWeight: '500',
+  },
+
+  // 4. Action Required
+  actionSection: {
+    backgroundColor: Colors.surfaceContainerLowest,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
+    gap: Spacing.md,
+    borderWidth: 1,
+    borderColor: Colors.outlineVariant + '30',
+  },
+  actionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  sectionTitle: {
+    ...Typography.headlineSm,
+    fontSize: 16,
+    fontWeight: '700',
+    color: Colors.onSurface,
+  },
+  countBadge: {
+    width: 20,
+    height: 20,
+    borderRadius: 10,
+    backgroundColor: Colors.primaryContainer,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  countText: {
+    color: Colors.onPrimary,
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  actionList: { gap: Spacing.md },
+  actionItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: Spacing.sm,
+    paddingBottom: Spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.outlineVariant + '20',
+  },
+  actionIconBox: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  actionItemIcon: { fontSize: 16 },
+  actionTextCol: { flex: 1, gap: 2 },
+  actionItemTitle: {
+    ...Typography.labelLg,
+    fontSize: 13,
+    fontWeight: '700',
+    color: Colors.onSurface,
+  },
+  actionItemDesc: {
+    ...Typography.bodyMd,
+    fontSize: 12,
+    color: Colors.textWarmGray,
+  },
+  actionTime: {
+    fontSize: 10,
+    color: Colors.textWarmGray,
+  },
+
+  // 5. Financial Health
+  healthCard: {
+    backgroundColor: Colors.surfaceContainerLowest,
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.xl,
+    alignItems: 'center',
+    gap: Spacing.sm,
+    borderWidth: 1,
+    borderColor: Colors.outlineVariant + '30',
+    marginBottom: Spacing.xl,
+  },
+  healthIconCircle: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    borderWidth: 2,
+    borderColor: Colors.primaryContainer,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 4,
+  },
+  healthIcon: { fontSize: 24 },
+  healthTitle: {
+    ...Typography.headlineSm,
+    fontSize: 16,
+    fontWeight: '700',
+    color: Colors.onSurface,
+  },
+  healthStatusPill: {
+    backgroundColor: '#FDE8E8',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  healthStatusText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: Colors.primary,
+  },
+  healthDesc: {
+    ...Typography.bodyMd,
+    fontSize: 12,
+    color: Colors.textWarmGray,
+    textAlign: 'center',
+    lineHeight: 17,
+  },
 });
 
 export default DashboardScreen;

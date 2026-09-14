@@ -1,6 +1,6 @@
 /**
  * DetailsScreen — Step 3 of 4 Onboarding
- * Collect basic profile details.
+ * Collect comprehensive gig worker profile details.
  */
 import React, { useState } from 'react';
 import {
@@ -20,38 +20,52 @@ import { Colors, Typography, Spacing, BorderRadius } from '../../theme';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Details'>;
 
+const PLATFORMS = ['Swiggy', 'Zomato', 'Ola', 'Uber', 'Rapido', 'Other'];
+
 const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
   const { language, comfortLevel } = route.params;
 
   const [age, setAge] = useState('');
   const [income, setIncome] = useState('');
-  const [expenses, setExpenses] = useState('');
+  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(['Swiggy']);
+  const [hasEmi, setHasEmi] = useState<'Yes' | 'No'>('No');
+  const [eShram, setEShram] = useState<'Yes' | 'No' | 'Not sure'>('Not sure');
+  const [epfoEsic, setEpfoEsic] = useState<'Yes' | 'No' | 'Not sure'>('Not sure');
+
+  const togglePlatform = (p: string) => {
+    if (selectedPlatforms.includes(p)) {
+      setSelectedPlatforms(selectedPlatforms.filter((item) => item !== p));
+    } else {
+      setSelectedPlatforms([...selectedPlatforms, p]);
+    }
+  };
 
   const handleContinue = () => {
-    // Navigate to Consent with collected profile data
     navigation.navigate('Consent', {
       profile: {
         language_pref: language,
-        risk_tolerance: comfortLevel, // simplistic mapping
-        age: parseInt(age, 10) || 0,
-        monthly_income: parseInt(income, 10) || 0,
-        monthly_expenses: parseInt(expenses, 10) || 0,
+        risk_tolerance: comfortLevel,
+        age: parseInt(age, 10) || 30,
+        monthly_income: parseInt(income, 10) || 15000,
+        platforms: selectedPlatforms,
+        has_emi: hasEmi === 'Yes',
+        is_registered_eshram: eShram === 'Yes',
+        is_registered_epfo: epfoEsic === 'Yes',
       },
     });
   };
 
-  const isComplete = age.trim() && income.trim() && expenses.trim();
-
   return (
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={styles.container}>
+        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+          {/* Header Progress */}
           <View style={styles.stepRow}>
             <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
               <Text style={styles.backIcon}>←</Text>
             </TouchableOpacity>
             <View style={styles.stepIndicator}>
-              <Text style={styles.stepLabel}>Step 3 of 4</Text>
+              <Text style={styles.stepLabel}>STEP 3 OF 4</Text>
               <View style={styles.dots}>
                 {[0, 1, 2, 3].map((i) => (
                   <View key={i} style={[styles.dot, i === 2 && styles.dotActive]} />
@@ -61,11 +75,14 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
           </View>
 
           <Text style={styles.title}>
-            कुछ बुनियादी जानकारी{'\n'}
-            <Text style={styles.subtitle}>A few basic details to personalize your experience.</Text>
+            आपकी जानकारी / Your Details
+          </Text>
+          <Text style={styles.subtitle}>
+            यह जानकारी सही योजनाएं दिखाने में मदद करती है / This helps us show you the right schemes.
           </Text>
 
           <View style={styles.form}>
+            {/* 1. Age */}
             <View style={styles.inputGroup}>
               <Text style={styles.label}>उम्र / Age</Text>
               <TextInput
@@ -73,41 +90,116 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
                 value={age}
                 onChangeText={setAge}
                 keyboardType="number-pad"
-                placeholder="25"
+                placeholder="e.g. 32"
                 placeholderTextColor={Colors.textWarmGray}
               />
+              <Text style={styles.helperText}>
+                कुछ सरकारी योजनाओं की उम्र सीमा होती है / Some schemes have age limits
+              </Text>
             </View>
 
+            {/* 2. Monthly Income */}
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>मासिक आय (₹) / Monthly Income</Text>
-              <TextInput
-                style={styles.input}
-                value={income}
-                onChangeText={setIncome}
-                keyboardType="number-pad"
-                placeholder="15000"
-                placeholderTextColor={Colors.textWarmGray}
-              />
+              <Text style={styles.label}>
+                पिछले महीने की अनुमानित कमाई / Approximate income last month
+              </Text>
+              <View style={styles.currencyInputRow}>
+                <Text style={styles.currencyPrefix}>₹</Text>
+                <TextInput
+                  style={styles.currencyInput}
+                  value={income}
+                  onChangeText={setIncome}
+                  keyboardType="number-pad"
+                  placeholder="0"
+                  placeholderTextColor={Colors.textWarmGray}
+                />
+              </View>
             </View>
 
+            {/* 3. Platforms */}
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>मासिक खर्च (₹) / Monthly Expenses</Text>
-              <TextInput
-                style={styles.input}
-                value={expenses}
-                onChangeText={setExpenses}
-                keyboardType="number-pad"
-                placeholder="12000"
-                placeholderTextColor={Colors.textWarmGray}
-              />
+              <Text style={styles.label}>
+                आप किस प्लेटफॉर्म पर काम करते हैं? / Which platform(s) do you work with?
+              </Text>
+              <View style={styles.chipsRow}>
+                {PLATFORMS.map((p) => {
+                  const isSelected = selectedPlatforms.includes(p);
+                  return (
+                    <TouchableOpacity
+                      key={p}
+                      onPress={() => togglePlatform(p)}
+                      style={[styles.chip, isSelected && styles.chipActive]}
+                      activeOpacity={0.8}
+                    >
+                      <Text style={[styles.chipText, isSelected && styles.chipTextActive]}>
+                        {p}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </View>
+
+            {/* 4. Ongoing EMI */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>क्या आपकी कोई EMI चल रही है? / Ongoing EMI?</Text>
+              <View style={styles.segmentRow}>
+                {(['Yes', 'No'] as const).map((opt) => (
+                  <TouchableOpacity
+                    key={opt}
+                    onPress={() => setHasEmi(opt)}
+                    style={[styles.segmentBtn, hasEmi === opt && styles.segmentBtnActive]}
+                  >
+                    <Text style={[styles.segmentText, hasEmi === opt && styles.segmentTextActive]}>
+                      {opt}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+
+            {/* 5. e-Shram Registration */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>
+                क्या आप e-Shram में रजिस्टर्ड हैं? / Registered with e-Shram?
+              </Text>
+              <View style={styles.segmentRow}>
+                {(['Yes', 'No', 'Not sure'] as const).map((opt) => (
+                  <TouchableOpacity
+                    key={opt}
+                    onPress={() => setEShram(opt)}
+                    style={[styles.segmentBtn, eShram === opt && styles.segmentBtnActive]}
+                  >
+                    <Text style={[styles.segmentText, eShram === opt && styles.segmentTextActive]}>
+                      {opt}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+
+            {/* 6. EPFO / ESIC Registration */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>
+                क्या आप EPFO/ESIC में रजिस्टर्ड हैं? / Registered with EPFO/ESIC?
+              </Text>
+              <View style={styles.segmentRow}>
+                {(['Yes', 'No', 'Not sure'] as const).map((opt) => (
+                  <TouchableOpacity
+                    key={opt}
+                    onPress={() => setEpfoEsic(opt)}
+                    style={[styles.segmentBtn, epfoEsic === opt && styles.segmentBtnActive]}
+                  >
+                    <Text style={[styles.segmentText, epfoEsic === opt && styles.segmentTextActive]}>
+                      {opt}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
             </View>
           </View>
 
-          <TouchableOpacity
-            style={[styles.cta, !isComplete && styles.ctaDisabled]}
-            onPress={handleContinue}
-            disabled={!isComplete}
-          >
+          <TouchableOpacity style={styles.cta} onPress={handleContinue}>
             <Text style={styles.ctaText}>आगे बढ़ें / Continue →</Text>
           </TouchableOpacity>
         </ScrollView>
@@ -119,38 +211,111 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: Colors.backgroundOffWhite },
   container: { flexGrow: 1, padding: Spacing.lg },
-  stepRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.xl },
+  stepRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.md },
   backBtn: { padding: Spacing.sm, marginLeft: -Spacing.sm },
   backIcon: { fontSize: 24, color: Colors.onSurface },
   stepIndicator: { alignItems: 'flex-end' },
-  stepLabel: { ...Typography.labelSm, color: Colors.textWarmGray, marginBottom: 4, textTransform: 'uppercase' },
+  stepLabel: { ...Typography.labelSm, color: Colors.textWarmGray, marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5 },
   dots: { flexDirection: 'row', gap: 4 },
   dot: { width: 16, height: 4, borderRadius: 2, backgroundColor: Colors.surfaceVariant },
   dotActive: { backgroundColor: Colors.vividRed },
-  title: { ...Typography.headlineSm, color: Colors.onSurface, marginBottom: Spacing.xl },
-  subtitle: { ...Typography.bodyMd, color: Colors.textWarmGray, fontWeight: '400' },
+  title: { ...Typography.headlineSm, fontSize: 22, color: Colors.onSurface, fontWeight: '700', marginBottom: 4 },
+  subtitle: { ...Typography.bodyMd, fontSize: 13, color: Colors.textWarmGray, marginBottom: Spacing.lg },
   form: { flex: 1, gap: Spacing.lg },
-  inputGroup: {},
-  label: { ...Typography.labelLg, color: Colors.onSurfaceVariant, marginBottom: Spacing.xs },
+  inputGroup: { gap: 6 },
+  label: { ...Typography.labelLg, fontSize: 14, color: Colors.onSurfaceVariant, fontWeight: '600' },
+  helperText: { ...Typography.labelSm, fontSize: 11, color: Colors.textWarmGray, marginTop: 2 },
   input: {
     backgroundColor: Colors.surfaceContainerLowest,
     borderWidth: 1,
     borderColor: Colors.outlineVariant,
     borderRadius: BorderRadius.md,
     paddingHorizontal: Spacing.md,
-    paddingVertical: 14,
+    paddingVertical: 12,
     ...Typography.bodyMd,
     color: Colors.onSurface,
   },
+  currencyInputRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.surfaceContainerLowest,
+    borderWidth: 1,
+    borderColor: Colors.outlineVariant,
+    borderRadius: BorderRadius.md,
+    paddingHorizontal: Spacing.md,
+  },
+  currencyPrefix: {
+    fontSize: 16,
+    color: Colors.onSurface,
+    fontWeight: '600',
+    marginRight: 6,
+  },
+  currencyInput: {
+    flex: 1,
+    paddingVertical: 12,
+    ...Typography.bodyMd,
+    color: Colors.onSurface,
+  },
+  chipsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.sm,
+  },
+  chip: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: Colors.outlineVariant,
+    backgroundColor: Colors.surfaceContainerLowest,
+  },
+  chipActive: {
+    backgroundColor: Colors.primaryContainer,
+    borderColor: Colors.primaryContainer,
+  },
+  chipText: {
+    ...Typography.labelLg,
+    fontSize: 13,
+    color: Colors.onSurface,
+  },
+  chipTextActive: {
+    color: Colors.onPrimary,
+    fontWeight: '700',
+  },
+  segmentRow: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+  },
+  segmentBtn: {
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: 8,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    borderColor: Colors.outlineVariant,
+    backgroundColor: Colors.surfaceContainerLowest,
+  },
+  segmentBtnActive: {
+    backgroundColor: Colors.cautionTint,
+    borderColor: Colors.primaryContainer,
+  },
+  segmentText: {
+    ...Typography.labelLg,
+    fontSize: 13,
+    color: Colors.onSurfaceVariant,
+  },
+  segmentTextActive: {
+    color: Colors.primary,
+    fontWeight: '700',
+  },
   cta: {
-    backgroundColor: Colors.secondaryContainer,
+    backgroundColor: Colors.primaryContainer,
     borderRadius: BorderRadius.lg,
     paddingVertical: Spacing.md,
     alignItems: 'center',
     marginTop: Spacing.xl,
+    marginBottom: Spacing.lg,
   },
-  ctaDisabled: { backgroundColor: Colors.surfaceVariant },
-  ctaText: { ...Typography.labelLg, color: Colors.onPrimary, fontSize: 16 },
+  ctaText: { ...Typography.labelLg, color: Colors.onPrimary, fontSize: 16, fontWeight: '600' },
 });
 
 export default DetailsScreen;

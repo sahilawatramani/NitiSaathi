@@ -6,8 +6,12 @@ before LangGraph integration.
 
 from fastapi import APIRouter
 
-from agent import rewrite_output
-from schemas import RewriteRequest, RewriteResponse
+try:
+    from agent import rewrite_output
+    from schemas import RewriteRequest, RewriteResponse
+except ImportError:
+    from .agent import rewrite_output
+    from .schemas import RewriteRequest, RewriteResponse
 
 router = APIRouter(prefix="/literacy", tags=["Literacy Agent"])
 

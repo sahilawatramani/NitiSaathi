@@ -12,9 +12,14 @@ degradation — the user still gets cleaned output, just not fully simplified).
 import logging
 from typing import Optional
 
-from jargon import replace_jargon
-from llm_service import generate_chat_completion
-from prompts import get_system_prompt
+try:
+    from jargon import replace_jargon
+    from llm_service import generate_chat_completion
+    from prompts import get_system_prompt
+except ImportError:
+    from .jargon import replace_jargon
+    from .llm_service import generate_chat_completion
+    from .prompts import get_system_prompt
 
 logger = logging.getLogger("literacy_agent.agent")
 

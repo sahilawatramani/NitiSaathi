@@ -1,6 +1,6 @@
 /**
  * Main Tab Navigator — Bottom tabs for the main app experience.
- * Tabs: Home, Budget, Saathi (Chat), Schemes, More
+ * Tabs matching video: 1. गृह (Home), 2. बजट (Budget), 3. साथी (Assistant), 4. योजनाएं (Schemes), 5. जांच (Fraud Check)
  */
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -20,11 +20,9 @@ import FraudResultScreen from '../screens/main/FraudResultScreen';
 import TransactionsScreen from '../screens/main/TransactionsScreen';
 import AddTransactionScreen from '../screens/main/AddTransactionScreen';
 import ProfileScreen from '../screens/main/ProfileScreen';
-import MoreHomeScreen from '../screens/main/MoreHomeScreen';
 import NudgesScreen from '../screens/main/NudgesScreen';
 import ReportsScreen from '../screens/main/ReportsScreen';
 import SettingsScreen from '../screens/main/SettingsScreen';
-
 import SeedDataScreen from '../screens/main/SeedDataScreen';
 
 export type MainTabParamList = {
@@ -32,7 +30,7 @@ export type MainTabParamList = {
   BudgetTab: undefined;
   SaathiTab: undefined;
   SchemesTab: undefined;
-  MoreTab: undefined;
+  FraudTab: undefined;
 };
 
 export type BudgetStackParamList = {
@@ -58,65 +56,48 @@ export type MoreStackParamList = {
   SeedData: undefined;
 };
 
+export type MainRootStackParamList = {
+  MainTabs: undefined;
+  Settings: undefined;
+  Nudges: undefined;
+  Profile: undefined;
+  Reports: undefined;
+  SeedData: undefined;
+  SchemeDetail: { schemeId: string; schemeName: string };
+  FraudResult: { analysis: Record<string, unknown> };
+  CausalChain: undefined;
+  Transactions: undefined;
+  AddTransaction: undefined;
+};
+
 const Tab = createBottomTabNavigator<MainTabParamList>();
-const BudgetStack = createNativeStackNavigator<BudgetStackParamList>();
-const SchemesStack = createNativeStackNavigator<SchemesStackParamList>();
-const MoreStack = createNativeStackNavigator<MoreStackParamList>();
-
-const BudgetNavigator = () => (
-  <BudgetStack.Navigator screenOptions={{ headerShown: false }}>
-    <BudgetStack.Screen name="BudgetMain" component={BudgetScreen} />
-    <BudgetStack.Screen name="CausalChain" component={CausalChainScreen} />
-    <BudgetStack.Screen name="Transactions" component={TransactionsScreen} />
-    <BudgetStack.Screen name="AddTransaction" component={AddTransactionScreen} />
-  </BudgetStack.Navigator>
-);
-
-const SchemesNavigator = () => (
-  <SchemesStack.Navigator screenOptions={{ headerShown: false }}>
-    <SchemesStack.Screen name="SchemesList" component={SchemesListScreen} />
-    <SchemesStack.Screen name="SchemeDetail" component={SchemeDetailScreen} />
-  </SchemesStack.Navigator>
-);
-
-// Placeholder More home screen
-const MoreNavigator = () => (
-  <MoreStack.Navigator screenOptions={{ headerShown: false }}>
-    <MoreStack.Screen name="MoreHome" component={MoreHomeScreen} />
-    <MoreStack.Screen name="FraudCheck" component={FraudCheckScreen} />
-    <MoreStack.Screen name="FraudResult" component={FraudResultScreen} />
-    <MoreStack.Screen name="Nudges" component={NudgesScreen} />
-    <MoreStack.Screen name="Reports" component={ReportsScreen} />
-    <MoreStack.Screen name="Settings" component={SettingsScreen} />
-    <MoreStack.Screen name="Profile" component={ProfileScreen} />
-    <MoreStack.Screen name="SeedData" component={SeedDataScreen} />
-  </MoreStack.Navigator>
-);
+const RootStack = createNativeStackNavigator<MainRootStackParamList>();
 
 // Tab bar icon component
 const TabIcon = ({
-  symbol,
+  icon,
   label,
   focused,
 }: {
-  symbol: string;
+  icon: string;
   label: string;
   focused: boolean;
 }) => (
-  <View style={{ alignItems: 'center', paddingTop: 4 }}>
+  <View style={{ alignItems: 'center', justifyContent: 'center', paddingTop: 6 }}>
     <Text
       style={{
-        fontSize: 22,
+        fontSize: 18,
         color: focused ? Colors.primaryContainer : Colors.textWarmGray,
-        fontFamily: 'Material-Symbols-Outlined',
       }}
     >
-      {symbol}
+      {icon}
     </Text>
     <Text
       style={{
         ...Typography.labelSm,
+        fontSize: 11,
         color: focused ? Colors.primaryContainer : Colors.textWarmGray,
+        fontWeight: focused ? '700' : '500',
         marginTop: 2,
       }}
     >
@@ -125,17 +106,17 @@ const TabIcon = ({
   </View>
 );
 
-const MainNavigator = () => (
+const MainTabsNavigator = () => (
   <Tab.Navigator
     screenOptions={{
       headerShown: false,
       tabBarShowLabel: false,
       tabBarStyle: {
         backgroundColor: Colors.surface,
-        borderTopColor: Colors.outlineVariant,
+        borderTopColor: Colors.outlineVariant + '40',
         borderTopWidth: 1,
-        height: Platform.OS === 'ios' ? 84 : 64,
-        paddingBottom: Platform.OS === 'ios' ? 24 : 8,
+        height: Platform.OS === 'ios' ? 84 : 62,
+        paddingBottom: Platform.OS === 'ios' ? 24 : 6,
       },
     }}
   >
@@ -144,16 +125,16 @@ const MainNavigator = () => (
       component={DashboardScreen}
       options={{
         tabBarIcon: ({ focused }) => (
-          <TabIcon symbol="home" label="गृह" focused={focused} />
+          <TabIcon icon="🏠" label="गृह" focused={focused} />
         ),
       }}
     />
     <Tab.Screen
       name="BudgetTab"
-      component={BudgetNavigator}
+      component={BudgetScreen}
       options={{
         tabBarIcon: ({ focused }) => (
-          <TabIcon symbol="payments" label="बजट" focused={focused} />
+          <TabIcon icon="📊" label="बजट" focused={focused} />
         ),
       }}
     />
@@ -162,29 +143,45 @@ const MainNavigator = () => (
       component={AssistantScreen}
       options={{
         tabBarIcon: ({ focused }) => (
-          <TabIcon symbol="forum" label="साथी" focused={focused} />
+          <TabIcon icon="💬" label="साथी" focused={focused} />
         ),
       }}
     />
     <Tab.Screen
       name="SchemesTab"
-      component={SchemesNavigator}
+      component={SchemesListScreen}
       options={{
         tabBarIcon: ({ focused }) => (
-          <TabIcon symbol="description" label="योजनाएं" focused={focused} />
+          <TabIcon icon="📋" label="योजनाएं" focused={focused} />
         ),
       }}
     />
     <Tab.Screen
-      name="MoreTab"
-      component={MoreNavigator}
+      name="FraudTab"
+      component={FraudCheckScreen}
       options={{
         tabBarIcon: ({ focused }) => (
-          <TabIcon symbol="menu" label="और" focused={focused} />
+          <TabIcon icon="🛡️" label="जांच" focused={focused} />
         ),
       }}
     />
   </Tab.Navigator>
+);
+
+const MainNavigator = () => (
+  <RootStack.Navigator screenOptions={{ headerShown: false }}>
+    <RootStack.Screen name="MainTabs" component={MainTabsNavigator} />
+    <RootStack.Screen name="Settings" component={SettingsScreen} />
+    <RootStack.Screen name="Nudges" component={NudgesScreen} />
+    <RootStack.Screen name="Profile" component={ProfileScreen} />
+    <RootStack.Screen name="Reports" component={ReportsScreen} />
+    <RootStack.Screen name="SeedData" component={SeedDataScreen} />
+    <RootStack.Screen name="SchemeDetail" component={SchemeDetailScreen} />
+    <RootStack.Screen name="FraudResult" component={FraudResultScreen} />
+    <RootStack.Screen name="CausalChain" component={CausalChainScreen} />
+    <RootStack.Screen name="Transactions" component={TransactionsScreen} />
+    <RootStack.Screen name="AddTransaction" component={AddTransactionScreen} />
+  </RootStack.Navigator>
 );
 
 export default MainNavigator;

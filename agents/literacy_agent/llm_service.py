@@ -9,15 +9,26 @@ import json
 import logging
 from typing import Optional
 
-from config import (
-    GEMINI_API_KEY,
-    GEMINI_CHAT_MODEL,
-    LLM_PROVIDER,
-    OLLAMA_API_BASE_URL,
-    OLLAMA_CHAT_MODEL,
-    OPENAI_API_KEY,
-    OPENAI_CHAT_MODEL,
-)
+try:
+    from config import (
+        GEMINI_API_KEY,
+        GEMINI_CHAT_MODEL,
+        LLM_PROVIDER,
+        OLLAMA_API_BASE_URL,
+        OLLAMA_CHAT_MODEL,
+        OPENAI_API_KEY,
+        OPENAI_CHAT_MODEL,
+    )
+except ImportError:
+    from .config import (
+        GEMINI_API_KEY,
+        GEMINI_CHAT_MODEL,
+        LLM_PROVIDER,
+        OLLAMA_API_BASE_URL,
+        OLLAMA_CHAT_MODEL,
+        OPENAI_API_KEY,
+        OPENAI_CHAT_MODEL,
+    )
 
 logger = logging.getLogger("literacy_agent.llm")
 

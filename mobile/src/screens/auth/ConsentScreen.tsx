@@ -1,6 +1,6 @@
 /**
  * ConsentScreen — Step 4 of 4 Onboarding
- * Show consent details and navigate to register.
+ * Granular consent toggles matching video reference.
  */
 import React, { useState } from 'react';
 import {
@@ -9,33 +9,90 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Switch,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { AuthStackParamList } from '../../navigation/AuthNavigator';
+import { useAuth } from '../../context/AuthContext';
 import { Colors, Typography, Spacing, BorderRadius } from '../../theme';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Consent'>;
 
+interface ConsentItem {
+  id: string;
+  title: string;
+  desc: string;
+  enabled: boolean;
+}
+
 const ConsentScreen: React.FC<Props> = ({ route, navigation }) => {
   const { profile } = route.params;
-  const [agreed, setAgreed] = useState(false);
+  const { login } = useAuth();
 
-  const handleContinue = () => {
-    // Navigate to Register to create account.
-    // In a real app, we'd pass the profile data along to save after registration.
-    navigation.navigate('Register');
+  const [toggles, setToggles] = useState<Record<string, boolean>>({
+    txData: true,
+    schemeEligibility: true,
+    fraudDetection: true,
+    notifications: false,
+    monthlyReport: false,
+  });
+
+  const toggleSwitch = (key: string) => {
+    setToggles((prev) => ({ ...prev, [key]: !prev[key] }));
   };
+
+  const handleStart = async () => {
+    try {
+      // Create session or login demo user to access dashboard immediately
+      await login('rajesh@nitisaathi.in', 'password123');
+    } catch {
+      // If offline or mock mode, AuthContext fallback takes user into main app
+    }
+  };
+
+  const CONSENT_ITEMS: ConsentItem[] = [
+    {
+      id: 'txData',
+      title: 'लेन-देन जानकारी / Transaction data',
+      desc: 'आपकी income और खर्च ट्रैक करने के लिए',
+      enabled: toggles.txData,
+    },
+    {
+      id: 'schemeEligibility',
+      title: 'योजना पात्रता जांच / Scheme eligibility check',
+      desc: 'सही सरकारी योजनाएं दिखाने के लिए आपकी प्रोफाइल का उपयोग',
+      enabled: toggles.schemeEligibility,
+    },
+    {
+      id: 'fraudDetection',
+      title: 'धोखाधड़ी सुरक्षा / Fraud detection',
+      desc: 'संदिग्ध लेन-देन की जांच के लिए',
+      enabled: toggles.fraudDetection,
+    },
+    {
+      id: 'notifications',
+      title: 'सूचनाएं / Push notifications',
+      desc: 'समय पर अलर्ट भेजने के लिए',
+      enabled: toggles.notifications,
+    },
+    {
+      id: 'monthlyReport',
+      title: 'मासिक रिपोर्ट / Monthly PDF report + email',
+      desc: 'आपकी मासिक रिपोर्ट ईमेल पर भेजने के लिए',
+      enabled: toggles.monthlyReport,
+    },
+  ];
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         <View style={styles.stepRow}>
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
             <Text style={styles.backIcon}>←</Text>
           </TouchableOpacity>
           <View style={styles.stepIndicator}>
-            <Text style={styles.stepLabel}>Step 4 of 4</Text>
+            <Text style={styles.stepLabel}>STEP 4 OF 4</Text>
             <View style={styles.dots}>
               {[0, 1, 2, 3].map((i) => (
                 <View key={i} style={[styles.dot, i === 3 && styles.dotActive]} />
@@ -44,43 +101,36 @@ const ConsentScreen: React.FC<Props> = ({ route, navigation }) => {
           </View>
         </View>
 
-        <Text style={styles.title}>
-          डेटा सुरक्षा और सहमति{'\n'}
-          <Text style={styles.subtitle}>Data Privacy & Consent</Text>
+        <Text style={styles.title}>आपकी सहमति / Your Consent</Text>
+        <Text style={styles.subtitle}>
+          आप हर एक को अलग से चालू या बंद कर सकते हैं, कभी भी बदल सकते हैं / You can turn each on or off separately, anytime in Settings.
         </Text>
 
-        <View style={styles.card}>
-          <View style={styles.iconRow}>
-            <Text style={styles.icon}>🔒</Text>
-            <Text style={styles.cardTitle}>आपका डेटा सुरक्षित है / Your data is safe</Text>
-          </View>
-          <Text style={styles.desc}>
-            हम आपकी जानकारी का उपयोग केवल आपको बेहतर वित्तीय सलाह और योजनाएं देने के लिए करते हैं। हम इसे किसी और को नहीं बेचते।
-          </Text>
-          <Text style={[styles.desc, { marginTop: Spacing.sm }]}>
-            We only use your info to provide better financial advice and schemes. We do not sell it to anyone else.
-          </Text>
+        <View style={styles.toggleList}>
+          {CONSENT_ITEMS.map((item) => (
+            <View key={item.id} style={styles.toggleRow}>
+              <View style={styles.toggleInfo}>
+                <Text style={styles.toggleTitle}>{item.title}</Text>
+                <Text style={styles.toggleDesc}>{item.desc}</Text>
+              </View>
+              <Switch
+                value={item.enabled}
+                onValueChange={() => toggleSwitch(item.id)}
+                trackColor={{ false: Colors.surfaceVariant, true: Colors.primaryContainer }}
+                thumbColor={Colors.surfaceContainerLowest}
+              />
+            </View>
+          ))}
         </View>
 
-        <TouchableOpacity
-          style={styles.checkboxRow}
-          onPress={() => setAgreed(!agreed)}
-        >
-          <View style={[styles.checkbox, agreed && styles.checkboxActive]}>
-            {agreed && <Text style={styles.checkIcon}>✓</Text>}
-          </View>
-          <Text style={styles.checkboxLabel}>
-            मैं सहमत हूँ / I agree to the terms and privacy policy
+        <View style={styles.footerBlock}>
+          <TouchableOpacity style={styles.cta} onPress={handleStart} activeOpacity={0.85}>
+            <Text style={styles.ctaText}>शुरू करें / Get Started</Text>
+          </TouchableOpacity>
+          <Text style={styles.footerNote}>
+            आप बाद में इन्हें चालू कर सकते हैं / You can turn these on later
           </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.cta, !agreed && styles.ctaDisabled]}
-          onPress={handleContinue}
-          disabled={!agreed}
-        >
-          <Text style={styles.ctaText}>खाता बनाएँ / Create Account →</Text>
-        </TouchableOpacity>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -89,53 +139,37 @@ const ConsentScreen: React.FC<Props> = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: Colors.backgroundOffWhite },
   container: { flexGrow: 1, padding: Spacing.lg },
-  stepRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.xl },
+  stepRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.md },
   backBtn: { padding: Spacing.sm, marginLeft: -Spacing.sm },
   backIcon: { fontSize: 24, color: Colors.onSurface },
   stepIndicator: { alignItems: 'flex-end' },
-  stepLabel: { ...Typography.labelSm, color: Colors.textWarmGray, marginBottom: 4, textTransform: 'uppercase' },
+  stepLabel: { ...Typography.labelSm, color: Colors.textWarmGray, marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5 },
   dots: { flexDirection: 'row', gap: 4 },
   dot: { width: 16, height: 4, borderRadius: 2, backgroundColor: Colors.surfaceVariant },
   dotActive: { backgroundColor: Colors.vividRed },
-  title: { ...Typography.headlineSm, color: Colors.onSurface, marginBottom: Spacing.xl },
-  subtitle: { ...Typography.bodyMd, color: Colors.textWarmGray, fontWeight: '400' },
-  card: {
-    backgroundColor: Colors.surfaceContainerLowest,
-    padding: Spacing.lg,
-    borderRadius: BorderRadius.lg,
-    borderWidth: 1,
-    borderColor: Colors.outlineVariant,
-    marginBottom: Spacing.xl,
-  },
-  iconRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, marginBottom: Spacing.sm },
-  icon: { fontSize: 24 },
-  cardTitle: { ...Typography.headlineMd, fontSize: 18, color: Colors.onSurface },
-  desc: { ...Typography.bodyMd, fontSize: 14, color: Colors.onSurfaceVariant },
-  checkboxRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.md, marginBottom: Spacing.xl, paddingRight: Spacing.xl },
-  checkbox: {
-    width: 24,
-    height: 24,
-    borderRadius: 4,
-    borderWidth: 2,
-    borderColor: Colors.outline,
+  title: { ...Typography.headlineSm, fontSize: 22, color: Colors.onSurface, fontWeight: '700', marginBottom: 4 },
+  subtitle: { ...Typography.bodyMd, fontSize: 13, color: Colors.textWarmGray, marginBottom: Spacing.xl },
+  toggleList: { gap: Spacing.lg, marginBottom: Spacing.xl },
+  toggleRow: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: Spacing.xs,
+    gap: Spacing.md,
   },
-  checkboxActive: {
-    backgroundColor: Colors.primaryContainer,
-    borderColor: Colors.primaryContainer,
-  },
-  checkIcon: { color: Colors.onPrimary, fontSize: 16, fontWeight: 'bold' },
-  checkboxLabel: { ...Typography.bodyMd, color: Colors.onSurface, flex: 1 },
+  toggleInfo: { flex: 1 },
+  toggleTitle: { ...Typography.labelLg, fontSize: 15, color: Colors.onSurface, fontWeight: '600', marginBottom: 2 },
+  toggleDesc: { ...Typography.bodyMd, fontSize: 12, color: Colors.textWarmGray },
+  footerBlock: { marginTop: 'auto', paddingTop: Spacing.lg },
   cta: {
-    backgroundColor: Colors.secondaryContainer,
+    backgroundColor: Colors.primaryContainer,
     borderRadius: BorderRadius.lg,
     paddingVertical: Spacing.md,
     alignItems: 'center',
-    marginTop: 'auto',
+    marginBottom: Spacing.sm,
   },
-  ctaDisabled: { backgroundColor: Colors.surfaceVariant },
-  ctaText: { ...Typography.labelLg, color: Colors.onPrimary, fontSize: 16 },
+  ctaText: { ...Typography.labelLg, color: Colors.onPrimary, fontSize: 16, fontWeight: '700' },
+  footerNote: { ...Typography.labelSm, fontSize: 12, color: Colors.textWarmGray, textAlign: 'center' },
 });
 
 export default ConsentScreen;

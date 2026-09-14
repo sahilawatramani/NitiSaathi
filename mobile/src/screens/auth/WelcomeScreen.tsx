@@ -30,7 +30,7 @@ const WelcomeScreen: React.FC<Props> = ({ navigation }) => {
   const [selected, setSelected] = useState<Language>('hi');
 
   const handleContinue = () => {
-    navigation.navigate('Login');
+    navigation.navigate('ComfortLevel', { language: selected });
   };
 
   return (
