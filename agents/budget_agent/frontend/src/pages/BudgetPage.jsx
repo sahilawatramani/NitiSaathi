@@ -3,14 +3,14 @@ import { motion as Motion } from 'framer-motion';
 import {
   Wallet, TrendingUp, Shield, Flame, AlertTriangle, Zap,
   RefreshCw, Bell, Target, ChevronRight, Plus, Trash2,
-  Calculator, DollarSign, ArrowUpRight, CheckCircle2,
-  HelpCircle, Clock
+  Calculator, CheckCircle2, Globe
 } from 'lucide-react';
 import {
   ComposedChart, Line, Area, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
 import { useBudget } from '../context/BudgetContext';
+import { useLanguage } from '../context/LanguageContext';
 import {
   getBudgetPlanner, updateBudgetPlanner,
   createGoal, addSavingsToGoal, archiveGoal,
@@ -23,13 +23,14 @@ const fmt = (n) =>
   new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(n ?? 0);
 
 const MONTH_OPTIONS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const SOURCE_OPTIONS = ['Primary Income', 'Gig / Freelance', 'Bonus / Incentive', 'Other'];
 
 export default function BudgetPage() {
   const {
     insights, goals, recurringDebits,
     refreshInsights, refreshGoals, refreshRecurringDebits, triggerRecalculate,
   } = useBudget();
+
+  const { lang, changeLanguage, t } = useLanguage();
 
   // Budget Planner State
   const [plannerData, setPlannerData] = useState(null);
@@ -48,6 +49,7 @@ export default function BudgetPage() {
   const [newDebit, setNewDebit] = useState({ name: '', amount: '', category: 'rent', due_day_of_month: '' });
   const [reportMsg, setReportMsg] = useState('');
   const [recalcLoading, setRecalcLoading] = useState(false);
+  const [hoveredPoint, setHoveredPoint] = useState(null);
 
   // Load initial budget planner data
   useEffect(() => {
@@ -76,7 +78,7 @@ export default function BudgetPage() {
       if (res && res.data) {
         setPlannerData(res.data);
         setSaveSuccess(true);
-        setTimeout(() => setSaveSuccess(false), 3000);
+        setTimeout(() => setSaveSuccess(false), 3500);
       }
       refreshInsights();
     } catch (err) {
@@ -180,7 +182,7 @@ export default function BudgetPage() {
     setTimeout(() => setReportMsg(''), 5000);
   };
 
-  // Inflation Awareness dynamic projections
+  // Inflation Awareness dynamic calculations
   const costVal = currentCostItem > 0 ? currentCostItem : 1000;
   const cost5y = Math.round(costVal * Math.pow(1.04, 5));
   const cost10y = Math.round(costVal * Math.pow(1.04, 10));
@@ -191,8 +193,54 @@ export default function BudgetPage() {
   const forecastIncome = plannerData?.forecasted_monthly_income || 25000;
   const groupLabel = plannerData?.group_label || 'MIDDLE INCOME GROUP';
   const inflationRate = plannerData?.current_inflation_rate || 5.1;
-  const powerLossPct = plannerData?.purchasing_power_loss_pct || -3.2;
   const purchasingPowerOneYear = Math.round(forecastIncome / (1 + (inflationRate / 100)));
+
+  // SVG Chart Dimensions & Computations for robust visual rendering
+  const svgWidth = 520;
+  const svgHeight = 220;
+  const padX = 40;
+  const padY = 30;
+  const chartW = svgWidth - padX * 2;
+  const chartH = svgHeight - padY * 2;
+
+  const validAmounts = trajectoryData.map((d) => (d.is_forecast ? d.predicted_income : d.actual_income) || 0).filter((v) => v > 0);
+  const maxVal = validAmounts.length > 0 ? Math.max(...validAmounts) * 1.15 : 30000;
+  const minVal = validAmounts.length > 0 ? Math.max(0, Math.min(...validAmounts) * 0.85) : 0;
+
+  const getX = (idx) => padX + (idx / Math.max(1, trajectoryData.length - 1)) * chartW;
+  const getY = (val) => svgHeight - padY - ((val - minVal) / Math.max(1, maxVal - minVal)) * chartH;
+
+  const actualPoints = trajectoryData.filter((d) => !d.is_forecast);
+  const forecastPoints = trajectoryData.filter((d) => d.is_forecast);
+  const lastActualIdx = actualPoints.length - 1;
+
+  let actualPath = '';
+  actualPoints.forEach((d, i) => {
+    const x = getX(i);
+    const y = getY(d.actual_income);
+    actualPath += i === 0 ? `M ${x} ${y}` : ` L ${x} ${y}`;
+  });
+
+  let forecastPath = '';
+  if (lastActualIdx >= 0 && forecastPoints.length > 0) {
+    const startX = getX(lastActualIdx);
+    const startY = getY(actualPoints[lastActualIdx].actual_income);
+    forecastPath = `M ${startX} ${startY}`;
+    forecastPoints.forEach((d, i) => {
+      const idx = lastActualIdx + 1 + i;
+      const x = getX(idx);
+      const y = getY(d.predicted_income);
+      forecastPath += ` L ${x} ${y}`;
+    });
+  }
+
+  // Source display labels mapping
+  const sourceLabels = {
+    'Primary Income': t.history.sources.primary,
+    'Gig / Freelance': t.history.sources.gig,
+    'Bonus / Incentive': t.history.sources.bonus,
+    'Other': t.history.sources.other,
+  };
 
   return (
     <div style={{ maxWidth: '1440px', margin: '0 auto', paddingBottom: '60px' }}>
@@ -200,14 +248,35 @@ export default function BudgetPage() {
       <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', marginBottom: '24px' }}>
         <div>
           <h1 className="page-title" style={{ fontSize: '28px', background: 'linear-gradient(135deg, #fff 0%, #cbd5e1 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-            Income History & Predictor
+            {t.header.title}
           </h1>
           <p className="page-subtitle" style={{ fontSize: '14px', color: 'var(--text-muted)' }}>
-            Plan and project your cashflow with time-series forecasting & inflation insights
+            {t.header.subtitle}
           </p>
         </div>
 
         <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+          {/* Language Switcher in Header */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: '6px',
+            background: 'rgba(255,255,255,0.06)', borderRadius: '10px',
+            padding: '6px 12px', border: '1px solid var(--border)'
+          }}>
+            <Globe size={16} style={{ color: 'var(--accent)' }} />
+            <select
+              value={lang}
+              onChange={(e) => changeLanguage(e.target.value)}
+              style={{
+                background: 'transparent', border: 'none', color: '#fff',
+                fontSize: '13px', outline: 'none', cursor: 'pointer', fontWeight: 600
+              }}
+            >
+              <option value="hi" style={{ background: '#18181b', color: '#fff' }}>🇮🇳 हिंदी</option>
+              <option value="en" style={{ background: '#18181b', color: '#fff' }}>🇬🇧 English</option>
+              <option value="mr" style={{ background: '#18181b', color: '#fff' }}>🇮🇳 मराठी</option>
+            </select>
+          </div>
+
           <div style={{
             display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 14px',
             background: 'rgba(6, 182, 212, 0.1)', border: '1px solid rgba(6, 182, 212, 0.3)',
@@ -224,7 +293,7 @@ export default function BudgetPage() {
             disabled={recalcLoading}
           >
             <RefreshCw size={14} className={recalcLoading ? 'spin-anim' : ''} />
-            {recalcLoading ? 'Recalculating…' : 'Sync All'}
+            {recalcLoading ? t.nav.recalculating : t.nav.syncAll}
           </button>
         </div>
       </div>
@@ -241,7 +310,7 @@ export default function BudgetPage() {
             transition: 'all 0.2s ease'
           }}
         >
-          <TrendingUp size={16} /> Budget Planner & Predictor
+          <TrendingUp size={16} /> {t.nav.budgetPlanner}
         </button>
 
         <button
@@ -254,7 +323,7 @@ export default function BudgetPage() {
             transition: 'all 0.2s ease'
           }}
         >
-          <Target size={16} /> Goals & Recurring Debits
+          <Target size={16} /> {t.nav.goalsDebits}
         </button>
 
         <button
@@ -267,13 +336,13 @@ export default function BudgetPage() {
             transition: 'all 0.2s ease'
           }}
         >
-          <AlertTriangle size={16} /> Risk Analysis & Reports
+          <AlertTriangle size={16} /> {t.nav.riskAnalysis}
         </button>
       </div>
 
       {/* TAB 1: MAIN BUDGET PLANNER & PREDICTOR */}
       {activeTab === 'planner' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(480px, 1fr))', gap: '24px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(460px, 1fr))', gap: '24px' }}>
           
           {/* LEFT PANEL: Income History Table */}
           <Motion.div
@@ -289,17 +358,18 @@ export default function BudgetPage() {
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
-              boxShadow: '0 8px 32px rgba(0,0,0,0.4)'
+              boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+              minWidth: 0,
             }}
           >
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
                 <div>
                   <h2 style={{ fontSize: '18px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Wallet size={20} style={{ color: '#06b6d4' }} /> Income History
+                    <Wallet size={20} style={{ color: '#06b6d4' }} /> {t.history.title}
                   </h2>
                   <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '4px' }}>
-                    Manage your past income records to improve forecasting accuracy
+                    {t.history.subtitle}
                   </p>
                 </div>
               </div>
@@ -309,10 +379,10 @@ export default function BudgetPage() {
                 <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
                   <thead>
                     <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', color: 'var(--text-muted)', textAlign: 'left' }}>
-                      <th style={{ padding: '10px 8px', fontWeight: 600 }}>Month</th>
-                      <th style={{ padding: '10px 8px', fontWeight: 600 }}>Income (₹)</th>
-                      <th style={{ padding: '10px 8px', fontWeight: 600 }}>Source</th>
-                      <th style={{ padding: '10px 8px', textAlign: 'center', fontWeight: 600 }}>Action</th>
+                      <th style={{ padding: '10px 8px', fontWeight: 600 }}>{t.history.month}</th>
+                      <th style={{ padding: '10px 8px', fontWeight: 600 }}>{t.history.income}</th>
+                      <th style={{ padding: '10px 8px', fontWeight: 600 }}>{t.history.source}</th>
+                      <th style={{ padding: '10px 8px', textAlign: 'center', fontWeight: 600 }}>{t.history.action}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -380,11 +450,10 @@ export default function BudgetPage() {
                               outline: 'none'
                             }}
                           >
-                            {SOURCE_OPTIONS.map((s) => (
-                              <option key={s} value={s} style={{ background: '#18181b', color: '#fff' }}>
-                                {s}
-                              </option>
-                            ))}
+                            <option value="Primary Income" style={{ background: '#18181b', color: '#fff' }}>{t.history.sources.primary}</option>
+                            <option value="Gig / Freelance" style={{ background: '#18181b', color: '#fff' }}>{t.history.sources.gig}</option>
+                            <option value="Bonus / Incentive" style={{ background: '#18181b', color: '#fff' }}>{t.history.sources.bonus}</option>
+                            <option value="Other" style={{ background: '#18181b', color: '#fff' }}>{t.history.sources.other}</option>
                           </select>
                         </td>
 
@@ -436,7 +505,7 @@ export default function BudgetPage() {
                   transition: 'all 0.2s'
                 }}
               >
-                <Plus size={16} /> + Add Month
+                <Plus size={16} /> {t.history.addMonth}
               </button>
             </div>
 
@@ -449,7 +518,7 @@ export default function BudgetPage() {
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <TrendingUp size={16} style={{ color: '#f59e0b' }} />
-                  <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>Current Inflation Rate:</span>
+                  <span style={{ fontSize: '13px', color: 'var(--text-muted)' }}>{t.history.currentInflationRate}</span>
                 </div>
                 <div style={{
                   padding: '4px 10px', borderRadius: '20px',
@@ -484,7 +553,7 @@ export default function BudgetPage() {
                 }}
               >
                 <Calculator size={18} className={calculating ? 'spin-anim' : ''} />
-                {calculating ? 'Recalculating Timeseries…' : 'Calculate Forecast'}
+                {calculating ? t.history.calculating : t.history.calculateForecast}
               </button>
 
               {saveSuccess && (
@@ -493,14 +562,14 @@ export default function BudgetPage() {
                   background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.3)',
                   color: '#10b981', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '6px'
                 }}>
-                  <CheckCircle2 size={14} /> Forecast updated & saved to profile!
+                  <CheckCircle2 size={14} /> {t.history.savedSuccess}
                 </div>
               )}
             </div>
           </Motion.div>
 
           {/* RIGHT PANEL: Income Predictor & Spending Guide */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', minWidth: 0 }}>
             
             {/* Predictor Chart Card */}
             <Motion.div
@@ -514,92 +583,105 @@ export default function BudgetPage() {
                 borderRadius: '16px',
                 border: '1px solid var(--border)',
                 padding: '24px',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.4)'
+                boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+                minWidth: 0,
               }}
             >
               <div style={{ marginBottom: '16px' }}>
                 <h2 style={{ fontSize: '18px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <TrendingUp size={20} style={{ color: '#ec4899' }} /> Income Predictor & Spending Guide
+                  <TrendingUp size={20} style={{ color: '#ec4899' }} /> {t.predictor.title}
                 </h2>
                 <p style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '4px' }}>
-                  Forecasted monthly income based on weighted moving average (inflation adjusted)
+                  {t.predictor.subtitle}
                 </p>
               </div>
 
-              {/* Time Series Area / Line Chart */}
-              <div style={{ height: '240px', width: '100%', marginTop: '10px' }}>
+              {/* Time Series Dual-Rendering Chart (SVG + Recharts) */}
+              <div style={{ width: '100%', minHeight: '230px', position: 'relative', marginTop: '10px' }}>
                 {plannerLoading ? (
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '220px' }}>
                     <div className="spinner" />
                   </div>
                 ) : (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <ComposedChart data={trajectoryData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                  <div style={{ width: '100%' }}>
+                    {/* Native SVG Trajectory Chart */}
+                    <svg viewBox={`0 0 ${svgWidth} ${svgHeight}`} style={{ width: '100%', height: 'auto', overflow: 'visible' }}>
                       <defs>
-                        <linearGradient id="actualGrad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.4} />
-                          <stop offset="95%" stopColor="#06b6d4" stopOpacity={0.0} />
+                        <linearGradient id="svgActualGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#06b6d4" stopOpacity="0.35" />
+                          <stop offset="100%" stopColor="#06b6d4" stopOpacity="0.0" />
                         </linearGradient>
-                        <linearGradient id="forecastGrad" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3} />
-                          <stop offset="95%" stopColor="#f59e0b" stopOpacity={0.0} />
+                        <linearGradient id="svgForecastGrad" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.25" />
+                          <stop offset="100%" stopColor="#f59e0b" stopOpacity="0.0" />
                         </linearGradient>
                       </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.06)" vertical={false} />
-                      <XAxis
-                        dataKey="month"
-                        stroke="var(--text-muted)"
-                        tick={{ fill: 'var(--text-muted)', fontSize: 12 }}
-                      />
-                      <YAxis
-                        stroke="var(--text-muted)"
-                        tick={{ fill: 'var(--text-muted)', fontSize: 11 }}
-                        tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`}
-                      />
-                      <Tooltip
-                        contentStyle={{
-                          background: '#11121a',
-                          borderColor: 'rgba(255,255,255,0.15)',
-                          borderRadius: '10px',
-                          color: '#fff',
-                          fontSize: '12px'
-                        }}
-                        formatter={(val, name) => [
-                          val ? fmt(val) : 'N/A',
-                          name === 'actual_income' ? 'Actual Income' : name === 'predicted_income' ? 'Forecasted Income' : name
-                        ]}
-                      />
-                      <Legend
-                        verticalAlign="top"
-                        align="right"
-                        iconType="circle"
-                        wrapperStyle={{ fontSize: '11px', paddingBottom: '10px' }}
-                      />
-                      {/* Actual Income Solid Line */}
-                      <Area
-                        type="monotone"
-                        dataKey="actual_income"
-                        name="Actual Income"
-                        stroke="#06b6d4"
-                        strokeWidth={3}
-                        fillOpacity={1}
-                        fill="url(#actualGrad)"
-                        dot={{ r: 4, fill: '#06b6d4', stroke: '#fff', strokeWidth: 1.5 }}
-                        connectNulls={false}
-                      />
-                      {/* Forecast Dashed Line */}
-                      <Line
-                        type="monotone"
-                        dataKey="predicted_income"
-                        name="Forecasted Income"
-                        stroke="#f59e0b"
-                        strokeWidth={3}
-                        strokeDasharray="5 5"
-                        dot={{ r: 4, fill: '#f59e0b', stroke: '#fff', strokeWidth: 1.5 }}
-                        connectNulls={true}
-                      />
-                    </ComposedChart>
-                  </ResponsiveContainer>
+
+                      {/* Grid Lines */}
+                      {[0.25, 0.5, 0.75, 1.0].map((frac, idx) => {
+                        const y = padY + chartH * (1 - frac);
+                        const val = Math.round(minVal + frac * (maxVal - minVal));
+                        return (
+                          <g key={idx}>
+                            <line x1={padX} y1={y} x2={svgWidth - padX} y2={y} stroke="rgba(255,255,255,0.06)" strokeDasharray="3 3" />
+                            <text x={padX - 8} y={y + 3} fill="#64748b" fontSize="10" textAnchor="end">
+                              ₹{(val / 1000).toFixed(0)}k
+                            </text>
+                          </g>
+                        );
+                      })}
+
+                      {/* Actual Income Line */}
+                      {actualPath && (
+                        <path d={actualPath} fill="none" stroke="#06b6d4" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                      )}
+
+                      {/* Forecasted Line (Dashed) */}
+                      {forecastPath && (
+                        <path d={forecastPath} fill="none" stroke="#f59e0b" strokeWidth="3" strokeDasharray="6 6" strokeLinecap="round" strokeLinejoin="round" />
+                      )}
+
+                      {/* Interactive Data Dots */}
+                      {trajectoryData.map((d, i) => {
+                        const val = d.is_forecast ? d.predicted_income : d.actual_income;
+                        const x = getX(i);
+                        const y = getY(val);
+                        const isForecast = d.is_forecast;
+                        const color = isForecast ? '#f59e0b' : '#06b6d4';
+                        const isHovered = hoveredPoint === i;
+
+                        return (
+                          <g key={i} onMouseEnter={() => setHoveredPoint(i)} onMouseLeave={() => setHoveredPoint(null)} style={{ cursor: 'pointer' }}>
+                            <circle cx={x} cy={y} r={isHovered ? 7 : 5} fill={color} stroke="#fff" strokeWidth={isHovered ? 2.5 : 1.5} />
+                            <text x={x} y={svgHeight - 8} fill={isForecast ? '#f59e0b' : '#94a3b8'} fontSize="11" textAnchor="middle" fontWeight={isForecast ? '700' : '500'}>
+                              {d.month}
+                            </text>
+                            {/* Hover tooltip bubble */}
+                            {isHovered && (
+                              <g>
+                                <rect x={x - 45} y={y - 34} width="90" height="24" rx="6" fill="#18181b" stroke={color} strokeWidth="1" />
+                                <text x={x} y={y - 18} fill="#fff" fontSize="11" textAnchor="middle" fontWeight="700">
+                                  {fmt(val)}
+                                </text>
+                              </g>
+                            )}
+                          </g>
+                        );
+                      })}
+                    </svg>
+
+                    {/* Chart Legend */}
+                    <div style={{ display: 'flex', justifyContent: 'center', gap: '24px', marginTop: '12px', borderTop: '1px solid var(--border)', paddingTop: '10px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: 'var(--text-muted)' }}>
+                        <span style={{ width: '12px', height: '3px', background: '#06b6d4', borderRadius: '2px' }} />
+                        {t.predictor.pastActuals}
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#f59e0b' }}>
+                        <span style={{ width: '12px', height: '3px', background: '#f59e0b', borderRadius: '2px', borderStyle: 'dashed' }} />
+                        {t.predictor.forecastTrajectory}
+                      </div>
+                    </div>
+                  </div>
                 )}
               </div>
             </Motion.div>
@@ -616,10 +698,11 @@ export default function BudgetPage() {
                 borderRadius: '16px',
                 border: '1px solid var(--border)',
                 padding: '24px',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.4)'
+                boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+                minWidth: 0,
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{
@@ -632,11 +715,11 @@ export default function BudgetPage() {
                     </span>
                   </div>
                   <h3 style={{ fontSize: '15px', fontWeight: 700, marginTop: '6px' }}>
-                    Recommended Spending Guide
+                    {t.spendingGuide.title}
                   </h3>
                 </div>
                 <div style={{ textAlign: 'right' }}>
-                  <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Total Forecasted Monthly Income</span>
+                  <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{t.predictor.totalForecastIncome}</span>
                   <div style={{ fontSize: '18px', fontWeight: 800, color: '#fff' }}>
                     {fmt(forecastIncome)}
                   </div>
@@ -650,8 +733,8 @@ export default function BudgetPage() {
                 <div style={{ background: 'rgba(255,255,255,0.03)', padding: '12px 14px', borderRadius: '12px', border: '1px solid var(--border)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                     <div>
-                      <span style={{ fontWeight: 600, fontSize: '13px', color: '#fff' }}>Basic Needs (50%)</span>
-                      <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginLeft: '8px' }}>Housing, groceries, utilities</span>
+                      <span style={{ fontWeight: 600, fontSize: '13px', color: '#fff' }}>{t.spendingGuide.basicNeeds}</span>
+                      <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginLeft: '8px' }}>{t.spendingGuide.basicNeedsDesc}</span>
                     </div>
                     <span style={{ fontWeight: 700, fontSize: '14px', color: '#06b6d4' }}>
                       {fmt(spendingGuide?.basic_needs?.amount || forecastIncome * 0.5)}
@@ -666,8 +749,8 @@ export default function BudgetPage() {
                 <div style={{ background: 'rgba(255,255,255,0.03)', padding: '12px 14px', borderRadius: '12px', border: '1px solid var(--border)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                     <div>
-                      <span style={{ fontWeight: 600, fontSize: '13px', color: '#fff' }}>Emergency Savings (10%)</span>
-                      <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginLeft: '8px' }}>Liquid emergency fund</span>
+                      <span style={{ fontWeight: 600, fontSize: '13px', color: '#fff' }}>{t.spendingGuide.emergencySavings}</span>
+                      <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginLeft: '8px' }}>{t.spendingGuide.emergencySavingsDesc}</span>
                     </div>
                     <span style={{ fontWeight: 700, fontSize: '14px', color: '#10b981' }}>
                       {fmt(spendingGuide?.emergency_savings?.amount || forecastIncome * 0.1)}
@@ -682,8 +765,8 @@ export default function BudgetPage() {
                 <div style={{ background: 'rgba(255,255,255,0.03)', padding: '12px 14px', borderRadius: '12px', border: '1px solid var(--border)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                     <div>
-                      <span style={{ fontWeight: 600, fontSize: '13px', color: '#fff' }}>Future Growth (25%)</span>
-                      <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginLeft: '8px' }}>Investments, debt payoff</span>
+                      <span style={{ fontWeight: 600, fontSize: '13px', color: '#fff' }}>{t.spendingGuide.futureGrowth}</span>
+                      <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginLeft: '8px' }}>{t.spendingGuide.futureGrowthDesc}</span>
                     </div>
                     <span style={{ fontWeight: 700, fontSize: '14px', color: '#8b5cf6' }}>
                       {fmt(spendingGuide?.future_growth?.amount || forecastIncome * 0.25)}
@@ -698,8 +781,8 @@ export default function BudgetPage() {
                 <div style={{ background: 'rgba(255,255,255,0.03)', padding: '12px 14px', borderRadius: '12px', border: '1px solid var(--border)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                     <div>
-                      <span style={{ fontWeight: 600, fontSize: '13px', color: '#fff' }}>Personal Spending (15%)</span>
-                      <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginLeft: '8px' }}>Entertainment, dining out</span>
+                      <span style={{ fontWeight: 600, fontSize: '13px', color: '#fff' }}>{t.spendingGuide.personalSpending}</span>
+                      <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginLeft: '8px' }}>{t.spendingGuide.personalSpendingDesc}</span>
                     </div>
                     <span style={{ fontWeight: 700, fontSize: '14px', color: '#f59e0b' }}>
                       {fmt(spendingGuide?.personal_spending?.amount || forecastIncome * 0.15)}
@@ -737,22 +820,23 @@ export default function BudgetPage() {
                 borderRadius: '16px',
                 border: '1px solid var(--border)',
                 padding: '24px',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.4)'
+                boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+                minWidth: 0,
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
                 <div>
                   <h3 style={{ fontSize: '16px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Zap size={18} style={{ color: '#f59e0b' }} /> Inflation Awareness
+                    <Zap size={18} style={{ color: '#f59e0b' }} /> {t.inflation.title}
                   </h3>
                   <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>
-                    See how inflation erodes value over time (at 4% annual rate)
+                    {t.inflation.subtitle}
                   </p>
                 </div>
 
                 {/* Cost Input Box */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Enter item cost:</span>
+                  <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{t.inflation.enterCost}</span>
                   <div style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '120px' }}>
                     <span style={{ position: 'absolute', left: '10px', color: 'var(--text-muted)', fontSize: '13px' }}>₹</span>
                     <input
@@ -786,7 +870,7 @@ export default function BudgetPage() {
                   padding: '14px',
                   textAlign: 'center'
                 }}>
-                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '4px' }}>In 5 Years (at 4%)</div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '4px' }}>{t.inflation.in5Years}</div>
                   <div style={{ fontSize: '16px', fontWeight: 800, color: '#fff' }}>{fmt(cost5y)}</div>
                   <div style={{ fontSize: '11px', color: '#f59e0b', fontWeight: 600, marginTop: '2px' }}>+21.7%</div>
                 </div>
@@ -799,7 +883,7 @@ export default function BudgetPage() {
                   padding: '14px',
                   textAlign: 'center'
                 }}>
-                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '4px' }}>In 10 Years (at 4%)</div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '4px' }}>{t.inflation.in10Years}</div>
                   <div style={{ fontSize: '16px', fontWeight: 800, color: '#fff' }}>{fmt(cost10y)}</div>
                   <div style={{ fontSize: '11px', color: '#f59e0b', fontWeight: 600, marginTop: '2px' }}>+48.0%</div>
                 </div>
@@ -812,7 +896,7 @@ export default function BudgetPage() {
                   padding: '14px',
                   textAlign: 'center'
                 }}>
-                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '4px' }}>In 15 Years (at 4%)</div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '4px' }}>{t.inflation.in15Years}</div>
                   <div style={{ fontSize: '16px', fontWeight: 800, color: '#fff' }}>{fmt(cost15y)}</div>
                   <div style={{ fontSize: '11px', color: '#ef4444', fontWeight: 600, marginTop: '2px' }}>+80.1%</div>
                 </div>
@@ -832,10 +916,10 @@ export default function BudgetPage() {
           <Motion.div className="card" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
               <Target size={18} style={{ color: 'var(--primary)' }} />
-              <h3 style={{ fontSize: '16px', fontWeight: 700 }}>Saving Goals</h3>
+              <h3 style={{ fontSize: '16px', fontWeight: 700 }}>{t.goals.title}</h3>
             </div>
             {goals.length === 0 ? (
-              <p style={{ color: 'var(--text-muted)', fontSize: '13px', marginBottom: '16px' }}>No active goals. Add your first goal below!</p>
+              <p style={{ color: 'var(--text-muted)', fontSize: '13px', marginBottom: '16px' }}>{t.goals.noGoals}</p>
             ) : (
               goals.map((g) => (
                 <div key={g.id} style={{ marginBottom: '16px', padding: '14px', borderRadius: '12px',
@@ -861,17 +945,17 @@ export default function BudgetPage() {
                         style={{ width: '80px', padding: '4px 8px', borderRadius: '6px', border: '1px solid var(--border)',
                           background: 'var(--bg-card)', color: '#fff', fontSize: '12px' }} />
                       <button className="btn btn-primary" style={{ padding: '4px 10px', fontSize: '12px' }}
-                        onClick={() => handleAddSavings(g.id)}>Add</button>
+                        onClick={() => handleAddSavings(g.id)}>{t.goals.addSavings}</button>
                     </div>
                   </div>
                 </div>
               ))
             )}
             <div style={{ display: 'flex', gap: '8px', marginTop: '8px', flexWrap: 'wrap' }}>
-              <input className="input" placeholder="Goal name" value={newGoal.name}
+              <input className="input" placeholder={t.goals.goalName} value={newGoal.name}
                 onChange={(e) => setNewGoal((p) => ({ ...p, name: e.target.value }))}
                 style={{ flex: 2, minWidth: '120px' }} />
-              <input className="input" type="number" placeholder="Target ₹" value={newGoal.target_amount}
+              <input className="input" type="number" placeholder={t.goals.targetAmount} value={newGoal.target_amount}
                 onChange={(e) => setNewGoal((p) => ({ ...p, target_amount: e.target.value }))}
                 style={{ flex: 1, minWidth: '90px' }} />
               <button className="btn btn-primary" onClick={handleCreateGoal}><Plus size={16} /></button>
@@ -882,10 +966,10 @@ export default function BudgetPage() {
           <Motion.div className="card" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
               <Bell size={18} style={{ color: 'var(--warning)' }} />
-              <h3 style={{ fontSize: '16px', fontWeight: 700 }}>EMI / Rent / Subscriptions</h3>
+              <h3 style={{ fontSize: '16px', fontWeight: 700 }}>{t.debits.title}</h3>
             </div>
             {recurringDebits.length === 0 ? (
-              <p style={{ color: 'var(--text-muted)', fontSize: '13px', marginBottom: '16px' }}>No recurring debits configured.</p>
+              <p style={{ color: 'var(--text-muted)', fontSize: '13px', marginBottom: '16px' }}>{t.debits.noDebits}</p>
             ) : (
               recurringDebits.map((d) => (
                 <div key={d.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center',
@@ -907,10 +991,10 @@ export default function BudgetPage() {
               ))
             )}
             <div style={{ display: 'flex', gap: '8px', marginTop: '8px', flexWrap: 'wrap' }}>
-              <input className="input" placeholder="Name (e.g. Room Rent)" value={newDebit.name}
+              <input className="input" placeholder={t.debits.name} value={newDebit.name}
                 onChange={(e) => setNewDebit((p) => ({ ...p, name: e.target.value }))}
                 style={{ flex: 2, minWidth: '120px' }} />
-              <input className="input" type="number" placeholder="Amount ₹" value={newDebit.amount}
+              <input className="input" type="number" placeholder={t.debits.amount} value={newDebit.amount}
                 onChange={(e) => setNewDebit((p) => ({ ...p, amount: e.target.value }))}
                 style={{ flex: 1, minWidth: '80px' }} />
               <select className="input" value={newDebit.category}
@@ -920,7 +1004,7 @@ export default function BudgetPage() {
                   <option key={c} value={c}>{c}</option>
                 ))}
               </select>
-              <input className="input" type="number" placeholder="Due day" value={newDebit.due_day_of_month}
+              <input className="input" type="number" placeholder={t.debits.dueDay} value={newDebit.due_day_of_month}
                 onChange={(e) => setNewDebit((p) => ({ ...p, due_day_of_month: e.target.value }))}
                 style={{ flex: 1, minWidth: '70px' }} />
               <button className="btn btn-primary" onClick={handleCreateDebit}><Plus size={16} /></button>
@@ -937,20 +1021,20 @@ export default function BudgetPage() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <AlertTriangle size={18} style={{ color: 'var(--danger)' }} />
-                <h3 style={{ fontSize: '16px', fontWeight: 700 }}>Causal Risk Chains</h3>
+                <h3 style={{ fontSize: '16px', fontWeight: 700 }}>{t.risks.title}</h3>
               </div>
               <button className="btn" style={{ fontSize: '12px', padding: '6px 12px' }}
                 onClick={handleLoadChains} disabled={chainsLoading}>
-                {chainsLoading ? 'Analysing…' : chains === null ? 'Analyse Risks' : 'Refresh'}
+                {chainsLoading ? t.history.calculating : chains === null ? t.risks.analyseBtn : t.risks.refreshBtn}
               </button>
             </div>
             {chains === null && (
               <p style={{ color: 'var(--text-muted)', fontSize: '13px' }}>
-                Click "Analyse Risks" to see what happens if your balance doesn't cover upcoming debits.
+                {t.risks.analyseBtn} to see what happens if your balance doesn't cover upcoming debits.
               </p>
             )}
             {chains !== null && chains.length === 0 && (
-              <p style={{ color: 'var(--success)', fontSize: '13px' }}>✅ No shortfall risks detected for the next 14 days.</p>
+              <p style={{ color: 'var(--success)', fontSize: '13px' }}>✅ {t.risks.noRisks}</p>
             )}
             {chains?.map((chain, i) => (
               <div key={i} style={{ marginBottom: '16px', padding: '16px', borderRadius: '12px',
@@ -982,14 +1066,14 @@ export default function BudgetPage() {
 
           {/* Weekly Reports */}
           <Motion.div className="card" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <h3 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '16px' }}>📄 Automated Weekly Reports</h3>
+            <h3 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '16px' }}>📄 {t.reports.title}</h3>
             <p style={{ color: 'var(--text-muted)', fontSize: '13px', marginBottom: '16px' }}>
-              Download PDF summaries or receive automated weekly WhatsApp/Email digest of your gig cashflow.
+              {t.reports.desc}
             </p>
             <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-              <button className="btn btn-primary" onClick={handleDownloadReport}>Download PDF</button>
+              <button className="btn btn-primary" onClick={handleDownloadReport}>{t.reports.downloadPdf}</button>
               <button className="btn" onClick={handleEmailReport} style={{ background: 'rgba(255,255,255,0.05)' }}>
-                Email Report
+                {t.reports.emailReport}
               </button>
             </div>
             {reportMsg && <p style={{ color: 'var(--success)', fontSize: '13px', marginTop: '10px' }}>{reportMsg}</p>}

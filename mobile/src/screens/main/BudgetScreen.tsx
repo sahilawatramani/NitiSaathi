@@ -154,7 +154,7 @@ export const BudgetScreen: React.FC = () => {
             <Text style={styles.groupBadgeText}>{groupLabel}</Text>
           </View>
           <View style={styles.liveRateBadge}>
-            <Text style={styles.liveRateText}>{inflationRate}% Live Inflation</Text>
+            <Text style={styles.liveRateText}>{inflationRate}% {t.budget.liveInflation}</Text>
           </View>
         </View>
 
@@ -162,9 +162,9 @@ export const BudgetScreen: React.FC = () => {
         <View style={styles.card}>
           <View style={styles.cardHeader}>
             <View>
-              <Text style={styles.cardTitle}>Income Predictor & Spending Guide</Text>
+              <Text style={styles.cardTitle}>{t.budget.incomePredictorTitle}</Text>
               <Text style={styles.cardSub}>
-                Weighted moving average with inflation adjustment
+                {t.budget.incomePredictorSub}
               </Text>
             </View>
             <View style={styles.forecastPill}>
@@ -207,11 +207,11 @@ export const BudgetScreen: React.FC = () => {
             <View style={styles.legendRow}>
               <View style={styles.legendItem}>
                 <View style={[styles.legendDot, { backgroundColor: '#06b6d4' }]} />
-                <Text style={styles.legendText}>Past Actuals</Text>
+                <Text style={styles.legendText}>{t.budget.pastActuals}</Text>
               </View>
               <View style={styles.legendItem}>
                 <View style={[styles.legendDot, { backgroundColor: '#f59e0b', borderStyle: 'dashed' }]} />
-                <Text style={styles.legendText}>Timeseries Forecast (F)</Text>
+                <Text style={styles.legendText}>{t.budget.forecastTrajectory}</Text>
               </View>
             </View>
           </View>
@@ -220,15 +220,15 @@ export const BudgetScreen: React.FC = () => {
         {/* 2. Editable Income History Section */}
         <View style={styles.card}>
           <View style={styles.sectionHeaderRow}>
-            <Text style={styles.cardTitle}>Income History</Text>
-            <Text style={styles.historySub}>Edit past months to refine trend</Text>
+            <Text style={styles.cardTitle}>{t.budget.incomeHistoryTitle}</Text>
+            <Text style={styles.historySub}>{t.budget.incomeHistorySub}</Text>
           </View>
 
           <View style={styles.historyTable}>
             <View style={styles.tableHeaderRow}>
-              <Text style={[styles.tableHeadCol, { flex: 1.2 }]}>Month</Text>
-              <Text style={[styles.tableHeadCol, { flex: 2 }]}>Income (₹)</Text>
-              <Text style={[styles.tableHeadCol, { flex: 0.8, textAlign: 'center' }]}>Del</Text>
+              <Text style={[styles.tableHeadCol, { flex: 1.2 }]}>{t.budget.month}</Text>
+              <Text style={[styles.tableHeadCol, { flex: 2 }]}>{t.budget.income}</Text>
+              <Text style={[styles.tableHeadCol, { flex: 0.8, textAlign: 'center' }]}>{t.budget.action}</Text>
             </View>
 
             {history.map((row, idx) => (
@@ -263,7 +263,7 @@ export const BudgetScreen: React.FC = () => {
           </View>
 
           <TouchableOpacity style={styles.addMonthBtn} onPress={handleAddMonth} activeOpacity={0.8}>
-            <Text style={styles.addMonthText}>+ Add Month</Text>
+            <Text style={styles.addMonthText}>{t.budget.addMonth}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -275,7 +275,7 @@ export const BudgetScreen: React.FC = () => {
             {calculating ? (
               <ActivityIndicator color="#fff" size="small" />
             ) : (
-              <Text style={styles.recalculateBtnText}>Calculate Forecast</Text>
+              <Text style={styles.recalculateBtnText}>{t.budget.calculateForecast}</Text>
             )}
           </TouchableOpacity>
         </View>
@@ -284,8 +284,8 @@ export const BudgetScreen: React.FC = () => {
         <View style={styles.card}>
           <View style={styles.cardHeader}>
             <View>
-              <Text style={styles.cardTitle}>Recommended Spending Guide</Text>
-              <Text style={styles.cardSub}>Based on ₹{forecastIncome.toLocaleString('en-IN')} monthly forecast</Text>
+              <Text style={styles.cardTitle}>{t.budget.spendingGuideTitle}</Text>
+              <Text style={styles.cardSub}>{t.budget.spendingGuideSub} (₹{forecastIncome.toLocaleString('en-IN')})</Text>
             </View>
           </View>
 
@@ -293,12 +293,12 @@ export const BudgetScreen: React.FC = () => {
             {/* Basic Needs 50% */}
             <View style={styles.spendingItem}>
               <View style={styles.spendingTopRow}>
-                <Text style={styles.spendingCategoryTitle}>Basic Needs (50%)</Text>
+                <Text style={styles.spendingCategoryTitle}>{t.budget.basicNeedsTitle}</Text>
                 <Text style={[styles.spendingAmount, { color: '#06b6d4' }]}>
                   ₹{Math.round(spendingGuide?.basic_needs?.amount ?? forecastIncome * 0.5).toLocaleString('en-IN')}
                 </Text>
               </View>
-              <Text style={styles.spendingDesc}>Housing, groceries, utilities</Text>
+              <Text style={styles.spendingDesc}>{t.budget.basicNeedsDesc}</Text>
               <View style={styles.progressTrack}>
                 <View style={[styles.progressBar, { width: '50%', backgroundColor: '#06b6d4' }]} />
               </View>
@@ -307,12 +307,12 @@ export const BudgetScreen: React.FC = () => {
             {/* Emergency Savings 10% */}
             <View style={styles.spendingItem}>
               <View style={styles.spendingTopRow}>
-                <Text style={styles.spendingCategoryTitle}>Emergency Savings (10%)</Text>
+                <Text style={styles.spendingCategoryTitle}>{t.budget.emergencySavingsTitle}</Text>
                 <Text style={[styles.spendingAmount, { color: '#10b981' }]}>
                   ₹{Math.round(spendingGuide?.emergency_savings?.amount ?? forecastIncome * 0.1).toLocaleString('en-IN')}
                 </Text>
               </View>
-              <Text style={styles.spendingDesc}>Liquid emergency fund</Text>
+              <Text style={styles.spendingDesc}>{t.budget.emergencySavingsDesc}</Text>
               <View style={styles.progressTrack}>
                 <View style={[styles.progressBar, { width: '10%', backgroundColor: '#10b981' }]} />
               </View>
@@ -321,12 +321,12 @@ export const BudgetScreen: React.FC = () => {
             {/* Future Growth 25% */}
             <View style={styles.spendingItem}>
               <View style={styles.spendingTopRow}>
-                <Text style={styles.spendingCategoryTitle}>Future Growth (25%)</Text>
+                <Text style={styles.spendingCategoryTitle}>{t.budget.futureGrowthTitle}</Text>
                 <Text style={[styles.spendingAmount, { color: '#8b5cf6' }]}>
                   ₹{Math.round(spendingGuide?.future_growth?.amount ?? forecastIncome * 0.25).toLocaleString('en-IN')}
                 </Text>
               </View>
-              <Text style={styles.spendingDesc}>Investments, debt payoff</Text>
+              <Text style={styles.spendingDesc}>{t.budget.futureGrowthDesc}</Text>
               <View style={styles.progressTrack}>
                 <View style={[styles.progressBar, { width: '25%', backgroundColor: '#8b5cf6' }]} />
               </View>
@@ -335,12 +335,12 @@ export const BudgetScreen: React.FC = () => {
             {/* Personal Spending 15% */}
             <View style={styles.spendingItem}>
               <View style={styles.spendingTopRow}>
-                <Text style={styles.spendingCategoryTitle}>Personal Spending (15%)</Text>
+                <Text style={styles.spendingCategoryTitle}>{t.budget.personalSpendingTitle}</Text>
                 <Text style={[styles.spendingAmount, { color: '#f59e0b' }]}>
                   ₹{Math.round(spendingGuide?.personal_spending?.amount ?? forecastIncome * 0.15).toLocaleString('en-IN')}
                 </Text>
               </View>
-              <Text style={styles.spendingDesc}>Entertainment, dining out</Text>
+              <Text style={styles.spendingDesc}>{t.budget.personalSpendingDesc}</Text>
               <View style={styles.progressTrack}>
                 <View style={[styles.progressBar, { width: '15%', backgroundColor: '#f59e0b' }]} />
               </View>
@@ -351,7 +351,7 @@ export const BudgetScreen: React.FC = () => {
           <View style={styles.inflationAlertBox}>
             <Text style={styles.inflationAlertIcon}>⚠️</Text>
             <Text style={styles.inflationAlertText}>
-              At {inflationRate}% inflation, ₹{forecastIncome.toLocaleString('en-IN')} will have the purchasing power of approximately ₹{purchasingPowerOneYear.toLocaleString('en-IN')} in one year.
+              {t.budget.inflationAlert}
             </Text>
           </View>
         </View>
@@ -360,13 +360,13 @@ export const BudgetScreen: React.FC = () => {
         <View style={styles.card}>
           <View style={styles.cardHeader}>
             <View>
-              <Text style={styles.cardTitle}>Inflation Awareness</Text>
-              <Text style={styles.cardSub}>See how inflation erodes value over time (at 4% annual rate)</Text>
+              <Text style={styles.cardTitle}>{t.budget.inflationAwarenessTitle}</Text>
+              <Text style={styles.cardSub}>{t.budget.inflationAwarenessSub}</Text>
             </View>
           </View>
 
           <View style={styles.costInputRow}>
-            <Text style={styles.costInputLabel}>Enter item cost:</Text>
+            <Text style={styles.costInputLabel}>{t.budget.enterItemCost}</Text>
             <View style={styles.costInputWrapper}>
               <Text style={styles.costRupeePrefix}>₹</Text>
               <TextInput
@@ -382,19 +382,19 @@ export const BudgetScreen: React.FC = () => {
 
           <View style={styles.projectionGrid}>
             <View style={styles.projectionCard}>
-              <Text style={styles.projectionCardTitle}>In 5 Years</Text>
+              <Text style={styles.projectionCardTitle}>{t.budget.in5Years}</Text>
               <Text style={styles.projectionCardVal}>₹{cost5y.toLocaleString('en-IN')}</Text>
               <Text style={styles.projectionCardPct}>+21.7%</Text>
             </View>
 
             <View style={styles.projectionCard}>
-              <Text style={styles.projectionCardTitle}>In 10 Years</Text>
+              <Text style={styles.projectionCardTitle}>{t.budget.in10Years}</Text>
               <Text style={styles.projectionCardVal}>₹{cost10y.toLocaleString('en-IN')}</Text>
               <Text style={styles.projectionCardPct}>+48.0%</Text>
             </View>
 
             <View style={styles.projectionCard}>
-              <Text style={styles.projectionCardTitle}>In 15 Years</Text>
+              <Text style={styles.projectionCardTitle}>{t.budget.in15Years}</Text>
               <Text style={styles.projectionCardVal}>₹{cost15y.toLocaleString('en-IN')}</Text>
               <Text style={[styles.projectionCardPct, { color: '#ef4444' }]}>+80.1%</Text>
             </View>

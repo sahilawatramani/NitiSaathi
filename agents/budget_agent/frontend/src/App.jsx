@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { useAuth } from './context/useAuth';
 import { AppProvider } from './context/AppContext';
 import { BudgetProvider } from './context/BudgetContext';
+import { LanguageProvider } from './context/LanguageContext';
 import Sidebar from './components/Sidebar';
 import TransactionClassificationModal from './components/TransactionClassificationModal';
 
@@ -45,18 +46,19 @@ function AppLayout({ children }) {
 function App() {
   return (
     <Router>
-      <AppProvider>
-        <BudgetProvider>
-          <TransactionClassificationModal />
-          <Suspense fallback={<div className="loading-center"><div className="spinner" /></div>}>
-            <Routes>
-              <Route path="/login" element={<LoginPage />} />
-              
-              <Route path="/" element={
-                <ProtectedRoute>
-                  <AppLayout><DashboardPage /></AppLayout>
-                </ProtectedRoute>
-              } />
+      <LanguageProvider>
+        <AppProvider>
+          <BudgetProvider>
+            <TransactionClassificationModal />
+            <Suspense fallback={<div className="loading-center"><div className="spinner" /></div>}>
+              <Routes>
+                <Route path="/login" element={<LoginPage />} />
+                
+                <Route path="/" element={
+                  <ProtectedRoute>
+                    <AppLayout><DashboardPage /></AppLayout>
+                  </ProtectedRoute>
+                } />
               
               <Route path="/onboarding" element={
                 <ProtectedRoute>
@@ -121,7 +123,8 @@ function App() {
           </Suspense>
         </BudgetProvider>
       </AppProvider>
-    </Router>
+    </LanguageProvider>
+  </Router>
   );
 }
 

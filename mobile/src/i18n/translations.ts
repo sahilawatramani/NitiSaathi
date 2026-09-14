@@ -118,6 +118,35 @@ export interface TranslationSchema {
     causal2: string;
     monthlyProjection: string;
     viewDetails: string;
+    incomeHistoryTitle: string;
+    incomeHistorySub: string;
+    incomePredictorTitle: string;
+    incomePredictorSub: string;
+    spendingGuideTitle: string;
+    spendingGuideSub: string;
+    basicNeedsTitle: string;
+    basicNeedsDesc: string;
+    emergencySavingsTitle: string;
+    emergencySavingsDesc: string;
+    futureGrowthTitle: string;
+    futureGrowthDesc: string;
+    personalSpendingTitle: string;
+    personalSpendingDesc: string;
+    inflationAlert: string;
+    inflationAwarenessTitle: string;
+    inflationAwarenessSub: string;
+    enterItemCost: string;
+    in5Years: string;
+    in10Years: string;
+    in15Years: string;
+    addMonth: string;
+    calculateForecast: string;
+    liveInflation: string;
+    pastActuals: string;
+    forecastTrajectory: string;
+    month: string;
+    income: string;
+    action: string;
   };
   assistant: {
     newChat: string;
@@ -366,6 +395,35 @@ export const translations: Record<Language, TranslationSchema> = {
       causal2: 'शनिवार/रविवार अतिरिक्त 2 घंटे काम करें',
       monthlyProjection: 'मासिक अनुमान',
       viewDetails: 'विवरण देखें',
+      incomeHistoryTitle: 'मासिक आय इतिहास',
+      incomeHistorySub: 'सटीक पूर्वानुमान के लिए पिछले महीनों की कमाई दर्ज करें',
+      incomePredictorTitle: 'आय पूर्वानुमान व व्यय मार्गदर्शिका',
+      incomePredictorSub: 'समय-श्रृंखला और मौसमीयता विश्लेषण पर आधारित',
+      spendingGuideTitle: 'सुझाई गई व्यय मार्गदर्शिका',
+      spendingGuideSub: 'मासिक पूर्वानुमान के आधार पर आवंटन',
+      basicNeedsTitle: 'बुनियादी जरूरतें (50%)',
+      basicNeedsDesc: 'किराया, राशन, बिजली-पानी',
+      emergencySavingsTitle: 'आपातकालीन बचत (10%)',
+      emergencySavingsDesc: 'तरल आपातकालीन फंड',
+      futureGrowthTitle: 'भविष्य की वृद्धि (25%)',
+      futureGrowthDesc: 'निवेश, ऋण भुगतान',
+      personalSpendingTitle: 'व्यक्तिगत खर्च (15%)',
+      personalSpendingDesc: 'मनोरंजन, बाहर खाना',
+      inflationAlert: 'मुद्रास्फीति दर पर, एक वर्ष में आपकी क्रय शक्ति कम हो जाएगी। बचत का निवेश करें।',
+      inflationAwarenessTitle: 'मुद्रास्फीति जागरूकता',
+      inflationAwarenessSub: 'देखें कि 4% वार्षिक दर से समय के साथ मूल्य कैसे घटता है',
+      enterItemCost: 'वस्तु की वर्तमान कीमत:',
+      in5Years: '5 वर्षों में',
+      in10Years: '10 वर्षों में',
+      in15Years: '15 वर्षों में',
+      addMonth: '+ नया महीना जोड़ें',
+      calculateForecast: 'पूर्वानुमान की गणना करें',
+      liveInflation: 'लाइव मुद्रास्फीति दर',
+      pastActuals: 'पिछली वास्तविक कमाई',
+      forecastTrajectory: 'समय-श्रृंखला पूर्वानुमान (F)',
+      month: 'माह',
+      income: 'आय (₹)',
+      action: 'हटाएं',
     },
     assistant: {
       newChat: '+ नई बातचीत',
@@ -613,6 +671,35 @@ export const translations: Record<Language, TranslationSchema> = {
       causal2: 'Work 2 additional hours on weekends',
       monthlyProjection: 'Monthly Forecast',
       viewDetails: 'View Details',
+      incomeHistoryTitle: 'Income History',
+      incomeHistorySub: 'Edit past months to refine time-series trend',
+      incomePredictorTitle: 'Income Predictor & Spending Guide',
+      incomePredictorSub: 'Weighted moving average with seasonality & inflation adjustments',
+      spendingGuideTitle: 'Recommended Spending Guide',
+      spendingGuideSub: 'Based on monthly time series forecast',
+      basicNeedsTitle: 'Basic Needs (50%)',
+      basicNeedsDesc: 'Housing, groceries, utilities',
+      emergencySavingsTitle: 'Emergency Savings (10%)',
+      emergencySavingsDesc: 'Liquid emergency fund',
+      futureGrowthTitle: 'Future Growth (25%)',
+      futureGrowthDesc: 'Investments, debt payoff',
+      personalSpendingTitle: 'Personal Spending (15%)',
+      personalSpendingDesc: 'Entertainment, dining out',
+      inflationAlert: 'At inflation rate, purchasing power will decline over one year. Consider investing surplus.',
+      inflationAwarenessTitle: 'Inflation Awareness',
+      inflationAwarenessSub: 'See how inflation erodes value over time (at 4% annual rate)',
+      enterItemCost: 'Enter item cost:',
+      in5Years: 'In 5 Years',
+      in10Years: 'In 10 Years',
+      in15Years: 'In 15 Years',
+      addMonth: '+ Add Month',
+      calculateForecast: 'Calculate Forecast',
+      liveInflation: 'Live Inflation',
+      pastActuals: 'Past Actuals',
+      forecastTrajectory: 'Timeseries Forecast (F)',
+      month: 'Month',
+      income: 'Income (₹)',
+      action: 'Del',
     },
     assistant: {
       newChat: '+ New Chat',
@@ -860,6 +947,35 @@ export const translations: Record<Language, TranslationSchema> = {
       causal2: 'शनिवार/रविवार अतिरिक्त 2 तास काम करा',
       monthlyProjection: 'मासिक अंदाज',
       viewDetails: 'तपशील पहा',
+      incomeHistoryTitle: 'मासिक उत्पन्न इतिहास',
+      incomeHistorySub: 'अचूक अंदाजासाठी मागील महिन्यांची कमाई व्यवस्थापित करा',
+      incomePredictorTitle: 'उत्पन्न अंदाज आणि खर्च मार्गदर्शिका',
+      incomePredictorSub: 'टाइम-सिरीज आणि हंगामी विश्लेषणावर आधारित अंदाज',
+      spendingGuideTitle: 'शिफारस केलेली खर्च मार्गदर्शिका',
+      spendingGuideSub: 'मासिक अंदाजावर आधारित वाटप',
+      basicNeedsTitle: 'मूलभूत गरजा (50%)',
+      basicNeedsDesc: 'घरभाडे, किराणा, वीज-पाणी',
+      emergencySavingsTitle: 'आपत्कालीन बचत (10%)',
+      emergencySavingsDesc: 'तातडीचा आपत्कालीन निधी',
+      futureGrowthTitle: 'भविष्यातील वाढ (25%)',
+      futureGrowthDesc: 'गुंतवणूक, कर्ज परतफेड',
+      personalSpendingTitle: 'वैयक्तिक खर्च (15%)',
+      personalSpendingDesc: 'मनोरंजन, हॉटेलिंग',
+      inflationAlert: 'महागाई दरामुळे एका वर्षात आपली खरेदी क्षमता कमी होईल. बचतीची गुंतवणूक करा.',
+      inflationAwarenessTitle: 'महागाई जागरूकता',
+      inflationAwarenessSub: '४% वार्षिक दराने महागाई वेळेनुसार मूल्य कसे कमी करते ते पहा',
+      enterItemCost: 'वस्तूची सध्याची किंमत:',
+      in5Years: '५ वर्षांत',
+      in10Years: '१० वर्षांत',
+      in15Years: '१५ वर्षांत',
+      addMonth: '+ नवीन महिना जोडा',
+      calculateForecast: 'अंदाजाची गणना करा',
+      liveInflation: 'थेट महागाई दर',
+      pastActuals: 'मागील प्रत्यक्ष कमाई',
+      forecastTrajectory: 'टाइम-सिरीज अंदाज (F)',
+      month: 'महिना',
+      income: 'उत्पन्न (₹)',
+      action: 'हटवा',
     },
     assistant: {
       newChat: '+ नवीन संभाषण',
