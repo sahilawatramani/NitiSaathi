@@ -154,7 +154,7 @@ const DashboardScreen: React.FC = () => {
         <View style={styles.greetingRow}>
           <View>
             <Text style={styles.greetingText}>
-              {t.dashboard.greeting.replace('राजेश', userProfile?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'राजेश')}
+              {t.dashboard.greeting.replace('{name}', userProfile?.full_name?.trim()?.split(' ')[0] || user?.email?.split('@')[0] || 'साथी').replace('राजेश', userProfile?.full_name?.trim()?.split(' ')[0] || user?.email?.split('@')[0] || 'साथी')}
             </Text>
             <Text style={styles.greetingSub}>{t.budget.title}</Text>
           </View>

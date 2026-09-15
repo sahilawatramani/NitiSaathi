@@ -27,7 +27,7 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
   const { language, comfortLevel } = route.params;
   const { t } = useTranslation();
 
-  const [fullName, setFullName] = useState('Rajesh Kumar');
+  const [fullName, setFullName] = useState('');
   const [gender, setGender] = useState<'male' | 'female' | 'other'>('male');
   const [age, setAge] = useState('');
   const [income, setIncome] = useState('');
@@ -49,7 +49,7 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
       profile: {
         language_pref: language,
         risk_tolerance: comfortLevel,
-        full_name: fullName.trim() || 'Rajesh Kumar',
+        full_name: fullName.trim() || 'User',
         gender,
         age: parseInt(age, 10) || 30,
         monthly_income: parseInt(income, 10) || 25000,

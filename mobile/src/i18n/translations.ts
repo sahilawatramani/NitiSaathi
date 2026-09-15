@@ -381,7 +381,7 @@ export const translations: Record<Language, TranslationSchema> = {
       settings: 'सेटिंग्स',
     },
     dashboard: {
-      greeting: 'नमस्ते राजेश 👋',
+      greeting: 'नमस्ते {name} 👋',
       urgentAlert: 'PMSBY डेबिट देय है • खाता शेष पर ध्यान दें',
       availableBalance: 'उपलब्ध शेष',
       savingsRate: 'सुझाई गई बचत दर',
@@ -445,7 +445,7 @@ export const translations: Record<Language, TranslationSchema> = {
     assistant: {
       newChat: '+ नई बातचीत',
       liveStatus: 'बजट और योजनाएं देख रहे हैं...',
-      initialMsg: 'नमस्ते राजेश! मैं आपका नीति साथी हूँ। आप मुझसे सरकारी योजनाओं, बजट या पैसों के बारे में कोई भी सवाल पूछ सकते हैं।',
+      initialMsg: 'नमस्ते! मैं आपका नीति साथी हूँ। आप मुझसे सरकारी योजनाओं, बजट या पैसों के बारे में कोई भी सवाल पूछ सकते हैं।',
       inputPlaceholder: 'अपना सवाल यहाँ लिखें या बोलें...',
       insightHeading: 'यहाँ एक बात ध्यान देने वाली है',
       confidenceBadge: '85% विश्वसनीयता',
@@ -491,7 +491,7 @@ export const translations: Record<Language, TranslationSchema> = {
     },
     settings: {
       title: 'सेटिंग्स',
-      profileName: 'राजेश (गिग वर्कर)',
+      profileName: 'गिग वर्कर प्रोफ़ाइल',
       profileSubtitle: 'Swiggy • Zomato • Rapido',
       languageTitle: 'भाषा चुनें',
       accessibilityTitle: 'सुलभता व आवाज',
@@ -668,7 +668,7 @@ export const translations: Record<Language, TranslationSchema> = {
       settings: 'Settings',
     },
     dashboard: {
-      greeting: 'Hello Rajesh 👋',
+      greeting: 'Hello {name} 👋',
       urgentAlert: 'PMSBY debit due soon • Please maintain balance',
       availableBalance: 'Available Balance',
       savingsRate: 'Recommended Savings Rate',
@@ -732,7 +732,7 @@ export const translations: Record<Language, TranslationSchema> = {
     assistant: {
       newChat: '+ New Chat',
       liveStatus: 'Checking budget and schemes...',
-      initialMsg: 'Hello Rajesh! I am your NitiSaathi companion. Ask me anything about government schemes, budgeting, or emergency funds.',
+      initialMsg: 'Hello! I am your NitiSaathi companion. Ask me anything about government schemes, budgeting, or emergency funds.',
       inputPlaceholder: 'Type or speak your question...',
       insightHeading: 'Key Insight to Note',
       confidenceBadge: '85% Confidence',
@@ -778,7 +778,7 @@ export const translations: Record<Language, TranslationSchema> = {
     },
     settings: {
       title: 'Settings',
-      profileName: 'Rajesh (Gig Worker)',
+      profileName: 'Gig Worker Profile',
       profileSubtitle: 'Swiggy • Zomato • Rapido',
       languageTitle: 'App Language',
       accessibilityTitle: 'Accessibility & Voice',
@@ -955,7 +955,7 @@ export const translations: Record<Language, TranslationSchema> = {
       settings: 'सेटिंग्ज',
     },
     dashboard: {
-      greeting: 'नमस्ते राजेश 👋',
+      greeting: 'नमस्ते {name} 👋',
       urgentAlert: 'PMSBY डेबिट देय आहे • बँक शिल्लक तपासा',
       availableBalance: 'उपलब्ध शिल्लक',
       savingsRate: 'शिफारस केलेला बचत दर',
@@ -1019,7 +1019,7 @@ export const translations: Record<Language, TranslationSchema> = {
     assistant: {
       newChat: '+ नवीन संभाषण',
       liveStatus: 'बजेट आणि योजना तपासत आहे...',
-      initialMsg: 'नमस्ते राजेश! मी तुमचा नीती साथी आहे. तुम्ही मला सरकारी योजना, बजेट किंवा पैशांविषयी कोणताही प्रश्न विचारू शकता.',
+      initialMsg: 'नमस्कार! मी तुमचा नीती साथी आहे. तुम्ही मला सरकारी योजना, बजेट किंवा पैशांविषयी कोणताही प्रश्न विचारू शकता.',
       inputPlaceholder: 'तुमचा प्रश्न येथे लिहा किंवा बोला...',
       insightHeading: 'येथे एक महत्त्वाची बाब लक्षात घेण्यासारखी आहे',
       confidenceBadge: '85% विश्वासार्हता',
@@ -1065,7 +1065,7 @@ export const translations: Record<Language, TranslationSchema> = {
     },
     settings: {
       title: 'सेटिंग्ज',
-      profileName: 'राजेश (गिग वर्कर)',
+      profileName: 'गिग वर्कर प्रोफाइल',
       profileSubtitle: 'Swiggy • Zomato • Rapido',
       languageTitle: 'भाषा निवडा',
       accessibilityTitle: 'सुलभता आणि आवाज',

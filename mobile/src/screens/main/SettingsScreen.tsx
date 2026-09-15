@@ -1,8 +1,4 @@
-/**
- * SettingsScreen — Profile, Preferences & Consent management matching reference design.
- * Pure single-language strings dynamically loaded via useTranslation().
- */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -16,11 +12,21 @@ import { Colors, Typography, Spacing, BorderRadius } from '../../theme';
 import { AppHeader } from '../../components/AppHeader';
 import { useAuth } from '../../context/AuthContext';
 import { useTranslation, Language } from '../../i18n';
+import { profileService, UserProfile } from '../../services/profileService';
 
 const SettingsScreen: React.FC = () => {
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
   const { t, language, setLanguage } = useTranslation();
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const [activeTab, setActiveTab] = useState<'lang' | 'consent'>('consent');
+
+  useEffect(() => {
+    let isMounted = true;
+    profileService.get().then((p) => {
+      if (isMounted && p) setProfile(p);
+    }).catch(() => {});
+    return () => { isMounted = false; };
+  }, []);
 
   const [toggles, setToggles] = useState({
     txData: true,
@@ -40,6 +46,8 @@ const SettingsScreen: React.FC = () => {
     { key: 'mr', label: 'मराठी' },
   ];
 
+  const displayName = profile?.full_name?.trim() || user?.email?.split('@')[0] || t.settings.profileName;
+
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <AppHeader title={t.settings.title} showBack />
@@ -56,8 +64,8 @@ const SettingsScreen: React.FC = () => {
             </View>
           </View>
           <View style={styles.profileInfo}>
-            <Text style={styles.profileName}>{t.settings.profileName}</Text>
-            <Text style={styles.profileRole}>{t.settings.profileSubtitle}</Text>
+            <Text style={styles.profileName}>{displayName}</Text>
+            <Text style={styles.profileRole}>{user?.email || t.settings.profileSubtitle}</Text>
           </View>
         </View>
 

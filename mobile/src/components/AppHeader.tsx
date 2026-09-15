@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Colors, Typography, Spacing, BorderRadius } from '../theme';
+import { useAuth } from '../context/AuthContext';
+import { profileService } from '../services/profileService';
 
 interface AppHeaderProps {
   title: string;
@@ -11,6 +13,20 @@ interface AppHeaderProps {
 
 export const AppHeader: React.FC<AppHeaderProps> = ({ title, showBack, onBack }) => {
   const navigation = useNavigation<any>();
+  const { user } = useAuth();
+  const [initial, setInitial] = useState<string>(() => (user?.email ? user.email[0] : 'U').toUpperCase());
+
+  useEffect(() => {
+    let isMounted = true;
+    profileService.get().then((p) => {
+      if (isMounted && p?.full_name?.trim()) {
+        setInitial(p.full_name.trim()[0].toUpperCase());
+      } else if (isMounted && user?.email) {
+        setInitial(user.email[0].toUpperCase());
+      }
+    }).catch(() => {});
+    return () => { isMounted = false; };
+  }, [user?.email]);
 
   return (
     <View style={styles.headerContainer}>
@@ -43,7 +59,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ title, showBack, onBack })
           style={styles.avatarCircle}
           onPress={() => navigation.navigate('Profile')}
         >
-          <Text style={styles.avatarText}>R</Text>
+          <Text style={styles.avatarText}>{initial}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity

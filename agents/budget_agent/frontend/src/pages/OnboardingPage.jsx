@@ -9,7 +9,7 @@ export default function OnboardingPage() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    full_name: 'Rajesh Kumar',
+    full_name: '',
     gender: 'male',
     age: 30,
     monthly_income: '',
@@ -40,7 +40,7 @@ export default function OnboardingPage() {
     try {
       await saveProfile({
         ...formData,
-        full_name: formData.full_name?.trim() || 'Rajesh Kumar',
+        full_name: formData.full_name?.trim() || 'User',
         gender: formData.gender || 'male',
         age: Number(formData.age),
         monthly_income: Number(formData.monthly_income),

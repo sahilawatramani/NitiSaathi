@@ -33,7 +33,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
   const { t, language, setLanguage } = useTranslation();
 
   const [profile, setProfile] = useState<Partial<UserProfile>>({
-    full_name: 'Rajesh Kumar',
+    full_name: '',
     gender: 'male',
     age: 28,
     state: 'Maharashtra',
@@ -78,7 +78,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
     try {
       const payload = {
         ...profile,
-        full_name: profile.full_name || 'Rajesh Kumar',
+        full_name: profile.full_name?.trim() || user?.email?.split('@')[0] || 'User',
         gender: profile.gender || 'male',
         age: Number(profile.age) || 28,
         monthly_income: Number(profile.monthly_income) || 0,
@@ -116,7 +116,8 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
     { key: 'high', label: t.profile.highRisk },
   ];
 
-  const avatarLetter = (user?.email ?? 'R')[0].toUpperCase();
+  const displayName = profile.full_name?.trim() || user?.email?.split('@')[0] || 'User';
+  const avatarLetter = (displayName ? displayName[0] : (user?.email ?? 'U')[0]).toUpperCase();
 
   if (loading) {
     return (
@@ -157,8 +158,8 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
                 <Text style={styles.avatarLetter}>{avatarLetter}</Text>
               </View>
               <View style={styles.accountInfo}>
-                <Text style={styles.emailText}>{user?.email || 'rajesh@nitisaathi.in'}</Text>
-                <Text style={styles.subtitleText}>{t.profile.subtitle}</Text>
+                <Text style={styles.emailText}>{displayName}</Text>
+                <Text style={styles.subtitleText}>{user?.email || t.profile.subtitle}</Text>
               </View>
             </View>
 
@@ -204,7 +205,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
                   style={styles.textInput}
                   value={profile.full_name ?? ''}
                   onChangeText={(val) => setProfile((p) => ({ ...p, full_name: val }))}
-                  placeholder="Rajesh Kumar"
+                  placeholder={t.details.namePlaceholder}
                   placeholderTextColor={Colors.textWarmGray}
                 />
               </View>
