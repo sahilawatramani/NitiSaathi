@@ -1,7 +1,7 @@
 import { apiFetch, storeToken, clearToken, API_BASE_URL } from './config';
 
 export const register = async (email, password) => {
-  const userEmail = email && email.trim() ? email.trim() : `rajesh_${Date.now().toString().slice(-4)}@nitisaathi.demo`;
+  const userEmail = email && email.trim() ? email.trim() : `user_${Date.now().toString().slice(-4)}@nitisaathi.demo`;
   const userPassword = password && password.length >= 8 ? password : 'demo_password_123';
 
   try {

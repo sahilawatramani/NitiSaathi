@@ -39,6 +39,8 @@ export interface TranslationSchema {
     subtitle: string;
     nameLabel: string;
     namePlaceholder: string;
+    emailLabel: string;
+    emailPlaceholder: string;
     genderLabel: string;
     genderMale: string;
     genderFemale: string;
@@ -223,6 +225,8 @@ export interface TranslationSchema {
     personalSection: string;
     personalDesc: string;
     nameLabel: string;
+    emailLabel: string;
+    emailPlaceholder: string;
     genderLabel: string;
     genderMale: string;
     genderFemale: string;
@@ -326,7 +330,9 @@ export const translations: Record<Language, TranslationSchema> = {
       title: 'अपनी जानकारी भरें',
       subtitle: 'सही सरकारी योजनाएं और बजट बनाने के लिए',
       nameLabel: 'पूरा नाम',
-      namePlaceholder: 'उदा. राजेश कुमार',
+      namePlaceholder: 'उदा. आपका नाम',
+      emailLabel: 'ईमेल आईडी',
+      emailPlaceholder: 'उदा. yourname@nitisaathi.in',
       genderLabel: 'लिंग',
       genderMale: 'पुरुष',
       genderFemale: 'महिला',
@@ -511,6 +517,8 @@ export const translations: Record<Language, TranslationSchema> = {
       personalSection: '1. व्यक्तिगत जानकारी',
       personalDesc: 'अपनी बुनियादी जानकारी यहाँ दर्ज करें',
       nameLabel: 'पूरा नाम',
+      emailLabel: 'ईमेल आईडी',
+      emailPlaceholder: 'उदा. yourname@nitisaathi.in',
       genderLabel: 'लिंग',
       genderMale: 'पुरुष',
       genderFemale: 'महिला',
@@ -613,7 +621,9 @@ export const translations: Record<Language, TranslationSchema> = {
       title: 'Enter your details',
       subtitle: 'To find matching schemes and build your custom budget',
       nameLabel: 'Full Name',
-      namePlaceholder: 'e.g. Rajesh Kumar',
+      namePlaceholder: 'e.g. Your Full Name',
+      emailLabel: 'Email ID',
+      emailPlaceholder: 'e.g. yourname@nitisaathi.in',
       genderLabel: 'Gender',
       genderMale: 'Male',
       genderFemale: 'Female',
@@ -795,9 +805,11 @@ export const translations: Record<Language, TranslationSchema> = {
       saving: 'Saving...',
       saveBtn: 'Save Profile',
       setupHint: '✏️ Enter your profile information and save',
-      personalSection: '1. Personal Information',
+      personalSection: '1. Personal Details',
       personalDesc: 'Enter your basic profile information',
       nameLabel: 'Full Name',
+      emailLabel: 'Email ID',
+      emailPlaceholder: 'e.g. yourname@nitisaathi.in',
       genderLabel: 'Gender',
       genderMale: 'Male',
       genderFemale: 'Female',
@@ -900,7 +912,9 @@ export const translations: Record<Language, TranslationSchema> = {
       title: 'तुमची माहिती भरा',
       subtitle: 'योग्य सरकारी योजना आणि बजेट तयार करण्यासाठी',
       nameLabel: 'पूर्ण नाव',
-      namePlaceholder: 'उदा. राजेश कुमार',
+      namePlaceholder: 'उदा. तुमचे नाव',
+      emailLabel: 'ईमेल आयडी',
+      emailPlaceholder: 'उदा. yourname@nitisaathi.in',
       genderLabel: 'लिंग',
       genderMale: 'पुरुष',
       genderFemale: 'स्त्री',
@@ -1085,6 +1099,8 @@ export const translations: Record<Language, TranslationSchema> = {
       personalSection: '1. वैयक्तिक माहिती',
       personalDesc: 'तुमची मूलभूत माहिती येथे प्रविष्ट करा',
       nameLabel: 'पूर्ण नाव',
+      emailLabel: 'ईमेल आयडी',
+      emailPlaceholder: 'उदा. yourname@nitisaathi.in',
       genderLabel: 'लिंग',
       genderMale: 'पुरुष',
       genderFemale: 'स्त्री',

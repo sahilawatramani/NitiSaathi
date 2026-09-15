@@ -2,7 +2,7 @@
  * AuthContext — provides authentication state throughout the app.
  *
  * Stores the JWT token in expo-secure-store.
- * On boot, tries to load existing token and calls /auth/me to validate.
+ * Dynamically provisions individual user accounts derived from user name / email.
  */
 import React, {
   createContext,
@@ -31,11 +31,25 @@ interface AuthContextValue extends AuthState {
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  updateUser: (updatedUser: Partial<UserMe>) => void;
   setLanguage: (lang: Language) => void;
   completeOnboarding: (profileData?: any) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
+
+const deriveEmailFromName = (name?: string, rawEmail?: string): string => {
+  if (rawEmail && rawEmail.trim() && rawEmail.includes('@')) {
+    return rawEmail.trim().toLowerCase();
+  }
+  const cleanName = (name || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '_')
+    .replace(/_+/g, '_')
+    .replace(/^_|_$/g, '');
+  return cleanName ? `${cleanName}@nitisaathi.in` : 'user@nitisaathi.in';
+};
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -72,11 +86,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
               language: initialLanguage,
             }));
           } catch {
-            // Keep user session active even if offline
+            // Keep user session active even if offline; recover name/email from profile if possible
+            let fallbackEmail = 'user@nitisaathi.in';
+            try {
+              const savedProf = await profileService.get();
+              if (savedProf?.full_name) {
+                fallbackEmail = deriveEmailFromName(savedProf.full_name);
+              }
+            } catch {}
+
             setState((s) => ({
               ...s,
               isAuthenticated: true,
-              user: { id: 1, email: 'rajesh@nitisaathi.in' },
+              user: { id: 1, email: fallbackEmail },
               token: savedToken,
               language: initialLanguage,
             }));
@@ -132,64 +154,91 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     await login(email, password);
   }, [login]);
 
+  const updateUser = useCallback((updatedUser: Partial<UserMe>) => {
+    setState((s) => ({
+      ...s,
+      user: s.user
+        ? { ...s.user, ...updatedUser }
+        : ({ id: 1, email: 'user@nitisaathi.in', ...updatedUser } as UserMe),
+    }));
+  }, []);
+
   const completeOnboarding = useCallback(async (profileData?: any) => {
+    const individualEmail = deriveEmailFromName(
+      profileData?.full_name,
+      profileData?.email
+    );
+    const individualPassword = 'password123';
+    let tokenData: { access_token: string; token_type: string } | null = null;
+    let user: UserMe = { id: 1, email: individualEmail };
+
     try {
-      const demoEmail = 'rajesh@nitisaathi.in';
-      const demoPassword = 'password123';
+      // Attempt login directly first
       try {
-        const tokenData = await authService.login({ email: demoEmail, password: demoPassword });
-        await authService.saveToken(tokenData.access_token);
-        const user = await authService.me().catch(() => ({ id: 1, email: demoEmail }));
-        if (profileData) {
-          try {
-            await profileService.upsert(profileData);
-          } catch (pe) {
-            console.warn('Failed to upsert profile after login:', pe);
-          }
-        }
-        setState((s) => ({
-          ...s,
-          isAuthenticated: true,
-          user,
-          token: tokenData.access_token,
-        }));
+        tokenData = await authService.login({
+          email: individualEmail,
+          password: individualPassword,
+        });
       } catch {
+        // If login fails, attempt signup then login
         try {
-          await authService.signup({ email: demoEmail, password: demoPassword });
-          const tokenData = await authService.login({ email: demoEmail, password: demoPassword });
-          await authService.saveToken(tokenData.access_token);
-          if (profileData) {
-            try {
-              await profileService.upsert(profileData);
-            } catch (pe) {
-              console.warn('Failed to upsert profile after signup:', pe);
-            }
-          }
-          setState((s) => ({
-            ...s,
-            isAuthenticated: true,
-            user: { id: 1, email: demoEmail },
-            token: tokenData.access_token,
-          }));
-        } catch {
-          const fallbackToken = 'demo-session-token-' + Date.now();
-          await authService.saveToken(fallbackToken);
-          setState((s) => ({
-            ...s,
-            isAuthenticated: true,
-            user: { id: 1, email: demoEmail },
-            token: fallbackToken,
-          }));
-        }
+          await authService.signup({
+            email: individualEmail,
+            password: individualPassword,
+          });
+        } catch {}
+        tokenData = await authService.login({
+          email: individualEmail,
+          password: individualPassword,
+        });
       }
-    } catch (e) {
-      setState((s) => ({
-        ...s,
-        isAuthenticated: true,
-        user: { id: 1, email: 'rajesh@nitisaathi.in' },
-        token: 'demo-session-token',
-      }));
+    } catch {
+      // If collision with different password, try with unique timestamped suffix
+      const slug = individualEmail.split('@')[0];
+      const uniqueEmail = `${slug}_${Date.now().toString().slice(-4)}@nitisaathi.in`;
+      try {
+        await authService.signup({
+          email: uniqueEmail,
+          password: individualPassword,
+        });
+        tokenData = await authService.login({
+          email: uniqueEmail,
+          password: individualPassword,
+        });
+        user = { id: 1, email: uniqueEmail };
+      } catch {
+        // Demo / offline fallback
+        const fallbackToken = 'demo-session-token-' + Date.now();
+        tokenData = { access_token: fallbackToken, token_type: 'bearer' };
+        user = { id: 1, email: individualEmail };
+      }
     }
+
+    if (tokenData?.access_token) {
+      await authService.saveToken(tokenData.access_token);
+      try {
+        const fetchedUser = await authService.me();
+        if (fetchedUser) user = fetchedUser;
+      } catch {}
+    }
+
+    if (profileData) {
+      try {
+        await profileService.upsert({
+          ...profileData,
+          full_name: profileData.full_name || user.email.split('@')[0],
+        });
+      } catch (pe) {
+        console.warn('Failed to upsert profile after onboarding:', pe);
+      }
+    }
+
+    setState((s) => ({
+      ...s,
+      isAuthenticated: true,
+      user,
+      token: tokenData?.access_token || 'demo-session-token',
+    }));
   }, []);
 
   const logout = useCallback(async () => {
@@ -208,7 +257,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   return (
-    <AuthContext.Provider value={{ ...state, login, signup, logout, setLanguage, completeOnboarding }}>
+    <AuthContext.Provider
+      value={{
+        ...state,
+        login,
+        signup,
+        logout,
+        updateUser,
+        setLanguage,
+        completeOnboarding,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

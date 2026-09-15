@@ -29,7 +29,7 @@ import { AppHeader } from '../../components/AppHeader';
 type Props = NativeStackScreenProps<MoreStackParamList, 'Profile'>;
 
 const ProfileScreen: React.FC<Props> = ({ navigation }) => {
-  const { user, logout } = useAuth();
+  const { user, updateUser, logout } = useAuth();
   const { t, language, setLanguage } = useTranslation();
 
   const [profile, setProfile] = useState<Partial<UserProfile>>({
@@ -94,6 +94,15 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
       if (saved) {
         setProfile((prev) => ({ ...prev, ...saved }));
       }
+      if (updateUser) {
+        const updatedSlug = (payload.full_name || '')
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-z0-9]/g, '_')
+          .replace(/_+/g, '_')
+          .replace(/^_|_$/g, '') || 'user';
+        updateUser({ email: `${updatedSlug}@nitisaathi.in` });
+      }
       setSaveSuccessBanner(true);
       Alert.alert('✅', t.profile.savedSuccess);
       setTimeout(() => setSaveSuccessBanner(false), 4000);
@@ -117,7 +126,16 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
   ];
 
   const displayName = profile.full_name?.trim() || user?.email?.split('@')[0] || 'User';
-  const avatarLetter = (displayName ? displayName[0] : (user?.email ?? 'U')[0]).toUpperCase();
+  const nameSlug = (profile.full_name || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '_')
+    .replace(/_+/g, '_')
+    .replace(/^_|_$/g, '') || 'user';
+  const personEmail = (user?.email && !user.email.includes('rajesh@'))
+    ? user.email
+    : `${nameSlug}@nitisaathi.in`;
+  const avatarLetter = (displayName ? displayName[0] : (personEmail ?? 'U')[0]).toUpperCase();
 
   if (loading) {
     return (
@@ -159,7 +177,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
               </View>
               <View style={styles.accountInfo}>
                 <Text style={styles.emailText}>{displayName}</Text>
-                <Text style={styles.subtitleText}>{user?.email || t.profile.subtitle}</Text>
+                <Text style={styles.subtitleText}>{personEmail}</Text>
               </View>
             </View>
 
@@ -190,7 +208,7 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
             </View>
           </View>
 
-            {/* Section 1: Personal Information */}
+          {/* Section 1: Personal Information */}
           <View style={styles.sectionCard}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>{t.profile.personalSection}</Text>
@@ -206,6 +224,20 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
                   value={profile.full_name ?? ''}
                   onChangeText={(val) => setProfile((p) => ({ ...p, full_name: val }))}
                   placeholder={t.details.namePlaceholder}
+                  placeholderTextColor={Colors.textWarmGray}
+                />
+              </View>
+            </View>
+
+            {/* Email ID Display */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>{t.profile.emailLabel}</Text>
+              <View style={styles.inputBox}>
+                <TextInput
+                  style={styles.textInput}
+                  value={personEmail}
+                  editable={false}
+                  placeholder={t.profile.emailPlaceholder}
                   placeholderTextColor={Colors.textWarmGray}
                 />
               </View>

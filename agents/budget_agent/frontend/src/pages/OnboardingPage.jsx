@@ -112,7 +112,7 @@ export default function OnboardingPage() {
             <div className="grid-2" style={{ marginBottom: '16px' }}>
               <div className="input-group">
                 <label>Full Name</label>
-                <input type="text" name="full_name" className="input" value={formData.full_name} onChange={handleChange} placeholder="e.g. Rajesh Kumar" />
+                <input type="text" name="full_name" className="input" value={formData.full_name} onChange={handleChange} placeholder="e.g. Your Full Name" />
               </div>
               <div className="input-group">
                 <label>Gender</label>

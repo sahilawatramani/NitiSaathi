@@ -28,6 +28,8 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
   const { t } = useTranslation();
 
   const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [emailTouched, setEmailTouched] = useState(false);
   const [gender, setGender] = useState<'male' | 'female' | 'other'>('male');
   const [age, setAge] = useState('');
   const [income, setIncome] = useState('');
@@ -35,6 +37,19 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
   const [hasEmi, setHasEmi] = useState<'Yes' | 'No'>('No');
   const [eShram, setEShram] = useState<'Yes' | 'No' | 'Not sure'>('Not sure');
   const [epfoEsic, setEpfoEsic] = useState<'Yes' | 'No' | 'Not sure'>('Not sure');
+
+  const handleNameChange = (val: string) => {
+    setFullName(val);
+    if (!emailTouched) {
+      const slug = val
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '_')
+        .replace(/_+/g, '_')
+        .replace(/^_|_$/g, '');
+      setEmail(slug ? `${slug}@nitisaathi.in` : '');
+    }
+  };
 
   const togglePlatform = (p: string) => {
     if (selectedPlatforms.includes(p)) {
@@ -45,11 +60,21 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
   };
 
   const handleContinue = () => {
+    const emailSlug = fullName
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, '_')
+      .replace(/_+/g, '_')
+      .replace(/^_|_$/g, '');
+    const finalEmail =
+      email.trim() || (emailSlug ? `${emailSlug}@nitisaathi.in` : 'user@nitisaathi.in');
+
     navigation.navigate('Consent', {
       profile: {
         language_pref: language,
         risk_tolerance: comfortLevel,
         full_name: fullName.trim() || 'User',
+        email: finalEmail,
         gender,
         age: parseInt(age, 10) || 30,
         monthly_income: parseInt(income, 10) || 25000,
@@ -90,13 +115,31 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
               <TextInput
                 style={styles.input}
                 value={fullName}
-                onChangeText={setFullName}
+                onChangeText={handleNameChange}
                 placeholder={t.details.namePlaceholder}
                 placeholderTextColor={Colors.textWarmGray}
               />
             </View>
 
-            {/* 2. Gender */}
+            {/* 2. Email ID */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>{t.details.emailLabel}</Text>
+              <TextInput
+                style={styles.input}
+                value={email}
+                onChangeText={(val) => {
+                  setEmail(val);
+                  setEmailTouched(true);
+                }}
+                placeholder={t.details.emailPlaceholder}
+                placeholderTextColor={Colors.textWarmGray}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+            </View>
+
+            {/* 3. Gender */}
             <View style={styles.inputGroup}>
               <Text style={styles.label}>{t.details.genderLabel}</Text>
               <View style={styles.segmentRow}>

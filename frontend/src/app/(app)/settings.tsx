@@ -16,7 +16,7 @@ export default function SettingsScreen() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<SettingsTab>('privacy');
-  const [profileName, setProfileName] = useState('राजेश / Rajesh');
+  const [profileName, setProfileName] = useState('User');
   const [consent, setConsent] = useState({
     transaction: false,
     eligibility: false,
@@ -49,8 +49,13 @@ export default function SettingsScreen() {
           setConsent(consentMap);
         }
 
-        if (userProfile && userProfile.language_pref) {
-          setLanguage(userProfile.language_pref);
+        if (userProfile) {
+          if (userProfile.full_name) {
+            setProfileName(userProfile.full_name);
+          }
+          if (userProfile.language_pref) {
+            setLanguage(userProfile.language_pref);
+          }
         }
       } catch (e) {
         console.error(e);

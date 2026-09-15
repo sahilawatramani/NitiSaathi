@@ -47,6 +47,15 @@ const SettingsScreen: React.FC = () => {
   ];
 
   const displayName = profile?.full_name?.trim() || user?.email?.split('@')[0] || t.settings.profileName;
+  const nameSlug = (profile?.full_name || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '_')
+    .replace(/_+/g, '_')
+    .replace(/^_|_$/g, '') || 'user';
+  const personEmail = (user?.email && !user.email.includes('rajesh@'))
+    ? user.email
+    : `${nameSlug}@nitisaathi.in`;
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
@@ -65,7 +74,7 @@ const SettingsScreen: React.FC = () => {
           </View>
           <View style={styles.profileInfo}>
             <Text style={styles.profileName}>{displayName}</Text>
-            <Text style={styles.profileRole}>{user?.email || t.settings.profileSubtitle}</Text>
+            <Text style={styles.profileRole}>{personEmail}</Text>
           </View>
         </View>
 
