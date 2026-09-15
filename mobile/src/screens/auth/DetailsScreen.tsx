@@ -27,6 +27,8 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
   const { language, comfortLevel } = route.params;
   const { t } = useTranslation();
 
+  const [fullName, setFullName] = useState('Rajesh Kumar');
+  const [gender, setGender] = useState<'male' | 'female' | 'other'>('male');
   const [age, setAge] = useState('');
   const [income, setIncome] = useState('');
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(['Swiggy']);
@@ -47,8 +49,10 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
       profile: {
         language_pref: language,
         risk_tolerance: comfortLevel,
+        full_name: fullName.trim() || 'Rajesh Kumar',
+        gender,
         age: parseInt(age, 10) || 30,
-        monthly_income: parseInt(income, 10) || 15000,
+        monthly_income: parseInt(income, 10) || 25000,
         platforms: selectedPlatforms,
         has_emi: hasEmi === 'Yes',
         is_registered_eshram: eShram === 'Yes',
@@ -80,7 +84,41 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
           <Text style={styles.subtitle}>{t.details.subtitle}</Text>
 
           <View style={styles.form}>
-            {/* 1. Age */}
+            {/* 1. Full Name */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>{t.details.nameLabel}</Text>
+              <TextInput
+                style={styles.input}
+                value={fullName}
+                onChangeText={setFullName}
+                placeholder={t.details.namePlaceholder}
+                placeholderTextColor={Colors.textWarmGray}
+              />
+            </View>
+
+            {/* 2. Gender */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>{t.details.genderLabel}</Text>
+              <View style={styles.segmentRow}>
+                {[
+                  { key: 'male', label: t.details.genderMale },
+                  { key: 'female', label: t.details.genderFemale },
+                  { key: 'other', label: t.details.genderOther },
+                ].map((opt) => (
+                  <TouchableOpacity
+                    key={opt.key}
+                    onPress={() => setGender(opt.key as any)}
+                    style={[styles.segmentBtn, gender === opt.key && styles.segmentBtnActive]}
+                  >
+                    <Text style={[styles.segmentText, gender === opt.key && styles.segmentTextActive]}>
+                      {opt.label}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+
+            {/* 3. Age */}
             <View style={styles.inputGroup}>
               <Text style={styles.label}>{t.details.ageLabel}</Text>
               <TextInput
@@ -93,7 +131,7 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
               />
             </View>
 
-            {/* 2. Monthly Income */}
+            {/* 4. Monthly Income */}
             <View style={styles.inputGroup}>
               <Text style={styles.label}>{t.details.incomeLabel}</Text>
               <View style={styles.currencyInputRow}>
@@ -103,7 +141,7 @@ const DetailsScreen: React.FC<Props> = ({ route, navigation }) => {
                   value={income}
                   onChangeText={setIncome}
                   keyboardType="number-pad"
-                  placeholder="15000"
+                  placeholder="25000"
                   placeholderTextColor={Colors.textWarmGray}
                 />
               </View>

@@ -23,6 +23,7 @@ import { useAuth } from '../../context/AuthContext';
 import { analyticsService, BudgetState, BudgetPlannerResponse } from '../../services/analyticsService';
 import { nudgeService, NudgeItem } from '../../services/nudgeService';
 import { schemeService, SchemeEligibilityItem } from '../../services/schemeService';
+import { profileService, UserProfile } from '../../services/profileService';
 
 const DashboardScreen: React.FC = () => {
   const navigation = useNavigation<any>();
@@ -30,6 +31,7 @@ const DashboardScreen: React.FC = () => {
   const { t, language } = useTranslation();
   const [budgetState, setBudgetState] = useState<BudgetState | null>(null);
   const [plannerData, setPlannerData] = useState<BudgetPlannerResponse | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [nudgesList, setNudgesList] = useState<NudgeItem[]>([]);
   const [schemesList, setSchemesList] = useState<SchemeEligibilityItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -38,16 +40,14 @@ const DashboardScreen: React.FC = () => {
 
   const fetchData = useCallback(async () => {
     try {
-      const [bState, pData, nList, sRes] = await Promise.all([
+      const [bState, pData, prof, nList] = await Promise.all([
         analyticsService.getBudgetState().catch(() => null),
         analyticsService.getBudgetPlanner().catch(() => null),
+        profileService.get().catch(() => null),
         nudgeService.list(user?.id || '1', language).catch(() => []),
-        schemeService.filterSchemes({
-          userProfile: { monthly_income: 25000 },
-          language: language || 'en',
-        }).catch(() => null),
       ]);
       if (bState) setBudgetState(bState);
+      if (prof) setUserProfile(prof);
       if (pData) {
         setPlannerData(pData);
         if (pData.full_trajectory && pData.full_trajectory.length > 0) {
@@ -55,6 +55,19 @@ const DashboardScreen: React.FC = () => {
         }
       }
       if (nList) setNudgesList(nList);
+
+      const incomeToUse = prof?.monthly_income || pData?.forecasted_monthly_income || 25000;
+      const sRes = await schemeService.filterSchemes({
+        userProfile: {
+          monthly_income: incomeToUse,
+          age: prof?.age,
+          state: prof?.state || undefined,
+          is_registered_eshram: prof?.e_shram_registered,
+          is_registered_epfo: prof?.epfo_esic_status,
+          has_bank_account: prof?.savings_bank_account,
+        },
+        language: language || 'en',
+      }).catch(() => null);
       if (sRes?.eligible_schemes) setSchemesList(sRes.eligible_schemes);
     } catch {
       // Offline fallback
@@ -141,7 +154,7 @@ const DashboardScreen: React.FC = () => {
         <View style={styles.greetingRow}>
           <View>
             <Text style={styles.greetingText}>
-              {t.dashboard.greeting.replace('राजेश', user?.email?.split('@')[0] || 'राजेश')}
+              {t.dashboard.greeting.replace('राजेश', userProfile?.full_name?.split(' ')[0] || user?.email?.split('@')[0] || 'राजेश')}
             </Text>
             <Text style={styles.greetingSub}>{t.budget.title}</Text>
           </View>

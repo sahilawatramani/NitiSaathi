@@ -12,6 +12,7 @@ import React, {
   useState,
 } from 'react';
 import { authService, UserMe } from '../services/authService';
+import { profileService } from '../services/profileService';
 import { secureStorage } from '../services/secureStorage';
 
 type Language = 'hi' | 'en' | 'mr';
@@ -139,6 +140,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         const tokenData = await authService.login({ email: demoEmail, password: demoPassword });
         await authService.saveToken(tokenData.access_token);
         const user = await authService.me().catch(() => ({ id: 1, email: demoEmail }));
+        if (profileData) {
+          try {
+            await profileService.upsert(profileData);
+          } catch (pe) {
+            console.warn('Failed to upsert profile after login:', pe);
+          }
+        }
         setState((s) => ({
           ...s,
           isAuthenticated: true,
@@ -150,6 +158,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
           await authService.signup({ email: demoEmail, password: demoPassword });
           const tokenData = await authService.login({ email: demoEmail, password: demoPassword });
           await authService.saveToken(tokenData.access_token);
+          if (profileData) {
+            try {
+              await profileService.upsert(profileData);
+            } catch (pe) {
+              console.warn('Failed to upsert profile after signup:', pe);
+            }
+          }
           setState((s) => ({
             ...s,
             isAuthenticated: true,

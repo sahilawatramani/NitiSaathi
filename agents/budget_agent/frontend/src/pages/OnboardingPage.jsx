@@ -9,6 +9,8 @@ export default function OnboardingPage() {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
+    full_name: 'Rajesh Kumar',
+    gender: 'male',
     age: 30,
     monthly_income: '',
     monthly_expenses: '',
@@ -38,6 +40,8 @@ export default function OnboardingPage() {
     try {
       await saveProfile({
         ...formData,
+        full_name: formData.full_name?.trim() || 'Rajesh Kumar',
+        gender: formData.gender || 'male',
         age: Number(formData.age),
         monthly_income: Number(formData.monthly_income),
         monthly_expenses: Number(formData.monthly_expenses),
@@ -102,7 +106,22 @@ export default function OnboardingPage() {
               <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(59, 130, 246, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#3B82F6' }}>
                 <Wallet size={20} />
               </div>
-              <h2 style={{ fontSize: '18px', fontWeight: 600 }}>Income & Baseline</h2>
+              <h2 style={{ fontSize: '18px', fontWeight: 600 }}>Personal Info & Income Baseline</h2>
+            </div>
+
+            <div className="grid-2" style={{ marginBottom: '16px' }}>
+              <div className="input-group">
+                <label>Full Name</label>
+                <input type="text" name="full_name" className="input" value={formData.full_name} onChange={handleChange} placeholder="e.g. Rajesh Kumar" />
+              </div>
+              <div className="input-group">
+                <label>Gender</label>
+                <select name="gender" className="input" value={formData.gender} onChange={handleChange} style={{ background: '#18181b', color: '#fff' }}>
+                  <option value="male">Male (पुरुष)</option>
+                  <option value="female">Female (महिला)</option>
+                  <option value="other">Other (अन्य)</option>
+                </select>
+              </div>
             </div>
             
             <div className="grid-2">
@@ -112,17 +131,17 @@ export default function OnboardingPage() {
               </div>
               <div className="input-group">
                 <label>Monthly Take-home Income (₹)</label>
-                <input type="number" name="monthly_income" className="input" value={formData.monthly_income} onChange={handleChange} placeholder="e.g. 100000" />
+                <input type="number" name="monthly_income" className="input" value={formData.monthly_income} onChange={handleChange} placeholder="e.g. 35000" />
               </div>
             </div>
             <div className="grid-2" style={{ marginTop: '16px' }}>
               <div className="input-group">
                 <label>Avg. Monthly Expenses (₹)</label>
-                <input type="number" name="monthly_expenses" className="input" value={formData.monthly_expenses} onChange={handleChange} placeholder="e.g. 50000" />
+                <input type="number" name="monthly_expenses" className="input" value={formData.monthly_expenses} onChange={handleChange} placeholder="e.g. 20000" />
               </div>
               <div className="input-group">
                 <label>Total Monthly EMI (₹)</label>
-                <input type="number" name="monthly_emi" className="input" value={formData.monthly_emi} onChange={handleChange} placeholder="e.g. 15000" />
+                <input type="number" name="monthly_emi" className="input" value={formData.monthly_emi} onChange={handleChange} placeholder="e.g. 3500" />
               </div>
             </div>
             

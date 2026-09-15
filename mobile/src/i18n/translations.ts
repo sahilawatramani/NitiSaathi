@@ -37,6 +37,12 @@ export interface TranslationSchema {
   details: {
     title: string;
     subtitle: string;
+    nameLabel: string;
+    namePlaceholder: string;
+    genderLabel: string;
+    genderMale: string;
+    genderFemale: string;
+    genderOther: string;
     ageLabel: string;
     incomeLabel: string;
     platformsLabel: string;
@@ -216,6 +222,11 @@ export interface TranslationSchema {
     setupHint: string;
     personalSection: string;
     personalDesc: string;
+    nameLabel: string;
+    genderLabel: string;
+    genderMale: string;
+    genderFemale: string;
+    genderOther: string;
     ageLabel: string;
     stateLabel: string;
     aggregatorLabel: string;
@@ -314,6 +325,12 @@ export const translations: Record<Language, TranslationSchema> = {
     details: {
       title: 'अपनी जानकारी भरें',
       subtitle: 'सही सरकारी योजनाएं और बजट बनाने के लिए',
+      nameLabel: 'पूरा नाम',
+      namePlaceholder: 'उदा. राजेश कुमार',
+      genderLabel: 'लिंग',
+      genderMale: 'पुरुष',
+      genderFemale: 'महिला',
+      genderOther: 'अन्य',
       ageLabel: 'आपकी उम्र',
       incomeLabel: 'अनुमानित मासिक आय (₹)',
       platformsLabel: 'काम करने का प्लेटफॉर्म',
@@ -493,6 +510,11 @@ export const translations: Record<Language, TranslationSchema> = {
       setupHint: '✏️ अपनी प्रोफ़ाइल में जानकारी दर्ज करें और सहेजें',
       personalSection: '1. व्यक्तिगत जानकारी',
       personalDesc: 'अपनी बुनियादी जानकारी यहाँ दर्ज करें',
+      nameLabel: 'पूरा नाम',
+      genderLabel: 'लिंग',
+      genderMale: 'पुरुष',
+      genderFemale: 'महिला',
+      genderOther: 'अन्य',
       ageLabel: 'आपकी उम्र (वर्ष)',
       stateLabel: 'राज्य (उदा. महाराष्ट्र / दिल्ली)',
       aggregatorLabel: 'प्लेटफ़ॉर्म पर सक्रिय दिन',
@@ -590,6 +612,12 @@ export const translations: Record<Language, TranslationSchema> = {
     details: {
       title: 'Enter your details',
       subtitle: 'To find matching schemes and build your custom budget',
+      nameLabel: 'Full Name',
+      namePlaceholder: 'e.g. Rajesh Kumar',
+      genderLabel: 'Gender',
+      genderMale: 'Male',
+      genderFemale: 'Female',
+      genderOther: 'Other',
       ageLabel: 'Your Age',
       incomeLabel: 'Approximate monthly income (₹)',
       platformsLabel: 'Working platforms',
@@ -769,6 +797,11 @@ export const translations: Record<Language, TranslationSchema> = {
       setupHint: '✏️ Enter your profile information and save',
       personalSection: '1. Personal Information',
       personalDesc: 'Enter your basic profile information',
+      nameLabel: 'Full Name',
+      genderLabel: 'Gender',
+      genderMale: 'Male',
+      genderFemale: 'Female',
+      genderOther: 'Other',
       ageLabel: 'Your Age (Years)',
       stateLabel: 'State (e.g., Maharashtra / Delhi)',
       aggregatorLabel: 'Days Active on Platform',
@@ -866,6 +899,12 @@ export const translations: Record<Language, TranslationSchema> = {
     details: {
       title: 'तुमची माहिती भरा',
       subtitle: 'योग्य सरकारी योजना आणि बजेट तयार करण्यासाठी',
+      nameLabel: 'पूर्ण नाव',
+      namePlaceholder: 'उदा. राजेश कुमार',
+      genderLabel: 'लिंग',
+      genderMale: 'पुरुष',
+      genderFemale: 'स्त्री',
+      genderOther: 'इतर',
       ageLabel: 'तुमचे वय',
       incomeLabel: 'अंदाजे मासिक उत्पन्न (₹)',
       platformsLabel: 'कामाचे प्लॅटफॉर्म',
@@ -1045,6 +1084,11 @@ export const translations: Record<Language, TranslationSchema> = {
       setupHint: '✏️ तुमच्या प्रोफाइलमध्ये माहिती भरा आणि जतन करा',
       personalSection: '1. वैयक्तिक माहिती',
       personalDesc: 'तुमची मूलभूत माहिती येथे प्रविष्ट करा',
+      nameLabel: 'पूर्ण नाव',
+      genderLabel: 'लिंग',
+      genderMale: 'पुरुष',
+      genderFemale: 'स्त्री',
+      genderOther: 'इतर',
       ageLabel: 'तुमचे वय (वर्षे)',
       stateLabel: 'राज्य (उदा. महाराष्ट्र / दिल्ली)',
       aggregatorLabel: 'प्लॅटफॉर्मवर सक्रिय दिवस',

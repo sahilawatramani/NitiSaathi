@@ -31,6 +31,8 @@ class UserProfile(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), unique=True, nullable=False)
     
+    full_name = Column(String, nullable=True, default="Rajesh Kumar")
+    gender = Column(String, nullable=True, default="male")  # male, female, other
     age = Column(Integer, nullable=False, default=30)
     monthly_income = Column(Float, nullable=False, default=0)
     monthly_expenses = Column(Float, nullable=False, default=0)

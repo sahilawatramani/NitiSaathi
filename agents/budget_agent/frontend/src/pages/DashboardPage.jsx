@@ -118,23 +118,23 @@ export default function DashboardPage() {
       });
     }
 
-    // Default timeseries curve matching reference video
-    const base = 50000;
+    // Dynamic fallback timeseries curve centered around user's actual monthly income
+    const base = userProfile?.monthly_income || plannerData?.forecasted_monthly_income || 25000;
     return [
-      { month: 'Jan', actual: 45500, predicted: null },
-      { month: 'Feb', actual: 47500, predicted: null },
-      { month: 'Mar', actual: 47000, predicted: null },
-      { month: 'Apr', actual: 49000, predicted: null },
-      { month: 'May', actual: 50500, predicted: null },
-      { month: 'Jun', actual: 50000, predicted: 50000 },
-      { month: 'Jul', actual: null, predicted: 51200, isForecast: true },
-      { month: 'Aug', actual: null, predicted: 52400, isForecast: true },
-      { month: 'Sep', actual: null, predicted: 53100, isForecast: true },
+      { month: 'Jan', actual: Math.round(base * 0.91), predicted: null },
+      { month: 'Feb', actual: Math.round(base * 0.95), predicted: null },
+      { month: 'Mar', actual: Math.round(base * 0.94), predicted: null },
+      { month: 'Apr', actual: Math.round(base * 0.98), predicted: null },
+      { month: 'May', actual: Math.round(base * 1.01), predicted: null },
+      { month: 'Jun', actual: Math.round(base * 1.00), predicted: Math.round(base * 1.00) },
+      { month: 'Jul', actual: null, predicted: Math.round(base * 1.02), isForecast: true },
+      { month: 'Aug', actual: null, predicted: Math.round(base * 1.04), isForecast: true },
+      { month: 'Sep', actual: null, predicted: Math.round(base * 1.06), isForecast: true },
     ];
-  }, [plannerData]);
+  }, [plannerData, userProfile]);
 
   // Derived metrics
-  const avgIncome = plannerData?.forecasted_monthly_income || userProfile?.monthly_income || 50000;
+  const avgIncome = userProfile?.monthly_income || plannerData?.forecasted_monthly_income || 25000;
   const emergencySaved = 17500;
   const emergencyGoal = 30000;
   const savingsPct = 35;
@@ -235,7 +235,7 @@ export default function DashboardPage() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '12px' }}>
         <div>
           <h1 style={{ fontSize: '26px', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em' }}>
-            {d.title || 'Dashboard'}
+            {d.title || 'Dashboard'} {userProfile?.full_name ? `• ${userProfile.full_name}` : ''}
           </h1>
           <p style={{ fontSize: '14px', color: 'var(--text-muted)', marginTop: '4px' }}>
             {d.subtitle || 'Platform tailored dashboard highlighting your configurations'}

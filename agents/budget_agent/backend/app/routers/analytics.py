@@ -12,6 +12,7 @@ from app.services.forecast_service import (
     compare_periods,
     calculate_savings_potential,
     forecast_monthly_income_and_budget_plan,
+    GIG_SEASONALITY_PRIORS,
 )
 from app.services.planner_service import calculate_health_score
 from app.services.state_bridge_service import get_finassist_data
@@ -130,27 +131,14 @@ def get_budget_planner(
         .all()
     )
     profile = db.query(UserProfile).filter(UserProfile.user_id == current_user.id).first()
-    fallback_income = profile.monthly_income if (profile and profile.monthly_income and profile.monthly_income > 0) else 50000.0
+    fallback_income = profile.monthly_income if (profile and profile.monthly_income and profile.monthly_income > 0) else 25000.0
 
     if not records:
-        if fallback_income == 50000.0:
-            seed_data = [
-                ("Jan", 50000.0, "Primary Income"),
-                ("Feb", 52000.0, "Primary Income"),
-                ("Mar", 48000.0, "Primary Income"),
-                ("Apr", 55000.0, "Primary Income"),
-                ("May", 53000.0, "Primary Income"),
-                ("Jun", 58000.0, "Primary Income"),
-            ]
-        else:
-            seed_data = [
-                ("Jan", round(fallback_income * 0.92, 0), "Primary Income"),
-                ("Feb", round(fallback_income * 0.96, 0), "Primary Income"),
-                ("Mar", round(fallback_income * 0.94, 0), "Primary Income"),
-                ("Apr", round(fallback_income * 1.02, 0), "Primary Income"),
-                ("May", round(fallback_income * 0.98, 0), "Primary Income"),
-                ("Jun", round(fallback_income * 1.04, 0), "Primary Income"),
-            ]
+        months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"]
+        seed_data = [
+            (m, round(fallback_income * GIG_SEASONALITY_PRIORS.get(m, 1.0), 0), "Primary Income")
+            for m in months
+        ]
         created_records = []
         for idx, (m, inc, src) in enumerate(seed_data):
             rec = MonthlyIncomeHistory(
@@ -206,7 +194,7 @@ def update_budget_planner(
     db.commit()
 
     profile = db.query(UserProfile).filter(UserProfile.user_id == current_user.id).first()
-    fallback_income = profile.monthly_income if (profile and profile.monthly_income and profile.monthly_income > 0) else 50000.0
+    fallback_income = profile.monthly_income if (profile and profile.monthly_income and profile.monthly_income > 0) else 25000.0
 
     return forecast_monthly_income_and_budget_plan(
         history_records=history_dicts,

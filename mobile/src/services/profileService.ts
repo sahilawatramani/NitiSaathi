@@ -6,6 +6,8 @@ import api from './api';
 export interface UserProfile {
   id: number;
   user_id: number;
+  full_name?: string;
+  gender?: string;
   age: number;
   monthly_income: number;
   monthly_expenses: number;

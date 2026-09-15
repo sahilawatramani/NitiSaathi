@@ -33,6 +33,8 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
   const { t, language, setLanguage } = useTranslation();
 
   const [profile, setProfile] = useState<Partial<UserProfile>>({
+    full_name: 'Rajesh Kumar',
+    gender: 'male',
     age: 28,
     state: 'Maharashtra',
     monthly_income: 25000,
@@ -76,6 +78,8 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
     try {
       const payload = {
         ...profile,
+        full_name: profile.full_name || 'Rajesh Kumar',
+        gender: profile.gender || 'male',
         age: Number(profile.age) || 28,
         monthly_income: Number(profile.monthly_income) || 0,
         monthly_expenses: Number(profile.monthly_expenses) || 0,
@@ -185,11 +189,51 @@ const ProfileScreen: React.FC<Props> = ({ navigation }) => {
             </View>
           </View>
 
-          {/* Section 1: Personal Information */}
+            {/* Section 1: Personal Information */}
           <View style={styles.sectionCard}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>{t.profile.personalSection}</Text>
               <Text style={styles.sectionDesc}>{t.profile.personalDesc}</Text>
+            </View>
+
+            {/* Full Name Input Box */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>{t.profile.nameLabel}</Text>
+              <View style={styles.inputBox}>
+                <TextInput
+                  style={styles.textInput}
+                  value={profile.full_name ?? ''}
+                  onChangeText={(val) => setProfile((p) => ({ ...p, full_name: val }))}
+                  placeholder="Rajesh Kumar"
+                  placeholderTextColor={Colors.textWarmGray}
+                />
+              </View>
+            </View>
+
+            {/* Gender Selection Chips */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.inputLabel}>{t.profile.genderLabel}</Text>
+              <View style={styles.riskRow}>
+                {[
+                  { key: 'male', label: t.profile.genderMale },
+                  { key: 'female', label: t.profile.genderFemale },
+                  { key: 'other', label: t.profile.genderOther },
+                ].map((opt) => {
+                  const isSelected = (profile.gender || 'male').toLowerCase() === opt.key;
+                  return (
+                    <TouchableOpacity
+                      key={opt.key}
+                      style={[styles.riskChip, isSelected && styles.riskChipActive]}
+                      onPress={() => setProfile((p) => ({ ...p, gender: opt.key }))}
+                      activeOpacity={0.8}
+                    >
+                      <Text style={[styles.riskChipText, isSelected && styles.riskChipTextActive]}>
+                        {opt.label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
             </View>
 
             {/* Age Input Box */}

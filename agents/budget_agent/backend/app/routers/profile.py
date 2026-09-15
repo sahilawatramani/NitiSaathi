@@ -4,12 +4,15 @@ from pydantic import BaseModel
 from typing import Optional
 
 from app.models.database import get_db
-from app.models.schemas import User, UserProfile
+from app.models.schemas import User, UserProfile, MonthlyIncomeHistory
 from app.services.auth_service import get_current_user
+from app.services.forecast_service import GIG_SEASONALITY_PRIORS
 
 router = APIRouter()
 
 class ProfileUpdateReq(BaseModel):
+    full_name: Optional[str] = "Rajesh Kumar"
+    gender: Optional[str] = "male"
     age: int = 28
     monthly_income: float = 0.0
     monthly_expenses: float = 0.0
@@ -56,6 +59,8 @@ def upsert_profile(
         profile = UserProfile(user_id=current_user.id)
         db.add(profile)
         
+    profile.full_name = req.full_name
+    profile.gender = req.gender
     profile.age = req.age
     profile.monthly_income = req.monthly_income
     profile.monthly_expenses = req.monthly_expenses
@@ -76,7 +81,26 @@ def upsert_profile(
     profile.aadhaar_linked = req.aadhaar_linked
     profile.language_pref = req.language_pref
     profile.literacy_level = req.literacy_level
+
+    # Synchronize MonthlyIncomeHistory so time-series forecasting & budget planner match profile income dynamically
+    if req.monthly_income and req.monthly_income > 0:
+        months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"]
+        existing_history = db.query(MonthlyIncomeHistory).filter(MonthlyIncomeHistory.user_id == current_user.id).all()
+        # If no history or only default seeded history, regenerate around the user's exact new income baseline
+        if not existing_history or len(existing_history) <= 6:
+            db.query(MonthlyIncomeHistory).filter(MonthlyIncomeHistory.user_id == current_user.id).delete()
+            for idx, m in enumerate(months):
+                multiplier = GIG_SEASONALITY_PRIORS.get(m, 1.0)
+                rec = MonthlyIncomeHistory(
+                    user_id=current_user.id,
+                    month_label=m,
+                    month_index=idx + 1,
+                    amount=round(req.monthly_income * multiplier, 0),
+                    source="Primary Income",
+                )
+                db.add(rec)
     
     db.commit()
     db.refresh(profile)
     return profile
+

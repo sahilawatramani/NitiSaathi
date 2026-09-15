@@ -59,6 +59,8 @@ def _ensure_dev_schema_compatibility() -> None:
             statements.append("ALTER TABLE user_profiles ADD COLUMN partner_age INTEGER")
             statements.append("ALTER TABLE user_profiles ADD COLUMN partner_income FLOAT")
         profile_columns = {
+            "full_name": "VARCHAR DEFAULT 'Rajesh Kumar'",
+            "gender": "VARCHAR DEFAULT 'male'",
             "epfo_esic_status": "BOOLEAN NOT NULL DEFAULT 0",
             "income_tax_payer": "BOOLEAN NOT NULL DEFAULT 0",
             "e_shram_registered": "BOOLEAN NOT NULL DEFAULT 0",
