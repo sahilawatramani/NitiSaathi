@@ -81,75 +81,83 @@ class NudgeSchedulerService:
                 break
 
     async def evaluate_all_users(self) -> List[NudgeOut]:
-        """Scan active users in features.csv or synthetic pipeline, generate and store proactive nudges."""
+        """Scan active users in features.csv AND finassist.db, evaluate all 7 concrete triggers, generate and store proactive nudges."""
         self.last_run_timestamp = datetime.utcnow()
         self.total_evaluations += 1
 
+        all_user_ids: List[str] = []
+
+        # 1. Collect synthetic user IDs from features.csv
         current_dir = os.path.dirname(os.path.abspath(__file__))
         csv_path = os.path.normpath(
             os.path.join(current_dir, "..", "..", "..", "data_pipeline", "data", "features.csv")
         )
-        if not os.path.exists(csv_path):
-            logger.debug("features.csv not found at %s; skipping bulk evaluation cycle.", csv_path)
-            return []
+        if os.path.exists(csv_path):
+            try:
+                df = await asyncio.to_thread(pd.read_csv, csv_path)
+                if not df.empty and "user_id" in df.columns:
+                    all_user_ids.extend([str(u) for u in df["user_id"].unique()[:30]])
+            except Exception as e:
+                logger.debug("Error reading features.csv: %s", e)
 
+        # 2. Collect real database user IDs from finassist.db
         try:
-            df = await asyncio.to_thread(pd.read_csv, csv_path)
-            if df.empty or "user_id" not in df.columns:
-                return []
-            
-            unique_users = df["user_id"].unique()[:50]  # Scoped batch per cycle
-            generated_nudges: List[NudgeOut] = []
+            from .trigger_registry import _get_finassist_db_path
+            import sqlite3
+            db_p = _get_finassist_db_path()
+            if db_p:
+                conn = sqlite3.connect(db_p)
+                cur = conn.cursor()
+                cur.execute("SELECT id FROM users LIMIT 50")
+                db_uids = [str(r[0]) for r in cur.fetchall()]
+                conn.close()
+                for uid in db_uids:
+                    if uid not in all_user_ids:
+                        all_user_ids.append(uid)
+        except Exception as e:
+            logger.debug("Error reading finassist.db users: %s", e)
 
-            for user_id in unique_users:
-                user_rows = df[df["user_id"] == user_id]
-                if user_rows.empty:
+        if not all_user_ids:
+            all_user_ids = ["1"]
+
+        generated_nudges: List[NudgeOut] = []
+
+        # Evaluate all 7 triggers for each user
+        for user_id in all_user_ids:
+            for checker in TRIGGER_REGISTRY:
+                if is_suppressed(user_id, checker.trigger_id):
                     continue
-                latest_row = user_rows.loc[user_rows["week_start"].idxmax()]
 
-                # Evaluate triggers
-                if bool(latest_row.get("nudge_trigger_low_balance_before_debit")) and not is_suppressed(str(user_id), "low_balance_before_debit"):
-                    balance = latest_row.get("closing_balance", 0.0)
-                    days = int(latest_row.get("days_to_next_pmsby_debit", 0) or 0)
-                    raw_msg = f"Your balance is low (₹{balance:,.2f}) and your PMSBY insurance payment is due in {days} days."
-                    msg = await asyncio.to_thread(simplify_message, raw_msg, "medium", "en")
-                    nudge = NudgeOut(
-                        id=str(uuid.uuid4()),
-                        user_id=str(user_id),
-                        trigger_id="low_balance_before_debit",
-                        message=msg,
-                        status="active",
-                        created_at=datetime.utcnow(),
-                        outcome_check_at=datetime.utcnow() + timedelta(days=7),
-                        outcome_status="pending"
-                    )
-                    generated_nudges.append(nudge)
+                try:
+                    fires = checker.check(user_id)
+                    if fires is True:
+                        meta = checker.build_metadata(user_id, language_pref="en")
+                        nudge = NudgeOut(
+                            id=str(uuid.uuid4()),
+                            user_id=str(user_id),
+                            trigger_id=checker.trigger_id,
+                            nudge_type=checker.trigger_id,
+                            title=meta.get("title", checker.trigger_id.replace("_", " ").title()),
+                            message=meta.get("message", ""),
+                            priority=meta.get("priority", "advisory"),
+                            action_url=meta.get("action_url"),
+                            action_label=meta.get("action_label"),
+                            language="en",
+                            status="active",
+                            created_at=datetime.utcnow(),
+                            outcome_check_at=datetime.utcnow() + timedelta(days=7),
+                            outcome_status="pending"
+                        )
+                        generated_nudges.append(nudge)
+                except Exception as exc:
+                    logger.debug("Error checking trigger %s for user %s: %s", checker.trigger_id, user_id, exc)
 
-                elif bool(latest_row.get("low_balance_flag")) and not is_suppressed(str(user_id), "low_balance"):
-                    balance = latest_row.get("closing_balance", 0.0)
-                    raw_msg = f"Your closing balance is ₹{balance:,.2f}, which is below your safe reserve. Pause discretionary spend."
-                    msg = await asyncio.to_thread(simplify_message, raw_msg, "medium", "en")
-                    nudge = NudgeOut(
-                        id=str(uuid.uuid4()),
-                        user_id=str(user_id),
-                        trigger_id="low_balance",
-                        message=msg,
-                        status="active",
-                        created_at=datetime.utcnow(),
-                        outcome_check_at=datetime.utcnow() + timedelta(days=7),
-                        outcome_status="pending"
-                    )
-                    generated_nudges.append(nudge)
+        if generated_nudges:
+            save_nudges_batch(generated_nudges)
+            self.total_nudges_generated += len(generated_nudges)
+            logger.info("Autonomous Nudge Scheduler generated %d proactive nudges across %d users.", len(generated_nudges), len(all_user_ids))
 
-            if generated_nudges:
-                save_nudges_batch(generated_nudges)
-                self.total_nudges_generated += len(generated_nudges)
-                logger.info("Autonomous Nudge Scheduler generated %d proactive nudges.", len(generated_nudges))
-
-            return generated_nudges
-        except Exception as exc:
-            logger.error("Failed bulk nudge evaluation: %s", exc)
-            return []
+        return generated_nudges
 
     async def evaluate_due_outcomes(self, force_all: bool = False) -> List[NudgeOutcomeRecord]:
         """Evaluate pending outcome checkpoints to measure financial efficacy."""

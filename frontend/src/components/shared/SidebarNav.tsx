@@ -1,20 +1,38 @@
-import React from 'react';
-import { View, Text, Pressable, Image, ScrollView } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Pressable, ScrollView } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { Link, usePathname, useRouter } from 'expo-router';
+import { getUserProfile } from '../../api/user';
 
 const NAV_ITEMS = [
   { name: 'Home',        hindi: 'गृह',           route: '/',           icon: 'home'         },
   { name: 'Budget',      hindi: 'बजट',           route: '/budget',     icon: 'payments'     },
   { name: 'Assistant',   hindi: 'साथी',          route: '/assistant',  icon: 'chat-bubble'  },
   { name: 'Schemes',     hindi: 'योजनाएं',      route: '/schemes',    icon: 'description'  },
+  { name: 'Nudges',      hindi: 'सूचनाएं',      route: '/nudges',     icon: 'notifications'},
   { name: 'Fraud Check', hindi: 'धोखाधड़ी जांच', route: '/fraud-check', icon: 'gpp-maybe'  },
   { name: 'Reports',     hindi: 'रिपोर्ट',       route: '/reports',    icon: 'download'     },
+  { name: 'Profile',     hindi: 'प्रोफ़ाइल',     route: '/settings',   icon: 'person'       },
 ];
 
 export function SidebarNav() {
   const pathname = usePathname();
   const router = useRouter();
+  const [profileName, setProfileName] = useState('User');
+
+  useEffect(() => {
+    let isMounted = true;
+    getUserProfile()
+      .then((p) => {
+        if (isMounted && p?.full_name?.trim()) {
+          setProfileName(p.full_name.trim());
+        }
+      })
+      .catch(() => {});
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const isActive = (route: string) => {
     if (route === '/') {
@@ -22,6 +40,8 @@ export function SidebarNav() {
     }
     return pathname.startsWith(route);
   };
+
+  const initial = (profileName ? profileName[0] : 'U').toUpperCase();
 
   return (
     <View className="w-[260px] bg-background-off-white h-full border-r border-outline-variant shadow-sm z-20 flex-col">
@@ -63,11 +83,7 @@ export function SidebarNav() {
         </View>
       </ScrollView>
 
-      {/*
-        Profile block — tapping navigates to Settings directly.
-        Active state matches /settings so the block highlights correctly.
-        Nudges is reachable via the header bell; Settings no longer duplicated in the list.
-      */}
+      {/* Profile block at bottom */}
       <Pressable
         onPress={() => router.push('/settings' as any)}
         className={`p-6 border-t border-outline-variant mt-auto active:opacity-70 ${
@@ -76,19 +92,17 @@ export function SidebarNav() {
         accessibilityLabel="Open settings"
       >
         <View className="flex-row items-center gap-3 px-2">
-          <View className="w-8 h-8 rounded-full overflow-hidden border border-outline-variant">
-            <Image
-              source={{ uri: 'https://lh3.googleusercontent.com/aida-public/AB6AXuCBTqmbzH-gOCdNdGwJ0DRQGIqnk-mqSnkZa3xTE090REW6Fpkvd7jtU-hEEWLhxSFp08MgjMr5GCXmToAla2n9K5zqNk4-8qb8mbuEX6ptVfGqTK6hkZVzjy-aX5rhAxHp2pjHe98Q3NG4srZfta9wL7pktaHCBWLjSFIfxkTdfb-09mC6KQV6SBPbTBX-reAk5hHkuVOrxJmsfC7hj8jvMpNt_pSlPRCPOW1O3hNenwuPYYRbuOINcA' }}
-              className="w-full h-full"
-              resizeMode="cover"
-            />
+          <View className="w-8 h-8 rounded-full bg-primary-container items-center justify-center border border-outline-variant">
+            <Text style={{ color: '#ffffff', fontSize: 13, fontWeight: '700' }}>
+              {initial}
+            </Text>
           </View>
           <View className="flex-1">
-            <Text className="font-label-lg text-label-lg text-[#1A1A1A] font-semibold">
-              राजेश
+            <Text className="font-label-lg text-label-lg text-[#1A1A1A] font-semibold" numberOfLines={1}>
+              {profileName}
             </Text>
             <Text className="font-label-sm text-[11px] text-on-surface-variant">
-              सेटिंग्स / Settings →
+              प्रोफ़ाइल व सेटिंग्स →
             </Text>
           </View>
         </View>

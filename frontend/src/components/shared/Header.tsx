@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, Pressable, useWindowDimensions, Platform } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { useRouter } from 'expo-router';
+import { getUserProfile } from '../../api/user';
 
 interface HeaderProps {
   title: string;
@@ -12,10 +13,24 @@ export function Header({ title, backTo }: HeaderProps) {
   const router = useRouter();
   const { width } = useWindowDimensions();
   const isWideWeb = Platform.OS === 'web' && width >= 768;
+  const [initial, setInitial] = useState('U');
+
+  useEffect(() => {
+    let isMounted = true;
+    getUserProfile()
+      .then((p) => {
+        if (isMounted && p?.full_name?.trim()) {
+          setInitial(p.full_name.trim()[0].toUpperCase());
+        }
+      })
+      .catch(() => {});
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   if (isWideWeb) {
-    // ── Desktop web: title / back-arrow on left, bell only on right ─────────
-    // (profile already lives in SidebarNav bottom — don't duplicate here)
+    // ── Desktop web: title / back-arrow on left, bell + profile on right ─────
     return (
       <View className="bg-white border-b border-surface-container-high h-16 px-4 md:px-12 w-full flex-row justify-between items-center z-10">
         <View className="flex-row items-center gap-3">
@@ -32,12 +47,22 @@ export function Header({ title, backTo }: HeaderProps) {
           </Text>
         </View>
 
-        <View className="flex-row items-center">
+        <View className="flex-row items-center gap-3">
           <Pressable
             onPress={() => router.push('/nudges' as any)}
-            className="p-2 rounded-full active:bg-surface-container-low active:opacity-70"
+            className="p-2 rounded-full active:bg-surface-container-low active:opacity-70 flex-row items-center gap-1"
           >
             <MaterialIcons name="notifications" size={24} color="#594140" />
+          </Pressable>
+
+          <Pressable
+            onPress={() => router.push('/settings' as any)}
+            className="w-8 h-8 rounded-full bg-primary-container items-center justify-center border border-outline-variant active:opacity-70"
+            accessibilityLabel="Open settings"
+          >
+            <Text style={{ color: '#ffffff', fontSize: 13, fontWeight: '700' }}>
+              {initial}
+            </Text>
           </Pressable>
         </View>
       </View>
@@ -45,7 +70,6 @@ export function Header({ title, backTo }: HeaderProps) {
   }
 
   // ── Native / narrow web: logo mark + title on left, bell + avatar on right ─
-  // When backTo is set, the back arrow replaces the logo mark (title stays).
   return (
     <View className="bg-white border-b border-surface-container-high h-16 px-4 w-full flex-row justify-between items-center z-10">
       {/* Left side */}
@@ -92,10 +116,9 @@ export function Header({ title, backTo }: HeaderProps) {
           className="ml-1 active:opacity-70"
           accessibilityLabel="Open settings"
         >
-          <View className="w-8 h-8 rounded-full bg-primary-fixed border-2 border-outline-variant items-center justify-center">
-            {/* Initials placeholder — replace with <Image> once user avatar API is wired */}
-            <Text style={{ color: '#82001b', fontSize: 13, fontWeight: '700', lineHeight: 17 }}>
-              R
+          <View className="w-8 h-8 rounded-full bg-primary-container border border-outline-variant items-center justify-center">
+            <Text style={{ color: '#ffffff', fontSize: 13, fontWeight: '700' }}>
+              {initial}
             </Text>
           </View>
         </Pressable>

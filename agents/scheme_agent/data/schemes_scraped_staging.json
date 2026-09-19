@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-15T02:01:04.667446",
+  "generated_at": "2026-09-15T02:53:20.706788",
   "target_portals_count": 6,
   "successful_scrapes": 4,
   "failed_scrapes": 2,
@@ -17,7 +17,7 @@
         "eshram"
       ],
       "http_status": 200,
-      "scraped_at": "2026-09-15T02:00:58.635231",
+      "scraped_at": "2026-09-15T02:53:14.669967",
       "notes": "Successfully crawled e-Shram National Portal. Extracted 2 relevant keywords."
     },
     {
@@ -31,7 +31,7 @@
         "suraksha"
       ],
       "http_status": 200,
-      "scraped_at": "2026-09-15T02:00:58.635231",
+      "scraped_at": "2026-09-15T02:53:14.669967",
       "notes": "Successfully crawled Jan Suraksha Portal (PMSBY & PMJJBY). Extracted 1 relevant keywords."
     },
     {
@@ -50,7 +50,7 @@
         "yojana"
       ],
       "http_status": 200,
-      "scraped_at": "2026-09-15T02:00:58.635231",
+      "scraped_at": "2026-09-15T02:53:14.669967",
       "notes": "Successfully crawled Pradhan Mantri Shram Yogi Maan-Dhan Portal. Extracted 6 relevant keywords."
     },
     {
@@ -62,7 +62,7 @@
       "extracted_title": null,
       "keywords_found": [],
       "http_status": null,
-      "scraped_at": "2026-09-15T02:00:58.637231",
+      "scraped_at": "2026-09-15T02:53:14.669967",
       "notes": "Portal connection timed out (non-blocking)."
     },
     {
@@ -78,7 +78,7 @@
         "svanidhi"
       ],
       "http_status": 200,
-      "scraped_at": "2026-09-15T02:00:58.637231",
+      "scraped_at": "2026-09-15T02:53:14.669967",
       "notes": "Successfully crawled PM SVANidhi Micro-Credit Portal. Extracted 3 relevant keywords."
     },
     {
@@ -90,7 +90,7 @@
       "extracted_title": null,
       "keywords_found": [],
       "http_status": null,
-      "scraped_at": "2026-09-15T02:00:58.637231",
+      "scraped_at": "2026-09-15T02:53:14.685443",
       "notes": "Network or parsing error: [Errno 11001] getaddrinfo failed"
     }
   ]

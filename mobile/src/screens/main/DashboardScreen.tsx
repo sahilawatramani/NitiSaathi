@@ -158,13 +158,25 @@ const DashboardScreen: React.FC = () => {
             </Text>
             <Text style={styles.greetingSub}>{t.budget.title}</Text>
           </View>
-          {budgetState?.financial_persona && (
-            <View style={styles.personaBadge}>
-              <Text style={styles.personaBadgeText}>
-                {budgetState.financial_persona.toUpperCase()}
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            {budgetState?.financial_persona && (
+              <View style={styles.personaBadge}>
+                <Text style={styles.personaBadgeText}>
+                  {budgetState.financial_persona.toUpperCase()}
+                </Text>
+              </View>
+            )}
+            <TouchableOpacity
+              style={styles.nudgeQuickBadge}
+              onPress={() => navigation.navigate('Nudges')}
+              activeOpacity={0.8}
+            >
+              <Text style={{ fontSize: 13 }}>🔔</Text>
+              <Text style={styles.nudgeQuickBadgeText}>
+                {nudgesList.length > 0 ? `${nudgesList.length} ${language === 'hi' ? 'अलर्ट' : 'Alerts'}` : (language === 'hi' ? 'सूचनाएं' : 'Nudges')}
               </Text>
-            </View>
-          )}
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* 1. Urgent Low Balance / Risk Banner */}
@@ -573,6 +585,23 @@ const styles = StyleSheet.create({
     ...Typography.labelSm,
     color: Colors.primaryContainer,
     fontWeight: '800',
+    fontSize: 11,
+  },
+  nudgeQuickBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: '#FFF0F2',
+    paddingHorizontal: Spacing.sm + 2,
+    paddingVertical: 4,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    borderColor: Colors.primaryContainer + '40',
+  },
+  nudgeQuickBadgeText: {
+    ...Typography.labelSm,
+    color: Colors.primary,
+    fontWeight: '700',
     fontSize: 11,
   },
 

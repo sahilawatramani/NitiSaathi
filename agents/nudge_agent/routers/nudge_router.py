@@ -261,6 +261,12 @@ async def stop_scheduler():
     return nudge_scheduler.get_status()
 
 
+@router.post("/scheduler/evaluate-now", response_model=List[NudgeOut])
+async def trigger_scheduler_evaluation_now():
+    """Trigger an immediate evaluation cycle across all active users."""
+    return await nudge_scheduler.evaluate_all_users()
+
+
 @router.post("/outcomes/evaluate-now", response_model=List[NudgeOutcomeRecord])
 async def evaluate_outcomes_now(force_all: bool = Query(True, description="Force evaluation of pending outcome checkpoints")):
     """Run immediate evaluation of post-intervention outcome checkpoints."""

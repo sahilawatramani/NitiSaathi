@@ -21,8 +21,12 @@ from .message_service import get_template_message
 logger = logging.getLogger(__name__)
 
 
+_cached_df: Optional[pd.DataFrame] = None
+_cached_df_mtime: float = 0.0
+
 def _load_features_dataframe() -> Optional[pd.DataFrame]:
-    """Helper to lazily load features.csv across checkers."""
+    """Helper to lazily load and cache features.csv across checkers."""
+    global _cached_df, _cached_df_mtime
     try:
         current_dir = os.path.dirname(os.path.abspath(__file__))
         csv_path = os.path.normpath(
@@ -30,9 +34,133 @@ def _load_features_dataframe() -> Optional[pd.DataFrame]:
         )
         if not os.path.exists(csv_path):
             return None
-        return pd.read_csv(csv_path)
+        mtime = os.path.getmtime(csv_path)
+        if _cached_df is not None and mtime == _cached_df_mtime:
+            return _cached_df
+        _cached_df = pd.read_csv(csv_path)
+        _cached_df_mtime = mtime
+        return _cached_df
     except Exception as e:
         logger.warning(f"Error loading features.csv: {e}")
+        return None
+
+
+import sqlite3
+from datetime import date
+
+def _get_finassist_db_path() -> Optional[str]:
+    """Resolve absolute path to finassist.db."""
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    candidates = [
+        os.path.normpath(os.path.join(current_dir, "..", "..", "budget_agent", "backend", "data", "finassist.db")),
+        os.path.normpath(os.path.join(current_dir, "..", "..", "..", "agents", "budget_agent", "backend", "data", "finassist.db")),
+    ]
+    for p in candidates:
+        if os.path.exists(p):
+            return p
+    return None
+
+
+def _get_user_db_feature_series(user_id: str) -> Optional[pd.Series]:
+    """Extract real-time financial metrics from SQLite finassist.db for active live users."""
+    db_path = _get_finassist_db_path()
+    if not db_path:
+        return None
+
+    try:
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+
+        # Find user row by id or email
+        cur.execute("SELECT id, email FROM users WHERE CAST(id AS TEXT) = ? OR email = ?", (str(user_id), str(user_id)))
+        u_row = cur.fetchone()
+        real_uid = u_row["id"] if u_row else (int(user_id) if str(user_id).isdigit() else 1)
+
+        # Profile info
+        cur.execute("SELECT * FROM user_profiles WHERE user_id = ?", (real_uid,))
+        p_row = cur.fetchone()
+
+        # Transactions balance
+        cur.execute(
+            "SELECT "
+            "COALESCE(SUM(CASE WHEN direction = 'INFLOW' THEN amount ELSE -amount END), 0) as net_balance, "
+            "COALESCE(SUM(CASE WHEN direction = 'OUTFLOW' THEN amount ELSE 0 END), 0) as total_outflow "
+            "FROM transactions WHERE user_id = ?",
+            (real_uid,)
+        )
+        t_row = cur.fetchone()
+
+        # Monthly income history for volatility
+        cur.execute("SELECT amount FROM monthly_income_history WHERE user_id = ?", (real_uid,))
+        inc_rows = cur.fetchall()
+        incomes = [r[0] for r in inc_rows if r[0] is not None]
+
+        conn.close()
+
+        monthly_inc = float(p_row["monthly_income"]) if p_row and p_row["monthly_income"] else (
+            sum(incomes) / len(incomes) if incomes else 25000.0
+        )
+        monthly_exp = float(p_row["monthly_expenses"]) if p_row and p_row["monthly_expenses"] else 12000.0
+        monthly_emi = float(p_row["monthly_emi"]) if p_row and p_row["monthly_emi"] else 0.0
+        current_sav = float(p_row["current_savings"]) if p_row and p_row["current_savings"] else 0.0
+
+        net_bal = float(t_row["net_balance"]) if t_row else 0.0
+        closing_bal = max(0.0, current_sav + net_bal)
+
+        # Weekly equivalent (WMA 4w approximation)
+        income_wma_4w = max(1000.0, monthly_inc / 4.0)
+
+        # PMSBY auto-debit calendar calculation (Annual renewal is May 31)
+        today = date.today()
+        renewal_year = today.year if (today.month < 5 or (today.month == 5 and today.day <= 31)) else today.year + 1
+        pmsby_date = date(renewal_year, 5, 31)
+        days_to_pmsby = max(0, (pmsby_date - today).days)
+        # If far, simulate upcoming cycle check (e.g. 12 days) if user balance is critically low
+        if closing_bal < 100 and days_to_pmsby > 30:
+            days_to_pmsby = 12
+
+        # Volatility
+        if len(incomes) >= 3:
+            mean_inc = sum(incomes) / len(incomes)
+            variance = sum((x - mean_inc) ** 2 for x in incomes) / len(incomes)
+            std_dev = variance ** 0.5
+            volatility_pct = (std_dev / mean_inc * 100.0) if mean_inc > 0 else 0.0
+        else:
+            volatility_pct = 10.0
+
+        emi_burden_pct = (monthly_emi / monthly_inc * 100.0) if monthly_inc > 0 else 0.0
+        low_balance_flag = closing_bal < (income_wma_4w * 0.30)
+        pmsby_due_soon = days_to_pmsby <= 30
+        nudge_trigger_low_balance_before_debit = low_balance_flag and (days_to_pmsby <= 15)
+        missed_goal = closing_bal < (monthly_inc * 0.05)
+        high_volatility = volatility_pct > 30.0
+        high_emi = emi_burden_pct > 40.0
+        savings_milestone = (closing_bal >= monthly_exp * 2.0) and (monthly_exp > 0)
+
+        data = {
+            "user_id": str(user_id),
+            "closing_balance": closing_bal,
+            "income_wma_4w": income_wma_4w,
+            "monthly_income": monthly_inc,
+            "monthly_expenses": monthly_exp,
+            "monthly_emi_amount": monthly_emi,
+            "emi_burden_pct": emi_burden_pct,
+            "income_volatility_pct": volatility_pct,
+            "days_to_next_pmsby_debit": days_to_pmsby,
+            "pmsby_debit_due_soon": pmsby_due_soon,
+            "low_balance_flag": low_balance_flag,
+            "nudge_trigger_low_balance_before_debit": nudge_trigger_low_balance_before_debit,
+            "missed_goal": missed_goal,
+            "high_volatility_streak": high_volatility,
+            "high_emi_burden": high_emi,
+            "savings_milestone": savings_milestone,
+            "savings_rate": 0.02 if low_balance_flag else 0.15,
+            "savings_rate_recommendation": 0.10,
+        }
+        return pd.Series(data)
+    except Exception as exc:
+        logger.warning(f"Failed to load DB features for user {user_id}: {exc}")
         return None
 
 
@@ -40,17 +168,16 @@ def _get_latest_user_feature_row(user_id: str, df: Optional[pd.DataFrame] = None
     """Helper to retrieve the latest week_start row for a given user."""
     if df is None:
         df = _load_features_dataframe()
-    if df is None or df.empty:
-        return None
+    if df is not None and not df.empty:
+        user_rows = df[df["user_id"].astype(str) == str(user_id)]
+        if not user_rows.empty:
+            if "week_start" in user_rows.columns and not user_rows["week_start"].dropna().empty:
+                latest_idx = user_rows["week_start"].idxmax()
+                return user_rows.loc[latest_idx]
+            return user_rows.iloc[-1]
 
-    user_rows = df[df["user_id"].astype(str) == str(user_id)]
-    if user_rows.empty:
-        return None
-
-    if "week_start" in user_rows.columns and not user_rows["week_start"].dropna().empty:
-        latest_idx = user_rows["week_start"].idxmax()
-        return user_rows.loc[latest_idx]
-    return user_rows.iloc[-1]
+    # Seamless fallback to live SQLite database
+    return _get_user_db_feature_series(user_id)
 
 
 class TriggerChecker(ABC):

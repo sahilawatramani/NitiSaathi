@@ -14,7 +14,7 @@ interface AppHeaderProps {
 export const AppHeader: React.FC<AppHeaderProps> = ({ title, showBack, onBack }) => {
   const navigation = useNavigation<any>();
   const { user } = useAuth();
-  const [initial, setInitial] = useState<string>(() => (user?.email ? user.email[0] : 'U').toUpperCase());
+  const [initial, setInitial] = useState<string>(() => (user?.email ? user.email[0] : 'K').toUpperCase());
 
   useEffect(() => {
     let isMounted = true;
@@ -35,6 +35,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ title, showBack, onBack })
           <TouchableOpacity
             onPress={onBack || (() => navigation.goBack())}
             style={styles.backBtn}
+            accessibilityLabel="Go Back"
           >
             <Text style={styles.backText}>←</Text>
           </TouchableOpacity>
@@ -47,24 +48,33 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ title, showBack, onBack })
       </View>
 
       <View style={styles.rightActions}>
+        {/* Nudges / Alerts Bell */}
         <TouchableOpacity
           style={styles.iconBtn}
           onPress={() => navigation.navigate('Nudges')}
+          accessibilityLabel="Open Nudges and Alerts"
+          activeOpacity={0.7}
         >
           <Text style={styles.actionIcon}>🔔</Text>
           <View style={styles.badgeDot} />
         </TouchableOpacity>
 
+        {/* Profile Avatar */}
         <TouchableOpacity
           style={styles.avatarCircle}
           onPress={() => navigation.navigate('Profile')}
+          accessibilityLabel="Open User Profile"
+          activeOpacity={0.7}
         >
           <Text style={styles.avatarText}>{initial}</Text>
         </TouchableOpacity>
 
+        {/* Settings Gear */}
         <TouchableOpacity
           style={styles.gearBtn}
           onPress={() => navigation.navigate('Settings')}
+          accessibilityLabel="Open Settings"
+          activeOpacity={0.7}
         >
           <Text style={styles.gearIcon}>⚙️</Text>
         </TouchableOpacity>
@@ -76,6 +86,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ title, showBack, onBack })
 const styles = StyleSheet.create({
   headerContainer: {
     height: 58,
+    width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -83,16 +94,18 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.surface,
     borderBottomWidth: 1,
     borderBottomColor: Colors.outlineVariant + '40',
+    zIndex: 50,
   },
   leftRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: Spacing.sm,
+    flexShrink: 1,
   },
   logoBox: {
-    width: 28,
-    height: 28,
-    borderRadius: 6,
+    width: 32,
+    height: 32,
+    borderRadius: 8,
     backgroundColor: Colors.primaryContainer,
     alignItems: 'center',
     justifyContent: 'center',
@@ -100,7 +113,7 @@ const styles = StyleSheet.create({
   logoText: {
     color: Colors.onPrimary,
     fontWeight: '800',
-    fontSize: 16,
+    fontSize: 18,
   },
   backBtn: {
     padding: Spacing.xs,
@@ -109,49 +122,76 @@ const styles = StyleSheet.create({
   backText: {
     fontSize: 22,
     color: Colors.onSurface,
+    fontWeight: '700',
   },
   titleText: {
     ...Typography.headlineSm,
-    fontSize: 17,
-    fontWeight: '700',
+    fontSize: 18,
+    fontWeight: '800',
     color: Colors.onSurface,
   },
   rightActions: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.sm,
+    justifyContent: 'flex-end',
+    gap: Spacing.sm + 4,
+    minWidth: 120,
+    flexShrink: 0,
   },
   iconBtn: {
     position: 'relative',
-    padding: 6,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: Colors.surfaceContainerLow,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: Colors.outlineVariant + '30',
   },
   actionIcon: {
     fontSize: 18,
   },
   badgeDot: {
     position: 'absolute',
-    top: 4,
-    right: 4,
-    width: 7,
-    height: 7,
-    borderRadius: 4,
+    top: 2,
+    right: 2,
+    width: 9,
+    height: 9,
+    borderRadius: 4.5,
     backgroundColor: Colors.vividRed,
+    borderWidth: 1.5,
+    borderColor: '#FFFFFF',
   },
   avatarCircle: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: '#F0D5D8',
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: Colors.primaryContainer,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1.5,
+    borderColor: Colors.outlineVariant + '60',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
   },
   avatarText: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: Colors.primary,
+    fontSize: 15,
+    fontWeight: '800',
+    color: Colors.onPrimary,
   },
   gearBtn: {
-    padding: 6,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: Colors.surfaceContainerLow,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: Colors.outlineVariant + '30',
   },
   gearIcon: {
     fontSize: 18,
